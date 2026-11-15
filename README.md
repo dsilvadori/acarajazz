@@ -18,5 +18,6 @@ npm run dev          # http://localhost:4321
 
 - 📋 [Briefing do projeto](docs/BRIEFING.md)
 - 🏗️ [Arquitetura e decisões técnicas](docs/ARQUITETURA.md)
+- 🚀 [Publicar na Cloudflare](docs/DEPLOY.md)
 - 🎮 [Acarabet — especificação técnica](docs/ACARABET-TECNICO.md)
 - 📸 [Conteúdo extraído do Instagram](docs/CONTEUDO-INSTAGRAM.md)

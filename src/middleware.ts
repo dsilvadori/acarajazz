@@ -1,11 +1,17 @@
 import { defineMiddleware } from 'astro:middleware';
+import { env } from 'cloudflare:workers';
 import { COOKIE, lerSessao } from './lib/auth';
 
 const PUBLICAS = new Set(['/admin/entrar', '/admin/entrar/']);
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
   const { pathname } = ctx.url;
-  if (!pathname.startsWith('/admin')) return next();
+  if (!pathname.startsWith('/admin')) {
+    const resposta = await next();
+    // Antes do lançamento (endereço provisório *.workers.dev), o site fica fora do Google
+    if ((env as unknown as { AMBIENTE?: string }).AMBIENTE !== 'producao') resposta.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return resposta;
+  }
 
   // Formulários do painel só podem vir do próprio site
   if (ctx.request.method !== 'GET' && ctx.request.method !== 'HEAD') {

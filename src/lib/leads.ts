@@ -38,8 +38,14 @@ export async function avisarEquipe(assunto: string, linhas: [string, string][], 
   const html = `<table cellpadding="6" style="font-family:sans-serif;font-size:15px;border-collapse:collapse">${linhas
     .map(([k, v]) => `<tr><td style="color:#6d4c3a"><b>${esc(k)}</b></td><td>${esc(v).replace(/\n/g, '<br>')}</td></tr>`)
     .join('')}</table><p style="font-family:sans-serif;color:#6d4c3a">Veja e acompanhe no painel: /admin</p>`;
+  // O binding EMAIL só existe depois do lançamento (domínio + Email Routing). Antes disso, só registra.
+  const email = (env as unknown as { EMAIL?: SendEmail }).EMAIL;
+  if (!email) {
+    console.warn('Envio de e-mail ainda não configurado (sem binding EMAIL).');
+    return false;
+  }
   try {
-    await env.EMAIL.send({
+    await email.send({
       from: { name: 'Site Acarajazz', email: env.EMAIL_REMETENTE },
       to: env.EMAIL_DESTINO,
       replyTo: responderPara,

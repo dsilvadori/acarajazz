@@ -4,27 +4,38 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Endereço provisório gratuito: acarajazz.<sua-conta>.workers.dev
+  "workers_dev": true,
+  // No lançamento, descomentar para ligar o domínio (o DNS precisa estar na Cloudflare):
+  // "routes": [
+  //   { "pattern": "oacarajazz.com", "custom_domain": true },
+  //   { "pattern": "www.oacarajazz.com", "custom_domain": true }
+  // ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "acarajazz",
-      // Trocar pelo ID real após `npx wrangler d1 create acarajazz` (ver docs/ARQUITETURA.md)
+      // Trocar pelo ID real após `npx wrangler d1 create acarajazz` (ver docs/DEPLOY.md)
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "db/migrations"
     }
   ],
-  // Aviso de novos leads por e-mail (exige Email Routing ativo no domínio oacarajazz.com)
-  "send_email": [
-    { "name": "EMAIL", "destination_address": "acarajazz.contato@gmail.com" }
-  ],
+  // Aviso de novos leads por e-mail: só funciona com o domínio e o Email Routing ativos.
+  // No lançamento, descomentar (antes disso o site salva os contatos normalmente, sem enviar e-mail):
+  // "send_email": [
+  //   { "name": "EMAIL", "destination_address": "acarajazz.contato@gmail.com" }
+  // ],
   "vars": {
     "EMAIL_REMETENTE": "site@oacarajazz.com",
     "EMAIL_DESTINO": "acarajazz.contato@gmail.com",
     // Chave pública do Turnstile. Esta é a chave de TESTE da Cloudflare (sempre aprova); trocar na produção.
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
     // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
-    "ADMIN_EMAIL": "acarajazz.contato@gmail.com"
-  }
+    "ADMIN_EMAIL": "acarajazz.contato@gmail.com",
+    // "pre-lancamento": site no ar em *.workers.dev, mas fora do Google. No lançamento: "producao".
+    "AMBIENTE": "pre-lancamento"
+  },
+
   // Segredos (não ficam aqui): TURNSTILE_SECRET, INSTAGRAM_TOKEN, ADMIN_SENHA_HASH, ADMIN_SESSAO_SEGREDO
   // → `npx wrangler secret put <NOME>` em produção, ou .dev.vars no desenvolvimento
 }

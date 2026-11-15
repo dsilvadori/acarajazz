@@ -64,19 +64,9 @@ npm run dev          # http://localhost:4321
 
 O D1 local é um SQLite em `.wrangler/state`, sem precisar de conta na Cloudflare.
 
-## 5. Para publicar (quando o domínio existir)
+## 5. Para publicar
 
-1. Criar a conta Cloudflare e adicionar o domínio oacarajazz.com.
-2. `npx wrangler d1 create acarajazz` → colocar o `database_id` no `wrangler.jsonc`.
-3. `npx wrangler d1 migrations apply acarajazz --remote` e rodar o seed remoto.
-4. Ativar o Email Routing e verificar acarajazz.contato@gmail.com como destino.
-5. Configurar o login do `/admin` (segredos, nunca no código):
-   - `node scripts/gerar-hash-senha.mjs` → digitar a senha → copiar o resultado.
-   - `npx wrangler secret put ADMIN_SENHA_HASH` → colar o hash.
-   - `npx wrangler secret put ADMIN_SESSAO_SEGREDO` → colar um texto aleatório longo (ex.: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`).
-   - O e-mail de acesso fica em `ADMIN_EMAIL` no `wrangler.jsonc`.
-   - Para **trocar a senha**: gerar um novo hash e repetir o `secret put ADMIN_SENHA_HASH`.
-6. `npm run build && npx wrangler deploy`.
+Passo a passo completo em [DEPLOY.md](DEPLOY.md): primeiro no endereço provisório `*.workers.dev` (fora do Google), depois o domínio oacarajazz.com é ligado ao mesmo site no lançamento.
 
 ## 6. Limites do plano gratuito (conferir antes do lançamento)
 
