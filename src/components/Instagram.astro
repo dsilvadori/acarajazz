@@ -1,64 +1,144 @@
 ---
-import { getPosts, PERFIL } from '../lib/instagram';
-
-const posts = await getPosts(6);
+import { FEED, PERFIL_INSTAGRAM } from '../data/reels';
 ---
 
 <section class="insta" id="instagram" aria-labelledby="insta-titulo">
   <div class="container">
     <div class="topo">
       <div>
-        <p class="chamada">Novidades da casa</p>
-        <h2 class="titulo" id="insta-titulo">@o_acarajazz</h2>
+        <p class="chamada">No Instagram</p>
+        <h2 class="titulo" id="insta-titulo">Direto do nosso Instagram</h2>
       </div>
-      <a class="botao botao-vinho" href={PERFIL} target="_blank" rel="noopener">Seguir no Instagram</a>
+      <div class="controles">
+        <button class="seta" type="button" data-dir="-1" aria-label="Anterior">‹</button>
+        <button class="seta" type="button" data-dir="1" aria-label="Próximo">›</button>
+        <a class="botao botao-vinho" href={PERFIL_INSTAGRAM} target="_blank" rel="noopener">Seguir @o_acarajazz</a>
+      </div>
     </div>
-
-    <ul class="grade">
-      {posts.map((p) => (
-        <li>
-          <a href={p.link} target="_blank" rel="noopener" aria-label={p.legenda || 'Ver post no Instagram'}>
-            <img src={p.imagem} alt="" loading="lazy" decoding="async" width="720" height="900" />
-            {p.video && <span class="play" aria-hidden="true">▶</span>}
-            <span class="legenda">{p.legenda}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
   </div>
+
+  <ul class="reels">
+    {FEED.map((r) => (
+      <li>
+        {r.tipo === 'reel' ? (
+          <button class="reel" type="button" data-video={`/reels/${r.arquivo}.mp4`} aria-label={`Assistir: ${r.titulo}`}>
+            <img src={`/reels/${r.arquivo}.webp`} alt="" width="540" height="960" loading="lazy" decoding="async" />
+            <span class="play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+            </span>
+            <span class="legenda">{r.titulo}</span>
+          </button>
+        ) : (
+          <a class="reel foto" href={PERFIL_INSTAGRAM} target="_blank" rel="noopener" aria-label={`${r.titulo} (abre o Instagram)`}>
+            <img src={`/img/feed/${r.arquivo}.webp`} alt={r.titulo} width="540" height="960" loading="lazy" decoding="async" />
+            <span class="legenda">{r.titulo}</span>
+          </a>
+        )}
+      </li>
+    ))}
+  </ul>
+
+  <p class="mais container">
+    <a href={PERFIL_INSTAGRAM} target="_blank" rel="noopener">Ver mais no Instagram ↗</a>
+  </p>
 </section>
 
 <style>
-  .insta { background: var(--creme); padding-block: var(--secao); }
+  .insta { background: var(--creme); padding-block: var(--secao); overflow: hidden; }
   .topo { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px 24px; }
 
-  .grade {
-    list-style: none; padding: 0; margin: 2rem 0 0;
-    display: grid; gap: 10px;
-    grid-template-columns: repeat(2, 1fr);
+  .controles { display: flex; align-items: center; gap: 8px; }
+  .seta {
+    width: 46px; height: 46px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #fff; color: var(--vinho); font: 800 1.8rem/1 var(--fonte-titulo);
+    box-shadow: 0 4px 0 -1px var(--creme-2);
   }
-  @media (min-width: 760px) { .grade { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+  .seta:hover { background: var(--vinho); color: var(--creme); }
+  @media (max-width: 760px) { .seta { display: none; } }
 
-  .grade a {
-    position: relative; display: block; overflow: hidden;
-    aspect-ratio: 1; border-radius: 18px; background: var(--creme-2);
+  /* Carrossel que desliza (todas as telas) */
+  .reels {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0 max(var(--gutter), calc((100vw - var(--largura)) / 2)) 8px;
+    scroll-padding-inline: max(var(--gutter), calc((100vw - var(--largura)) / 2));
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(62vw, 230px);
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
   }
-  .grade img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-  .grade a:hover img { transform: scale(1.04); }
+  .reels::-webkit-scrollbar { display: none; }
+  .reels li { scroll-snap-align: start; }
+
+  .reel {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    padding: 0;
+    border: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--vinho-escuro);
+    cursor: pointer;
+    box-shadow: var(--sombra);
+  }
+  .reel img, .reel :global(video) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .reel:hover img { transform: scale(1.03); }
+  .reel img { transition: transform 0.4s ease; }
+
+  .play {
+    position: absolute; top: 50%; left: 50%; translate: -50% -50%;
+    width: 56px; height: 56px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgb(254 245 226 / 0.92); color: var(--vinho);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+  }
+  .play svg { margin-left: 3px; }
 
   .legenda {
     position: absolute; inset: auto 0 0 0;
-    padding: 28px 14px 12px;
-    background: linear-gradient(transparent, rgb(58 0 0 / 0.85));
-    color: #fff; font-size: 0.85rem; font-weight: 700; line-height: 1.3;
-    opacity: 0; transform: translateY(8px); transition: 0.25s ease;
+    padding: 40px 12px 12px;
+    background: linear-gradient(transparent, rgb(58 0 0 / 0.9));
+    color: #fff; text-align: left;
+    font-family: var(--fonte-texto); font-size: 0.82rem; font-weight: 700; line-height: 1.3;
   }
-  .grade a:hover .legenda, .grade a:focus-visible .legenda { opacity: 1; transform: none; }
-  @media (hover: none) { .legenda { opacity: 1; transform: none; } }
 
-  .play {
-    position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
-    display: grid; place-items: center; background: rgb(0 0 0 / 0.5); color: #fff; font-size: 0.8rem;
-  }
-  @media (prefers-reduced-motion: reduce) { .grade img, .legenda { transition: none; } }
+  .mais { margin-top: 1.4rem; text-align: center; }
+  .mais a { font-family: var(--fonte-titulo); font-weight: 700; color: var(--vinho); }
+
+  @media (prefers-reduced-motion: reduce) { .reel img { transition: none; } }
 </style>
+
+<script>
+  // Setas do carrossel
+  const trilho = document.querySelector<HTMLElement>('.insta .reels');
+  document.querySelectorAll<HTMLButtonElement>('.insta .seta').forEach((b) =>
+    b.addEventListener('click', () => trilho?.scrollBy({ left: Number(b.dataset.dir) * trilho.clientWidth * 0.8 })),
+  );
+  // Troca a capa pelo vídeo só quando a pessoa toca (não baixa vídeo à toa). Um vídeo por vez.
+  document.querySelectorAll<HTMLButtonElement>('.insta .reel').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll<HTMLVideoElement>('.insta video').forEach((v) => v.pause());
+      const caixa = document.createElement('div');
+      caixa.className = b.className + ' tocando';
+      // mantém o escopo de estilo do Astro (data-astro-cid-*) no novo elemento
+      for (const at of Array.from(b.attributes)) if (at.name.startsWith('data-astro-cid')) caixa.setAttribute(at.name, at.value);
+      const v = document.createElement('video');
+      v.src = b.dataset.video!;
+      v.controls = true;
+      v.playsInline = true;
+      v.autoplay = true;
+      v.poster = (b.querySelector('img') as HTMLImageElement).src;
+      v.setAttribute('aria-label', b.getAttribute('aria-label') ?? 'Reel do Acarajazz');
+      caixa.appendChild(v);
+      b.replaceWith(caixa);
+      v.play().catch(() => {});
+    });
+  });
+</script>

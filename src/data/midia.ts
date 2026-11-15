@@ -12,10 +12,10 @@ export const MATERIAS: Materia[] = [
   {
     veiculo: 'Band · Melhor da Tarde',
     tipo: 'TV',
-    titulo: 'Acarajé da chef Bia Souza: a receita ensinada no programa',
-    link: 'https://receitas.band.com.br/melhor-da-tarde/receita/acaraje-202510071706',
+    titulo: 'Surpresa culinária: Pamela Lucciola recebe os acarajés da chef Bia Souza',
+    link: 'https://www.youtube.com/watch?v=D1tSDp2GX_U',
     data: 'out/2025',
-    imagem: '/img/pratos/acaraje.webp',
+    imagem: 'https://i.ytimg.com/vi/D1tSDp2GX_U/hqdefault.jpg',
   },
   {
     veiculo: 'Achadinhos do Paladar',

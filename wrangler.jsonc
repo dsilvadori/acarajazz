@@ -28,8 +28,9 @@
   "vars": {
     "EMAIL_REMETENTE": "site@oacarajazz.com",
     "EMAIL_DESTINO": "acarajazz.contato@gmail.com",
-    // Chave pública do Turnstile. Esta é a chave de TESTE da Cloudflare (sempre aprova); trocar na produção.
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    // Chave pública do Turnstile. Esta é a chave de TESTE invisível da Cloudflare (sempre aprova, sem aviso na tela);
+    // trocar pela chave real no lançamento.
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000BB",
     // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
     "ADMIN_EMAIL": "acarajazz.contato@gmail.com",
     // "pre-lancamento": site no ar em *.workers.dev, mas fora do Google. No lançamento: "producao".

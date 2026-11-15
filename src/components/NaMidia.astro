@@ -19,7 +19,7 @@ import { MATERIAS } from '../data/midia';
                 <span class="tipo">{m.tipo}{m.data && ` · ${m.data}`}</span>
                 <h3>{m.veiculo}</h3>
                 <p>{m.titulo}</p>
-                <span class="ver">{m.tipo === 'YouTube' ? 'Assistir' : 'Ver matéria'} ↗</span>
+                <span class="ver">{m.link.includes('youtube.com') ? 'Assistir' : 'Ver matéria'} ↗</span>
               </div>
             </a>
           </li>
