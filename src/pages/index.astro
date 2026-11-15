@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
 import Hero from '../components/Hero.astro';
 import Destaques from '../components/Destaques.astro';
 import Cardapio from '../components/Cardapio.astro';
 import Horarios from '../components/Horarios.astro';
 import Delivery from '../components/Delivery.astro';
 import SobreBia from '../components/SobreBia.astro';
+import NaMidia from '../components/NaMidia.astro';
+import Avaliacoes from '../components/Avaliacoes.astro';
 import Eventos from '../components/Eventos.astro';
 import Instagram from '../components/Instagram.astro';
 import Rodape from '../components/Rodape.astro';
@@ -20,10 +23,11 @@ const [categorias, horarios, aviso] = await Promise.all([
 const status = statusAgora(horarios);
 
 // O status "aberto agora" muda com o tempo: cache curto na borda.
-Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
+if (import.meta.env.PROD) Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
 ---
 
 <Base>
+  <Cabecalho />
   <Hero status={status} />
   <main>
     <Destaques categorias={categorias} />
@@ -31,6 +35,8 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
     <Delivery />
     <Horarios horarios={horarios} status={status} aviso={aviso} />
     <SobreBia />
+    <NaMidia />
+    <Avaliacoes />
     <Eventos />
     <Instagram />
   </main>

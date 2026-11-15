@@ -1,0 +1,56 @@
+---
+import { AVALIACOES, LINK_AVALIAR } from '../data/avaliacoes';
+---
+
+<section class="avaliacoes" id="avaliacoes" aria-labelledby="avaliacoes-titulo">
+  <div class="container">
+    <div class="topo">
+      <p class="chamada">Avaliações</p>
+      <h2 class="titulo" id="avaliacoes-titulo">Quem prova, conta</h2>
+    </div>
+
+    {AVALIACOES.length > 0 && (
+      <ul class="lista">
+        {AVALIACOES.map((a) => (
+          <li class="cartao">
+            <p class="estrelas" aria-label={`${a.nota} de 5 estrelas`}>{'★'.repeat(a.nota)}<span>{'★'.repeat(5 - a.nota)}</span></p>
+            <blockquote>“{a.texto}”</blockquote>
+            <p class="autor">{a.autor}{a.quando && <small> · {a.quando}</small>}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="cta">
+      <p class="estrelas-cta" aria-hidden="true">★★★★★</p>
+      <p class="cta-texto"><strong>Já veio no Acarajazz?</strong> Conta pra gente como foi. Sua avaliação no Google ajuda muita gente a encontrar a casa.</p>
+      <a class="botao botao-vinho" href={LINK_AVALIAR} target="_blank" rel="noopener">Avaliar no Google ↗</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .avaliacoes { background: var(--laranja); padding-block: var(--secao); }
+  .topo { text-align: center; }
+  .chamada { color: var(--vinho); }
+
+  .lista {
+    list-style: none; padding: 0; margin: 2.4rem 0 0;
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .cartao { background: var(--creme); border-radius: var(--raio); padding: 24px; box-shadow: var(--sombra); display: flex; flex-direction: column; gap: 12px; }
+  .estrelas { color: var(--laranja-forte); font-size: 1.3rem; letter-spacing: 2px; }
+  .estrelas span { color: var(--creme-2); }
+  blockquote { margin: 0; font-size: 1.02rem; color: var(--texto); flex: 1; }
+  .autor { font-family: var(--fonte-titulo); font-weight: 700; color: var(--vinho); }
+  .autor small { font-weight: 500; color: var(--texto-suave); }
+
+  .cta {
+    max-width: 640px; margin: 2.4rem auto 0; padding: 28px clamp(20px, 4vw, 40px);
+    background: var(--creme); border-radius: var(--raio); text-align: center; box-shadow: var(--sombra);
+  }
+  .estrelas-cta { color: var(--amarelo); font-size: 2rem; letter-spacing: 6px; text-shadow: 0 2px 0 var(--vinho); }
+  .cta-texto { margin: 8px 0 18px; font-size: 1.08rem; }
+  .cta-texto strong { color: var(--vinho); }
+</style>

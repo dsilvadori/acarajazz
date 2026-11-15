@@ -16,22 +16,14 @@ const { status } = Astro.props;
     <path d="M-20,114 C 300,64 520,164 800,114 S 1240,54 1460,94" stroke="var(--fita-vermelha)" />
   </svg>
 
-  <nav class="menu container" aria-label="Principal">
-    <a href="#cardapio">Cardápio</a>
-    <a href="#delivery">Delivery</a>
-    <a href="#eventos" class="so-desktop">Eventos</a>
-    <a href="#onde" class="so-desktop">Onde estamos</a>
-    <a class="botao botao-vinho whats" href="https://wa.me/5511979564494" target="_blank" rel="noopener">WhatsApp</a>
-  </nav>
-
   <div class="conteudo container">
     <div class="logo">
       <img src="/img/logo.webp" alt="Acarajazz" width="900" height="900" fetchpriority="high" />
     </div>
 
     <div class="texto">
-      <p class="chamada-hero">Boteco de baianos, para todos · Vila Mariana</p>
-      <h1>A Bahia não é tema. <span>É origem.</span></h1>
+      <p class="chamada-hero">Vila Mariana · São Paulo</p>
+      <h1>Boteco de baianos. <span>Para todos.</span></h1>
       <p class="apoio">
         Tem o acarajé tradicional e o <strong>Acarajazz</strong>, nosso acarajé vegano. Além de moquecas,
         caldos e comidas típicas, regionais e autorais.
@@ -41,6 +33,7 @@ const { status } = Astro.props;
         <a class="botao botao-vinho" href="#cardapio">Ver cardápio</a>
         <a class="botao botao-contorno" href="#delivery">Peça no delivery</a>
       </div>
+      <p class="lema">A Bahia não é tema, é origem.</p>
     </div>
   </div>
 </header>
@@ -67,28 +60,12 @@ const { status } = Astro.props;
   }
   .fitas path { fill: none; stroke-width: 7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 
-  .menu {
-    position: relative;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: clamp(14px, 3vw, 32px);
-    padding-block: 20px;
-    font-family: var(--fonte-titulo);
-    font-weight: 700;
-    font-size: 1.02rem;
-  }
-  .menu a:not(.botao) { color: var(--vinho); text-decoration: none; }
-  .menu a:not(.botao):hover { text-decoration: underline; text-underline-offset: 4px; }
-  .menu .whats { padding: 0.5em 1.2em; font-size: 0.98rem; }
-  @media (max-width: 720px) { .so-desktop { display: none; } }
-
   .conteudo {
     position: relative;
     display: grid;
     align-items: center;
     gap: 8px 56px;
-    padding-top: 8px;
+    padding-top: 4px;
   }
   @media (min-width: 900px) {
     .conteudo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); padding-top: 24px; }
@@ -127,6 +104,15 @@ const { status } = Astro.props;
   @media (min-width: 900px) { .apoio { margin-inline: 0; } }
 
   .status-wrap { margin-top: 1.4rem; }
+  .lema {
+    margin-top: 1.4rem;
+    font-family: var(--fonte-titulo);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--vinho);
+    opacity: 0.75;
+  }
   .acoes {
     display: flex;
     flex-wrap: wrap;

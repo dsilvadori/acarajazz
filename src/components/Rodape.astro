@@ -1,9 +1,14 @@
 ---
+interface Props {
+  /** Cor da seção acima (fundo atrás das fitinhas) */
+  acima?: string;
+}
+const { acima = 'var(--creme)' } = Astro.props;
 const ano = new Date().getFullYear();
 ---
 
 <footer class="rodape">
-  <svg class="fitas" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+  <svg class="fitas" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true" style={`background:${acima}`}>
     <path d="M0,30 C 360,6 720,56 1080,30 S 1360,14 1440,24" stroke="var(--fita-amarela)" />
     <path d="M0,44 C 360,20 720,70 1080,44 S 1360,28 1440,38" stroke="var(--fita-azul)" />
     <path d="M0,58 C 360,34 720,84 1080,58 S 1360,42 1440,52" stroke="var(--fita-vermelha)" />
@@ -44,7 +49,7 @@ const ano = new Date().getFullYear();
 
 <style>
   .rodape { background: var(--vinho); color: var(--creme); }
-  .fitas { width: 100%; height: 40px; display: block; background: var(--creme); }
+  .fitas { width: 100%; height: 40px; display: block; }
   .fitas path { fill: none; stroke-width: 7; }
 
   .grade {

@@ -90,7 +90,7 @@ Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leitur
 - [ ] Revisão jurídica da política de privacidade
 - [ ] Mapa: os tiles do OpenStreetMap servem para pouco tráfego; avaliar um provedor (ex.: MapTiler, plano gratuito) se o acesso crescer
 
-**Próximas etapas:** mini CRM em `/admin`, página `/curso`, página `/acarabet`.
+**Próximas etapas:** mini CRM em `/admin`, página `/acaraje-alem-da-receita`, página `/acarabet`.
 
 ## 8. Identidade visual
 

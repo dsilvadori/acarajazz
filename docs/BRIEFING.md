@@ -71,7 +71,7 @@ O site tem quatro papéis:
 │  └─ Rodapé (endereço, mapa, contatos, redes)
 │
 /acarabet               Página do jogo Acarabet
-/curso                  Landing page de captação — Curso "Acarajé além da receita"
+/acaraje-alem-da-receita                  Landing page de captação — Curso "Acarajé além da receita"
 /politica-de-privacidade   Exigida pela LGPD (formulários de lead)
 ```
 
@@ -167,7 +167,8 @@ Campos sugeridos:
 
 Pendente: a chef/equipe aprovar o valor.
 
-### 4.8 Página `/curso` — Curso "Acarajé além da receita"
+### 4.8 Página `/acaraje-alem-da-receita` — Curso "Acarajé além da receita"
+> ✅ **Implementada (15/11/2026)** com base no documento-base do curso. Sem data de lançamento: a página capta interessados (nome, e-mail, WhatsApp + perfil, formato preferido e cidade, opcionais). Conteúdo interno do documento (finanças, investimento, dívidas) **não** vai para o site.
 Landing page de **pré-lançamento** para captar potenciais alunos.
 - Apresentação do curso e da chef Bia Souza.
 - Promessa / o que o aluno vai aprender (alto nível).

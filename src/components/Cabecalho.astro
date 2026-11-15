@@ -1,0 +1,156 @@
+---
+interface Props {
+  /** Fora da Home, as âncoras apontam para a Home (/#cardapio etc.) */
+  home?: boolean;
+}
+const { home = true } = Astro.props;
+const base = home ? '' : '/';
+const links = [
+  { href: '#inicio', texto: 'Início' },
+  { href: '#cardapio', texto: 'Cardápio' },
+  { href: '#delivery', texto: 'Delivery' },
+  { href: '#onde', texto: 'Onde estamos' },
+  { href: '#chef', texto: 'A chef' },
+  { href: '#eventos', texto: 'Eventos' },
+].map((l) => ({ ...l, href: base + l.href }));
+links.push({ href: '/acaraje-alem-da-receita', texto: 'Acarajé Além da Receita' });
+const WHATS = 'https://wa.me/5511979564494';
+---
+
+<header class="cabecalho" id="cabecalho">
+  <div class="container barra">
+    <nav class="links" aria-label="Principal">
+      {links.map((l) => <a href={l.href}>{l.texto}</a>)}
+      <a class="botao botao-vinho whats" href={WHATS} target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+
+    <button class="hamburguer" type="button" aria-expanded="false" aria-controls="menu-mobile" aria-label="Abrir menu">
+      <svg class="icone-acaraje" viewBox="0 0 32 32" aria-hidden="true">
+        <!-- Três traços nas cores do bolinho do logo: laranja, amarelo, laranja -->
+        <path d="M6 8.5H26" stroke="var(--laranja-forte)" stroke-width="3.8" stroke-linecap="round" />
+        <path d="M6 16H26" stroke="var(--amarelo)" stroke-width="3.8" stroke-linecap="round" />
+        <path d="M6 23.5H26" stroke="var(--laranja-forte)" stroke-width="3.8" stroke-linecap="round" />
+      </svg>
+      <svg class="icone-fechar" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M9 9 23 23M23 9 9 23" stroke="var(--creme)" stroke-width="3.4" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="menu-mobile" id="menu-mobile" tabindex="-1" hidden>
+    <nav aria-label="Principal (celular)">
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.texto}</a></li>)}
+      </ul>
+      <a class="botao botao-creme" href={WHATS} target="_blank" rel="noopener">Chama no WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--laranja);
+    transition: box-shadow 0.2s ease;
+  }
+  .cabecalho.rolou { box-shadow: 0 6px 18px -10px rgb(86 0 0 / 0.5); }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: 72px;
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2.2vw, 28px);
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+  .links a:not(.botao) { color: var(--vinho); text-decoration: none; }
+  .links a:not(.botao):hover { text-decoration: underline; text-underline-offset: 4px; }
+  .whats { padding: 0.5em 1.2em; font-size: 0.98rem; }
+
+  .hamburguer {
+    display: none;
+    width: 52px;
+    height: 52px;
+    padding: 7px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--vinho);
+    cursor: pointer;
+  }
+  .hamburguer svg { width: 100%; height: 100%; }
+  .icone-fechar { display: none; }
+  .hamburguer[aria-expanded='true'] .icone-acaraje { display: none; }
+  .hamburguer[aria-expanded='true'] .icone-fechar { display: block; }
+
+  @media (max-width: 1100px) {
+    .links { display: none; }
+    .hamburguer { display: block; }
+  }
+
+  .menu-mobile {
+    position: fixed;
+    inset: 72px 0 0 0;
+    background: var(--vinho);
+    overflow-y: auto;
+    padding: 24px var(--gutter) 40px;
+  }
+  .menu-mobile[hidden] { display: none; }
+  .menu-mobile:focus { outline: none; }
+  .menu-mobile ul { list-style: none; margin: 0; padding: 0; }
+  .menu-mobile li + li { border-top: 1px solid rgb(254 245 226 / 0.15); }
+  .menu-mobile ul a {
+    display: block;
+    padding: 16px 4px;
+    font-family: var(--fonte-titulo);
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: var(--creme);
+    text-decoration: none;
+  }
+  .menu-mobile ul a:active { color: var(--amarelo); }
+  .menu-mobile .botao { margin-top: 28px; width: 100%; font-size: 1.15rem; }
+</style>
+
+<script>
+  const cab = document.getElementById('cabecalho')!;
+  const botao = cab.querySelector<HTMLButtonElement>('.hamburguer')!;
+  const menu = document.getElementById('menu-mobile')!;
+
+  function abrir(sim: boolean) {
+    botao.setAttribute('aria-expanded', String(sim));
+    botao.setAttribute('aria-label', sim ? 'Fechar menu' : 'Abrir menu');
+    menu.hidden = !sim;
+    document.documentElement.style.overflow = sim ? 'hidden' : '';
+    if (sim) menu.focus();
+  }
+
+  botao.addEventListener('click', () => abrir(botao.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) abrir(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) {
+      abrir(false);
+      botao.focus();
+    }
+  });
+  window.matchMedia('(min-width: 1101px)').addEventListener('change', (m) => m.matches && abrir(false));
+
+  // Sombra no cabeçalho quando o logo grande da hero sai da tela
+  const logoHero = document.querySelector('.hero .logo');
+  if (logoHero) {
+    new IntersectionObserver(([e]) => cab.classList.toggle('rolou', !e.isIntersecting), {
+      rootMargin: '-72px 0px 0px 0px',
+    }).observe(logoHero);
+  }
+</script>

@@ -1,0 +1,357 @@
+---
+import { env } from 'cloudflare:workers';
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import Rodape from '../components/Rodape.astro';
+import { FORMATOS, PERFIS } from '../lib/curso';
+
+const siteKey = env.TURNSTILE_SITE_KEY;
+const okSemJs = Astro.url.searchParams.get('lista') === 'ok';
+
+const eixos = [
+  { titulo: 'História e ancestralidade', texto: 'Origens africanas, transformações no Brasil, a cultura afro-baiana e o papel histórico das baianas de acarajé.' },
+  { titulo: 'Memória, identidade e patrimônio', texto: 'O acarajé como pertencimento, transmissão de saberes, encontro e patrimônio cultural do Brasil.' },
+  { titulo: 'Ingredientes e fundamentos', texto: 'Feijão-fradinho, dendê, camarão seco e os acompanhamentos: funções culinárias e sabores.' },
+  { titulo: 'Técnica, receita e padronização', texto: 'Massa, incorporação de ar, fritura, textura, acompanhamentos, rendimento, conservação e boas práticas.' },
+  { titulo: 'Tradição e criatividade', texto: 'Como valorizar e criar a partir de uma tradição, distinguindo o que é técnica tradicional do que é adaptação autoral.' },
+];
+
+const saberes = [
+  { nome: 'O saber herdado', texto: 'A cultura alimentar transmitida pela família, entre tabuleiros de Salvador e encontros em volta da comida.' },
+  { nome: 'O saber acadêmico', texto: 'Os estudos em gastronomia, que ajudam a entender ingredientes, processos e técnicas.' },
+  { nome: 'O saber profissional', texto: 'Mais de uma década fritando acarajé todos os dias: os erros, os ajustes e o compromisso com a qualidade.' },
+];
+
+const publicos = [
+  'Apaixonados por gastronomia',
+  'Cozinheiros e chefs',
+  'Estudantes de gastronomia',
+  'Historiadores e pesquisadores',
+  'Interessados em cultura afro-brasileira',
+  'Quem vive longe da Bahia e sente saudade',
+];
+---
+
+<Base
+  title="Acarajé Além da Receita · Curso com a chef Bia Souza"
+  description="Um curso de imersão na cultura do acarajé: história, ancestralidade, técnica e prática com a chef Bia Souza, do Acarajazz. Entre na lista de interesse."
+>
+  <Cabecalho home={false} />
+
+  <main>
+    <section class="topo">
+      <div class="container topo-grade">
+        <div class="topo-texto">
+          <p class="selo">Em breve · Lista de interesse aberta</p>
+          <h1>Acarajé <span>Além da Receita</span></h1>
+          <p class="sub">
+            Cultura, história, técnica e ancestralidade em torno de um dos maiores símbolos da gastronomia
+            afro-brasileira. Com a chef Bia Souza, do Acarajazz.
+          </p>
+          <a class="botao botao-vinho" href="#lista">Quero saber primeiro</a>
+          <p class="nota">Ainda sem data. Quem entra na lista recebe o aviso antes de todo mundo.</p>
+        </div>
+        <figure class="topo-foto">
+          <img src="/img/pratos/acaraje.webp" alt="Acarajés dourados com vatapá e camarão" width="800" height="1000" fetchpriority="high" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="essencia">
+      <div class="container estreito">
+        <p class="chamada">O curso</p>
+        <h2 class="titulo">Mais do que reproduzir uma receita</h2>
+        <p class="texto-grande">
+          Uma imersão no universo do acarajé que une história, memória afetiva, gastronomia e prática. Você vai
+          aprender a preparar o acarajé com qualidade e respeito à tradição, e entender de onde ele vem, o que
+          representa e como esses saberes chegaram até aqui.
+        </p>
+        <p class="frase">Porque aprender a fazer acarajé também é aprender a reconhecer tudo aquilo que ele carrega.</p>
+      </div>
+    </section>
+
+    <section class="eixos">
+      <div class="container">
+        <p class="chamada">O que você vai aprender</p>
+        <h2 class="titulo">Cinco caminhos para chegar ao acarajé</h2>
+        <ol class="lista-eixos">
+          {eixos.map((e, i) => (
+            <li>
+              <span class="num">{i + 1}</span>
+              <h3>{e.titulo}</h3>
+              <p>{e.texto}</p>
+            </li>
+          ))}
+        </ol>
+        <p class="aviso-conteudo">O programa ainda está sendo construído. Formato, duração e receitas serão anunciados primeiro para quem está na lista.</p>
+      </div>
+    </section>
+
+    <section class="professora">
+      <div class="container prof-grade">
+        <figure class="prof-foto">
+          <img src="/img/bia-curso.webp" alt="Chef Bia Souza de bata branca e turbante, segurando uma cumbuca de barro" width="720" height="900" loading="lazy" decoding="async" />
+        </figure>
+        <div>
+          <p class="chamada">Quem ensina</p>
+          <h2 class="titulo">Chef Bia Souza</h2>
+          <p class="prof-lead">
+            Criada numa família de raízes baianas, a Bia cresceu entre as memórias dos tabuleiros de Salvador e os
+            saberes culinários passados de geração em geração.
+          </p>
+          <p>
+            Estudou gastronomia e se dedica ao acarajé há mais de uma década. Fundou o Acarajazz, boteco de
+            baianos na Vila Mariana. No curso, ela junta três formas de conhecimento:
+          </p>
+          <ul class="saberes">
+            {saberes.map((s) => (
+              <li><strong>{s.nome}</strong>{s.texto}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="publico">
+      <div class="container estreito">
+        <p class="chamada">Para quem é</p>
+        <h2 class="titulo">Para quem vê a comida como cultura</h2>
+        <ul class="chips">
+          {publicos.map((p) => <li>{p}</li>)}
+        </ul>
+        <p class="obs">Quer empreender com acarajé? O curso também é pra você, mas a proposta vai além do negócio.</p>
+      </div>
+    </section>
+
+    <section class="lista" id="lista" aria-labelledby="lista-titulo">
+      <div class="container lista-grade">
+        <div>
+          <p class="chamada">Lista de interesse</p>
+          <h2 class="titulo" id="lista-titulo">Quero fazer o curso</h2>
+          <p class="subtitulo">
+            Deixe seu contato e seja avisado(a) em primeira mão sobre datas, formato e condições de pré-venda.
+            Sem spam: só novidades do curso.
+          </p>
+        </div>
+
+        <form class="form" id="form-curso" method="post" action="/api/curso" novalidate>
+          {okSemJs && <p class="sucesso-fallback" role="status">Pronto, você está na lista! Logo a gente dá notícia.</p>}
+
+          <div class="campo">
+            <label for="cu-nome">Seu nome *</label>
+            <input id="cu-nome" name="nome" required autocomplete="name" />
+            <p class="erro" data-erro="nome"></p>
+          </div>
+          <div class="duas">
+            <div class="campo">
+              <label for="cu-email">E-mail *</label>
+              <input id="cu-email" name="email" type="email" required autocomplete="email" />
+              <p class="erro" data-erro="email"></p>
+            </div>
+            <div class="campo">
+              <label for="cu-whatsapp">WhatsApp *</label>
+              <input id="cu-whatsapp" name="whatsapp" type="tel" required autocomplete="tel" inputmode="tel" placeholder="(11) 90000-0000" />
+              <p class="erro" data-erro="whatsapp"></p>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="cu-perfil">O que te traz até o acarajé? <small>(opcional)</small></label>
+            <select id="cu-perfil" name="perfil">
+              <option value="">Escolha…</option>
+              {Object.entries(PERFIS).map(([v, t]) => <option value={v}>{t}</option>)}
+            </select>
+            <p class="erro" data-erro="perfil"></p>
+          </div>
+
+          <fieldset class="formato">
+            <legend>Como você prefere fazer o curso? <small>(opcional)</small></legend>
+            {Object.entries(FORMATOS).map(([v, t]) => (
+              <label class="opcao"><input type="radio" name="formato" value={v} /><span>{t}</span></label>
+            ))}
+          </fieldset>
+
+          <div class="campo">
+            <label for="cu-cidade">Cidade / estado <small>(opcional)</small></label>
+            <input id="cu-cidade" name="cidade" autocomplete="address-level2" placeholder="São Paulo, SP" />
+          </div>
+
+          <div class="pote" aria-hidden="true"><label>Não preencha <input name="site" tabindex="-1" autocomplete="off" /></label></div>
+          <input type="hidden" name="origem" />
+
+          <label class="consentimento">
+            <input type="checkbox" name="consentimento" required />
+            <span>Quero receber novidades do curso Acarajé Além da Receita por e-mail e WhatsApp, conforme a <a href="/politica-de-privacidade">política de privacidade</a>. *</span>
+          </label>
+          <p class="erro" data-erro="consentimento"></p>
+
+          <div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-br" data-theme="light"></div>
+          <p class="erro" data-erro="geral" role="alert"></p>
+
+          <button class="botao botao-vinho enviar" type="submit">Entrar na lista</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <Rodape acima="var(--laranja)" />
+</Base>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  const form = document.getElementById('form-curso') as HTMLFormElement;
+  const enviar = form.querySelector('.enviar') as HTMLButtonElement;
+  (form.elements.namedItem('origem') as HTMLInputElement).value =
+    location.search ? `${location.pathname}${location.search}` : document.referrer || 'direto';
+
+  function mostrarErros(erros: Record<string, string>) {
+    form.querySelectorAll<HTMLElement>('[data-erro]').forEach((p) => {
+      const msg = erros[p.dataset.erro!] ?? '';
+      p.textContent = msg;
+      const campo = form.elements.namedItem(p.dataset.erro!) as HTMLElement | null;
+      if (campo && 'setAttribute' in campo) campo.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    });
+    const primeiro = Object.keys(erros)[0];
+    const el = primeiro && (form.elements.namedItem(primeiro) as HTMLElement | null);
+    if (el && 'focus' in el) el.focus();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    mostrarErros({});
+    enviar.disabled = true;
+    enviar.textContent = 'Enviando…';
+    try {
+      const r = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { accept: 'application/json' } });
+      const j = (await r.json()) as { ok: boolean; erros: Record<string, string>; jaInscrito?: boolean };
+      if (j.ok) {
+        form.innerHTML = j.jaInscrito
+          ? `<div class="sucesso" role="status"><h3>Você já está na lista! 🧡</h3><p>Esse e-mail já estava inscrito. Assim que tiver novidade do curso, a gente avisa.</p></div>`
+          : `<div class="sucesso" role="status"><h3>Oxe, que massa! 🧡</h3><p>Você está na lista do <strong>Acarajé Além da Receita</strong>. Vai saber antes de todo mundo quando abrirem as inscrições.</p></div>`;
+        return;
+      }
+      mostrarErros(j.erros);
+      (window as any).turnstile?.reset();
+    } catch {
+      mostrarErros({ geral: 'Não conseguimos enviar agora. Tente de novo em instantes.' });
+    }
+    enviar.disabled = false;
+    enviar.textContent = 'Entrar na lista';
+  });
+</script>
+
+<style>
+  .chamada { color: var(--laranja-forte); }
+
+  /* Topo */
+  .topo { background: var(--laranja); color: var(--vinho); padding-block: clamp(32px, 6vw, 80px) clamp(48px, 8vw, 96px); overflow: hidden; }
+  .topo-grade { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 900px) { .topo-grade { grid-template-columns: 1.15fr 0.85fr; gap: 64px; } }
+  .selo {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    background: var(--vinho); color: var(--creme);
+    font-family: var(--fonte-titulo); font-weight: 800; font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  h1 { margin-top: 1rem; font-size: clamp(2.8rem, 8vw, 5.2rem); line-height: 0.95; color: var(--vinho); }
+  h1 span { display: block; color: var(--creme); text-shadow: 3px 3px 0 var(--vinho); }
+  .sub { margin: 1.2rem 0 1.8rem; font-size: 1.2rem; max-width: 40ch; color: var(--vinho-escuro); }
+  .nota { margin-top: 1rem; font-size: 0.92rem; color: var(--vinho-escuro); opacity: 0.8; }
+  .topo-foto { margin: 0 auto; width: min(100%, 400px); }
+  .topo-foto img {
+    width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+    border-radius: 999px 999px var(--raio) var(--raio); border: 6px solid var(--creme);
+    box-shadow: var(--sombra);
+  }
+
+  /* Essência */
+  .essencia { background: var(--vinho); color: var(--creme); padding-block: var(--secao); text-align: center; }
+  .essencia .chamada { color: var(--amarelo); }
+  .essencia .titulo { color: var(--creme); }
+  .estreito { max-width: 820px; }
+  .texto-grande { margin-top: 1.2rem; font-size: clamp(1.1rem, 2.2vw, 1.35rem); opacity: 0.92; }
+  .frase {
+    margin-top: 2rem; font-family: var(--fonte-titulo); font-weight: 800; font-size: clamp(1.4rem, 3.2vw, 2rem);
+    line-height: 1.2; color: var(--amarelo);
+  }
+
+  /* Eixos */
+  .eixos { background: var(--creme); padding-block: var(--secao); }
+  .lista-eixos {
+    list-style: none; padding: 0; margin: 2.4rem 0 0;
+    display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
+  .lista-eixos li { background: #fff; border-radius: var(--raio); padding: 24px 22px; box-shadow: var(--sombra); }
+  .num {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+    background: var(--laranja); color: var(--vinho); font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.2rem;
+  }
+  .lista-eixos h3 { margin-top: 14px; font-size: 1.3rem; color: var(--vinho); }
+  .lista-eixos p { margin-top: 6px; font-size: 0.95rem; color: var(--texto-suave); }
+  .aviso-conteudo { margin-top: 1.6rem; font-size: 0.92rem; color: var(--texto-suave); font-style: italic; }
+
+  /* Professora */
+  .professora { background: var(--vinho); color: var(--creme); padding-block: var(--secao); }
+  .professora .titulo { color: var(--creme); }
+  .professora .chamada { color: var(--amarelo); }
+  .prof-grade { display: grid; gap: 48px; align-items: center; }
+  @media (min-width: 900px) { .prof-grade { grid-template-columns: 0.8fr 1.2fr; gap: 72px; } }
+  .prof-foto { margin: 0 auto; width: min(100%, 380px); }
+  .prof-foto img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--raio); border: 6px solid var(--creme); }
+  .prof-lead { margin: 1rem 0 0.8rem; font-size: 1.2rem; font-weight: 700; max-width: 46ch; }
+  .professora p:not(.prof-lead):not(.chamada) { opacity: 0.9; max-width: 52ch; }
+  .saberes { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 12px; }
+  .saberes li { padding: 14px 18px; border-radius: 16px; background: rgb(254 245 226 / 0.08); border-left: 5px solid var(--amarelo); }
+  .saberes strong { display: block; font-family: var(--fonte-titulo); font-size: 1.15rem; color: var(--amarelo); }
+
+  /* Público */
+  .publico { background: var(--creme); padding-block: var(--secao); text-align: center; }
+  .chips { list-style: none; padding: 0; margin: 2rem 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .chips li {
+    padding: 0.55em 1.2em; border-radius: 999px; background: #fff; color: var(--vinho);
+    font-family: var(--fonte-titulo); font-weight: 700; box-shadow: 0 4px 0 -1px var(--creme-2);
+  }
+  .obs { margin-top: 1.6rem; color: var(--texto-suave); }
+
+  /* Formulário */
+  .lista { background: var(--laranja); padding-block: var(--secao); }
+  .lista .chamada { color: var(--vinho); }
+  .lista .subtitulo { color: var(--vinho-escuro); }
+  .lista-grade { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 900px) { .lista-grade { grid-template-columns: 0.9fr 1.1fr; gap: 64px; } }
+
+  .form { background: #fff; border-radius: var(--raio); padding: clamp(20px, 4vw, 34px); display: grid; gap: 14px; box-shadow: var(--sombra); }
+  .duas { display: grid; gap: 14px; }
+  @media (min-width: 560px) { .duas { grid-template-columns: 1fr 1fr; } }
+  .campo { display: grid; gap: 6px; }
+  label, legend { font-weight: 800; font-size: 0.95rem; color: var(--vinho); }
+  label small, legend small { font-weight: 600; color: var(--texto-suave); }
+  input:not([type='radio'], [type='checkbox']), select {
+    width: 100%; font: inherit; padding: 12px 14px; border-radius: 12px;
+    border: 2px solid var(--creme-2); background: var(--creme); color: var(--texto);
+  }
+  input:focus, select:focus { border-color: var(--laranja); outline: none; box-shadow: 0 0 0 4px rgb(255 154 46 / 0.2); }
+  [aria-invalid='true'] { border-color: var(--fita-vermelha) !important; }
+
+  fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  legend { margin-bottom: 8px; width: 100%; }
+  .opcao { flex: 1 1 120px; }
+  .opcao input { position: absolute; opacity: 0; }
+  .opcao span {
+    display: block; text-align: center; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 700;
+    border: 2px solid var(--creme-2); background: var(--creme); color: var(--texto);
+  }
+  .opcao input:checked + span { border-color: var(--vinho); background: var(--vinho); color: var(--creme); }
+  .opcao input:focus-visible + span { outline: 3px solid var(--fita-azul); outline-offset: 2px; }
+
+  .consentimento { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 0.92rem; color: var(--texto); }
+  .consentimento input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--vinho); flex: none; }
+  .erro { color: var(--fita-vermelha); font-size: 0.88rem; font-weight: 700; }
+  .erro:empty { display: none; }
+  .pote { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .enviar { justify-content: center; font-size: 1.05rem; }
+  .enviar[disabled] { opacity: 0.6; cursor: wait; }
+
+  :global(.sucesso), .sucesso-fallback { padding: 20px; border-radius: 16px; background: #e4f3df; color: #1f4d1c; }
+  :global(.sucesso h3) { font-size: 1.5rem; color: #1f4d1c; margin-bottom: 6px; }
+</style>
