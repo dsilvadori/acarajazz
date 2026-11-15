@@ -64,13 +64,12 @@ const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 /**
- * Formulários (eventos, curso) só recebem contatos no lançamento, no domínio oficial.
- * Antes disso (AMBIENTE = "pre-lancamento" no endereço *.workers.dev) ficam fechados.
- * No desenvolvimento local continuam abertos para testes.
+ * Liga/desliga os formulários (eventos, curso) pela variável FORMULARIOS no wrangler.jsonc:
+ * "abertos" (padrão) ou "fechados". No desenvolvimento local ficam sempre abertos.
  */
 export function formulariosAbertos() {
   if (import.meta.env.DEV) return true;
-  return (env as unknown as { AMBIENTE?: string }).AMBIENTE === 'producao';
+  return (env as unknown as { FORMULARIOS?: string }).FORMULARIOS !== 'fechados';
 }
 
 export const respostaFormularioFechado = () =>

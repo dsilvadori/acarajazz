@@ -33,7 +33,9 @@
     // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
     "ADMIN_EMAIL": "acarajazz.contato@gmail.com",
     // "pre-lancamento": site no ar em *.workers.dev, mas fora do Google. No lançamento: "producao".
-    "AMBIENTE": "pre-lancamento"
+    "AMBIENTE": "pre-lancamento",
+    // Formulários de eventos e do curso: "abertos" ou "fechados"
+    "FORMULARIOS": "abertos"
   },
 
   // Segredos (não ficam aqui): TURNSTILE_SECRET, INSTAGRAM_TOKEN, ADMIN_SENHA_HASH, ADMIN_SESSAO_SEGREDO

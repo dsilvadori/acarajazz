@@ -62,6 +62,12 @@ Se houver migração nova no banco, rodar `npm run db:migrate:remoto` antes.
 
 ---
 
+### Cardápio inicial pelo painel (alternativa ao terminal)
+Banco de dados SQLite D1 → acarajazz → **Console** → colar o conteúdo de `db/seed-console.sql` (versão sem comentários) → Executar. **Só uma vez.**
+
+### Formulários
+`"FORMULARIOS": "abertos"` ou `"fechados"` no `wrangler.jsonc` (depois, push). Antes do domínio, os contatos são salvos e aparecem no `/admin`, mas o e-mail de aviso não sai.
+
 ## Parte 2 — Lançamento: ligar o oacarajazz.com
 
 1. **Comprar o domínio** no Cloudflare Registrar (Domain Registration → Register Domains). Ele já fica com o DNS na Cloudflare.
