@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { avisarEquipe, emailValido, normalizarWhatsapp, verificarTurnstile } from '../../lib/leads';
+import { avisarEquipe, emailValido, formulariosAbertos, normalizarWhatsapp, respostaFormularioFechado, verificarTurnstile } from '../../lib/leads';
 import { FORMATOS, PERFIS } from '../../lib/curso';
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
+  if (!formulariosAbertos()) return respostaFormularioFechado();
   const querJson = request.headers.get('accept')?.includes('application/json');
   const responder = (ok: boolean, erros: Record<string, string> = {}, extra: Record<string, unknown> = {}) =>
     querJson

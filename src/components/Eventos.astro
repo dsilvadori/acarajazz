@@ -1,6 +1,8 @@
 ---
 import { env } from 'cloudflare:workers';
 import { agoraSP } from '../lib/horario';
+import { formulariosAbertos } from '../lib/leads';
+const abertos = formulariosAbertos();
 
 const hoje = agoraSP().dataISO;
 const siteKey = env.TURNSTILE_SITE_KEY;
@@ -22,6 +24,7 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
       </p>
     </div>
 
+    {abertos ? (
     <form class="form" id="form-eventos" method="post" action="/api/eventos" novalidate>
       {status === 'ok' && <p class="sucesso-fallback" role="status">Recebemos seu pedido! Logo a gente chama você no WhatsApp.</p>}
 
@@ -104,6 +107,13 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
 
       <button class="botao botao-vinho enviar" type="submit">Pedir orçamento</button>
     </form>
+    ) : (
+      <div class="form fechado" role="note">
+        <h3>Pedidos de orçamento pelo site em breve</h3>
+        <p>Enquanto isso, chama a gente no WhatsApp para montar seu evento.</p>
+        <a class="botao botao-vinho" href="https://wa.me/5511979564494" target="_blank" rel="noopener">Chama no WhatsApp</a>
+      </div>
+    )}
   </div>
 </section>
 
@@ -175,10 +185,15 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
   }
   :global(.sucesso h3) { font-size: 1.5rem; color: #1f4d1c; margin-bottom: 6px; }
   :global(.sucesso p) { font-weight: 400; }
+  .fechado { text-align: center; justify-items: center; }
+  .fechado h3 { font-size: 1.4rem; color: var(--vinho); }
+  .fechado p { color: var(--texto-suave); max-width: 40ch; }
 </style>
 
 <script>
-  const form = document.getElementById('form-eventos') as HTMLFormElement;
+  const formEl = document.getElementById('form-eventos') as HTMLFormElement | null;
+  if (formEl) {
+  const form = formEl;
   const endereco = form.querySelector('.endereco') as HTMLElement;
   const enviar = form.querySelector('.enviar') as HTMLButtonElement;
 
@@ -236,4 +251,5 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
     enviar.disabled = false;
     enviar.textContent = 'Pedir orçamento';
   });
+  }
 </script>

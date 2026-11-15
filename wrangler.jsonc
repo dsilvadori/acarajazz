@@ -15,8 +15,8 @@
     {
       "binding": "DB",
       "database_name": "acarajazz",
-      // Trocar pelo ID real após `npx wrangler d1 create acarajazz` (ver docs/DEPLOY.md)
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Banco "acarajazz" na Cloudflare (criado pelo painel em 15/11/2026)
+      "database_id": "91a16b7f-3d1d-495a-81dc-2b06ff9f5b9d",
       "migrations_dir": "db/migrations"
     }
   ],

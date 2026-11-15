@@ -62,3 +62,19 @@ export async function avisarEquipe(assunto: string, linhas: [string, string][], 
 
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+/**
+ * Formulários (eventos, curso) só recebem contatos no lançamento, no domínio oficial.
+ * Antes disso (AMBIENTE = "pre-lancamento" no endereço *.workers.dev) ficam fechados.
+ * No desenvolvimento local continuam abertos para testes.
+ */
+export function formulariosAbertos() {
+  if (import.meta.env.DEV) return true;
+  return (env as unknown as { AMBIENTE?: string }).AMBIENTE === 'producao';
+}
+
+export const respostaFormularioFechado = () =>
+  Response.json(
+    { ok: false, erros: { geral: 'Os formulários abrem no lançamento do site. Fale com a gente pelo WhatsApp (11) 97956-4494.' } },
+    { status: 503 },
+  );
