@@ -76,3 +76,18 @@ O D1 local é um SQLite em `.wrangler/state`, sem precisar de conta na Cloudflar
 ## 6. Limites do plano gratuito (conferir antes do lançamento)
 
 Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leituras por dia · Access: até 50 usuários · Turnstile: ilimitado. Isso é bem acima da demanda prevista para o Acarajazz.
+
+## 7. Status do desenvolvimento (15/11/2026)
+
+**Pronto (local):** hero das fitinhas, cardápio e horários (D1), status "aberto agora", delivery com mapa do raio de 7 km e "Estou dentro do raio?", seção da chef Bia (rascunho), formulário de eventos (D1 + aviso por e-mail + Turnstile), feed do Instagram (com fotos de reserva), rodapé e política de privacidade (rascunho).
+
+**Pendências antes de publicar:**
+- [ ] Logo oficial em vetor (hoje o nome está em texto, fonte Fraunces)
+- [ ] Foto da Bia e revisão do texto da seção dela
+- [ ] Link oficial do Keeta (keeta.com.br **não** é do app de delivery)
+- [ ] Token da Instagram Graph API + renovação automática (Cron)
+- [ ] Chaves reais do Turnstile (hoje: chaves de teste)
+- [ ] Revisão jurídica da política de privacidade
+- [ ] Mapa: os tiles do OpenStreetMap servem para pouco tráfego; avaliar um provedor (ex.: MapTiler, plano gratuito) se o acesso crescer
+
+**Próximas etapas:** mini CRM em `/admin`, página `/curso`, página `/acarabet`.

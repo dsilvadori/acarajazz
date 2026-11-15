@@ -12,5 +12,16 @@
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "db/migrations"
     }
-  ]
+  ],
+  // Aviso de novos leads por e-mail (exige Email Routing ativo no domínio oacarajazz.com)
+  "send_email": [
+    { "name": "EMAIL", "destination_address": "acarajazz.contato@gmail.com" }
+  ],
+  "vars": {
+    "EMAIL_REMETENTE": "site@oacarajazz.com",
+    "EMAIL_DESTINO": "acarajazz.contato@gmail.com",
+    // Chave pública do Turnstile. Esta é a chave de TESTE da Cloudflare (sempre aprova); trocar na produção.
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+  }
+  // Segredos (não ficam aqui): TURNSTILE_SECRET, INSTAGRAM_TOKEN → `wrangler secret put` ou .dev.vars
 }

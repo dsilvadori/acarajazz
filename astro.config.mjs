@@ -5,5 +5,5 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   site: 'https://oacarajazz.com',
   output: 'server',
-  adapter: cloudflare({ imageService: 'compile' }),
+  adapter: cloudflare({ imageService: 'passthrough' }),
 });

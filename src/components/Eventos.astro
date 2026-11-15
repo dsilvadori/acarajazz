@@ -1,0 +1,246 @@
+---
+import { env } from 'cloudflare:workers';
+import { agoraSP } from '../lib/horario';
+
+const hoje = agoraSP().dataISO;
+const siteKey = env.TURNSTILE_SITE_KEY;
+const status = Astro.url.searchParams.get('evento'); // fallback sem JS
+---
+
+<section class="eventos" id="eventos" aria-labelledby="eventos-titulo">
+  <div class="container grade">
+    <div class="texto">
+      <p class="sobretitulo">Festas e encontros</p>
+      <h2 class="titulo-secao" id="eventos-titulo">Leve a Bahia pro seu evento</h2>
+      <p class="intro">
+        Aniversário, confraternização, casamento ou aquele encontro com os amigos: fazemos aqui na casinha
+        ou levamos o tabuleiro até você.
+      </p>
+      <ul class="opcoes">
+        <li><strong>No Acarajazz</strong> Reserve o espaço e a gente cuida da comida, do drink e do clima.</li>
+        <li><strong>No seu local</strong> Buffet de acarajé, caruru completo, finger food baiano e mais.</li>
+      </ul>
+      <p class="whats">
+        Prefere conversar direto? <a href="https://wa.me/5511979564494" target="_blank" rel="noopener">Chama no WhatsApp</a>
+      </p>
+    </div>
+
+    <form class="form" id="form-eventos" method="post" action="/api/eventos" novalidate>
+      {status === 'ok' && <p class="sucesso-fallback" role="status">Recebemos seu pedido! Logo a gente chama você no WhatsApp.</p>}
+
+      <fieldset class="local-evento">
+        <legend>Onde vai ser? *</legend>
+        <label class="opcao"><input type="radio" name="local" value="acarajazz" required checked /> <span>No Acarajazz</span></label>
+        <label class="opcao"><input type="radio" name="local" value="cliente" /> <span>No meu local</span></label>
+        <p class="erro" data-erro="local"></p>
+      </fieldset>
+
+      <div class="campo endereco" hidden>
+        <label for="ev-endereco">Bairro ou endereço do evento *</label>
+        <input id="ev-endereco" name="endereco" autocomplete="street-address" />
+        <p class="erro" data-erro="endereco"></p>
+      </div>
+
+      <div class="campo">
+        <label for="ev-nome">Seu nome *</label>
+        <input id="ev-nome" name="nome" required autocomplete="name" />
+        <p class="erro" data-erro="nome"></p>
+      </div>
+
+      <div class="duas">
+        <div class="campo">
+          <label for="ev-whatsapp">WhatsApp *</label>
+          <input id="ev-whatsapp" name="whatsapp" type="tel" required autocomplete="tel" inputmode="tel" placeholder="(11) 90000-0000" />
+          <p class="erro" data-erro="whatsapp"></p>
+        </div>
+        <div class="campo">
+          <label for="ev-email">E-mail *</label>
+          <input id="ev-email" name="email" type="email" required autocomplete="email" />
+          <p class="erro" data-erro="email"></p>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="ev-tipo">Tipo de evento *</label>
+        <select id="ev-tipo" name="tipo" required>
+          <option value="">Escolha…</option>
+          <option value="aniversario">Aniversário</option>
+          <option value="corporativo">Corporativo / confraternização</option>
+          <option value="casamento">Casamento</option>
+          <option value="outro">Outro</option>
+        </select>
+        <p class="erro" data-erro="tipo"></p>
+      </div>
+
+      <div class="duas">
+        <div class="campo">
+          <label for="ev-data">Data prevista *</label>
+          <input id="ev-data" name="data" type="date" required min={hoje} />
+          <p class="erro" data-erro="data"></p>
+        </div>
+        <div class="campo">
+          <label for="ev-convidados">Nº de convidados *</label>
+          <input id="ev-convidados" name="convidados" type="number" required min="1" max="5000" inputmode="numeric" />
+          <p class="erro" data-erro="convidados"></p>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="ev-mensagem">Conta mais (opcional)</label>
+        <textarea id="ev-mensagem" name="mensagem" rows="3" maxlength="2000" placeholder="Cardápio que imaginou, horário, alguma restrição…"></textarea>
+      </div>
+
+      <!-- Armadilha para robôs -->
+      <div class="pote" aria-hidden="true">
+        <label>Não preencha <input name="site" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <input type="hidden" name="origem" />
+
+      <label class="consentimento">
+        <input type="checkbox" name="consentimento" required />
+        <span>Autorizo o Acarajazz a usar meus dados para responder este pedido, conforme a <a href="/politica-de-privacidade">política de privacidade</a>. *</span>
+      </label>
+      <p class="erro" data-erro="consentimento"></p>
+
+      <div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-br" data-theme="light"></div>
+      <p class="erro" data-erro="geral" role="alert"></p>
+
+      <button class="botao botao-principal enviar" type="submit">Pedir orçamento</button>
+    </form>
+  </div>
+</section>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<style>
+  .eventos {
+    background: var(--papel);
+    padding-block: clamp(56px, 9vw, 110px);
+  }
+  .grade { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 940px) { .grade { grid-template-columns: 0.9fr 1.1fr; gap: 64px; } }
+
+  .intro { margin-top: 1rem; font-size: 1.15rem; max-width: 42ch; }
+  .opcoes { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 12px; }
+  .opcoes li { padding: 14px 18px; background: var(--creme); border-radius: 16px; border-left: 5px solid var(--fita-amarela); }
+  .opcoes li:nth-child(2) { border-left-color: var(--fita-azul); }
+  .opcoes strong { display: block; font-family: var(--fonte-titulo); font-size: 1.15rem; color: var(--vinho); }
+  .whats { margin-top: 1.4rem; }
+  .whats a { color: var(--quiabo); font-weight: 800; }
+
+  .form {
+    background: var(--creme);
+    border-radius: var(--raio);
+    padding: clamp(20px, 4vw, 34px);
+    display: grid;
+    gap: 14px;
+    box-shadow: var(--sombra);
+    border-top: 8px solid var(--fita-vermelha);
+  }
+  .duas { display: grid; gap: 14px; }
+  @media (min-width: 560px) { .duas { grid-template-columns: 1fr 1fr; } }
+
+  .campo { display: grid; gap: 6px; }
+  .campo[hidden] { display: none; }
+  label, legend { font-weight: 800; font-size: 0.95rem; }
+  input:not([type='radio'], [type='checkbox']), select, textarea {
+    width: 100%;
+    font: inherit;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid #e3c9a0;
+    background: #fff;
+    color: var(--tinta);
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--dende); outline: none; box-shadow: 0 0 0 4px rgb(217 96 26 / 0.15); }
+  [aria-invalid='true'] { border-color: var(--fita-vermelha) !important; }
+
+  fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  legend { margin-bottom: 8px; width: 100%; }
+  .opcao { flex: 1 1 150px; }
+  .opcao input { position: absolute; opacity: 0; }
+  .opcao span {
+    display: block; text-align: center; padding: 12px; border-radius: 12px;
+    border: 2px solid #e3c9a0; background: #fff; cursor: pointer;
+  }
+  .opcao input:checked + span { border-color: var(--vinho); background: var(--vinho); color: var(--creme); }
+  .opcao input:focus-visible + span { outline: 3px solid var(--fita-azul); outline-offset: 2px; }
+
+  .consentimento { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 0.92rem; }
+  .consentimento input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--vinho); flex: none; }
+
+  .erro { color: var(--fita-vermelha); font-size: 0.88rem; font-weight: 700; }
+  .erro:empty { display: none; }
+  .pote { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .enviar { justify-content: center; font-size: 1.05rem; border: 0; cursor: pointer; }
+  .enviar[disabled] { opacity: 0.6; cursor: wait; }
+
+  /* :global porque a mensagem de sucesso é inserida via JS (sem o escopo do Astro) */
+  :global(.sucesso), .sucesso-fallback {
+    padding: 18px 20px; border-radius: 16px; background: #e4f3df; color: #1f4d1c; font-weight: 700;
+  }
+  :global(.sucesso h3) { font-size: 1.5rem; color: #1f4d1c; margin-bottom: 6px; }
+  :global(.sucesso p) { font-weight: 400; }
+</style>
+
+<script>
+  const form = document.getElementById('form-eventos') as HTMLFormElement;
+  const endereco = form.querySelector('.endereco') as HTMLElement;
+  const enviar = form.querySelector('.enviar') as HTMLButtonElement;
+
+  // Mostra o campo de endereço só quando o evento é no local do cliente
+  form.addEventListener('change', (e) => {
+    const alvo = e.target as HTMLInputElement;
+    if (alvo.name === 'local') {
+      const fora = alvo.value === 'cliente';
+      endereco.hidden = !fora;
+      (endereco.querySelector('input') as HTMLInputElement).required = fora;
+    }
+  });
+
+  // Origem do lead (UTMs e página)
+  (form.elements.namedItem('origem') as HTMLInputElement).value =
+    location.search ? `${location.pathname}${location.search}` : document.referrer || 'direto';
+
+  function mostrarErros(erros: Record<string, string>) {
+    form.querySelectorAll<HTMLElement>('[data-erro]').forEach((p) => {
+      const msg = erros[p.dataset.erro!] ?? '';
+      p.textContent = msg;
+      const campo = form.elements.namedItem(p.dataset.erro!) as HTMLInputElement | null;
+      if (campo && 'setAttribute' in campo) campo.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    });
+    const primeiro = Object.keys(erros)[0];
+    const el = primeiro && (form.elements.namedItem(primeiro) as HTMLElement | null);
+    if (el && 'focus' in el) el.focus();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    mostrarErros({});
+    enviar.disabled = true;
+    enviar.textContent = 'Enviando…';
+    try {
+      const r = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { accept: 'application/json' },
+      });
+      const j = (await r.json()) as { ok: boolean; erros: Record<string, string> };
+      if (j.ok) {
+        form.innerHTML = `
+          <div class="sucesso" role="status">
+            <h3>Oxe, que massa! 🎉</h3>
+            <p>Recebemos seu pedido. A equipe do Acarajazz vai te chamar no WhatsApp pra montar o orçamento.</p>
+          </div>`;
+        return;
+      }
+      mostrarErros(j.erros);
+      (window as any).turnstile?.reset();
+    } catch {
+      mostrarErros({ geral: 'Não conseguimos enviar agora. Tente de novo ou chame no WhatsApp.' });
+    }
+    enviar.disabled = false;
+    enviar.textContent = 'Pedir orçamento';
+  });
+</script>

@@ -43,7 +43,7 @@ const faixaBase = [
       <span class="marca-acara">Acara</span><span class="marca-jazz">jazz</span>
     </h1>
     <p class="slogan">Boteco de baianos. <em>Para todos.</em></p>
-    <p class="apoio">Acarajé de lei, moquecas e comidas típicas, regionais e autorais. A Bahia não é tema: é origem.</p>
+    <p class="apoio">Acarajé de lei e o <strong>Acarajazz</strong>, nosso acarajé vegano, além de moquecas e comidas típicas, regionais e autorais. A Bahia não é tema: é origem.</p>
 
     <div class="status-wrap"><StatusAgora status={status} /></div>
 
@@ -148,11 +148,12 @@ const faixaBase = [
   .slogan em { color: var(--dende); }
 
   .apoio {
-    max-width: 36ch;
+    max-width: 40ch;
     text-wrap: pretty;
     margin-top: 0.6rem;
     color: var(--tinta-suave);
   }
+  .apoio strong { color: var(--quiabo); }
 
   .status-wrap { margin-top: 1.4rem; }
 

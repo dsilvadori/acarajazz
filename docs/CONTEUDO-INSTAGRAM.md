@@ -50,11 +50,13 @@ Observações:
 >
 > **Legenda:** **A** = autoral · **V** = vegetariano · **C** = contém camarão
 
+> 🌱 **Acarajazz** é a **versão vegana do acarajé** da casa (além de ser o nome do boteco). Por isso o cardápio diz "Acarajé/Acarajazz": o cliente escolhe o tradicional ou o vegano.
+
 **Quitutes** *(pra começar)*
 | Item | Descrição | Preço | |
 |---|---|---|---|
-| Acarajé/Acarajazz na mão (tradicional) | | R$ 30 | V |
-| Acarajé/Acarajazz no prato | | R$ 35 | V |
+| Acarajé/Acarajazz na mão (tradicional) | Acarajazz = versão vegana do acarajé | R$ 30 | V |
+| Acarajé/Acarajazz no prato | Acarajazz = versão vegana do acarajé | R$ 35 | V |
 | Abará na mão (tradicional) | | R$ 35 | |
 | Abará no prato | | R$ 40 | V |
 | **Wagner Moura** | 10 bolinhos de acarajé + recheios | R$ 60 | V |

@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Rodape from '../components/Rodape.astro';
+// RASCUNHO — revisar com quem cuida da parte jurídica antes de publicar.
+---
+
+<Base title="Política de privacidade · Acarajazz" description="Como o Acarajazz trata os dados enviados pelo site.">
+  <main class="container doc">
+    <a href="/" class="voltar">← Voltar ao site</a>
+    <h1>Política de privacidade</h1>
+    <p class="nota">Rascunho em revisão.</p>
+
+    <h2>Quem somos</h2>
+    <p>Acarajazz, Rua Dona Inácia Uchôa, 89, Vila Mariana, São Paulo/SP. Contato: <a href="mailto:acarajazz.contato@gmail.com">acarajazz.contato@gmail.com</a>.</p>
+
+    <h2>Quais dados coletamos e por quê</h2>
+    <ul>
+      <li><strong>Pedido de evento:</strong> nome, WhatsApp, e-mail e detalhes do evento, para responder seu pedido e enviar o orçamento.</li>
+      <li><strong>Lista do curso:</strong> nome, e-mail e WhatsApp, para avisar sobre o lançamento, se você autorizar.</li>
+      <li><strong>Jogo Acarabet:</strong> nome e WhatsApp, para gerar e conferir seu cupom (um por pessoa).</li>
+    </ul>
+    <p>Usamos esses dados só para essas finalidades. Não vendemos nem compartilhamos com terceiros para publicidade.</p>
+
+    <h2>Localização</h2>
+    <p>O botão “Estou dentro do raio?” usa a localização do seu aparelho apenas no seu navegador, para calcular a distância. Ela não é enviada para nós.</p>
+
+    <h2>Por quanto tempo guardamos</h2>
+    <p>Enquanto forem necessários para a finalidade, ou até você pedir para apagar.</p>
+
+    <h2>Seus direitos (LGPD)</h2>
+    <p>Você pode pedir acesso, correção ou exclusão dos seus dados a qualquer momento pelo e-mail acima ou pelo WhatsApp (11) 97956-4494.</p>
+  </main>
+  <Rodape />
+</Base>
+
+<style>
+  .doc { max-width: 720px; padding-block: 48px 72px; }
+  .voltar { font-weight: 700; color: var(--dende); }
+  h1 { font-size: clamp(2.2rem, 6vw, 3rem); color: var(--vinho); margin: 1rem 0 0.4rem; }
+  h2 { font-size: 1.4rem; color: var(--vinho); margin: 2rem 0 0.5rem; }
+  p, li { max-width: 65ch; }
+  ul { padding-left: 1.2em; }
+  li { margin-bottom: 6px; }
+  .nota { color: var(--tinta-suave); font-style: italic; }
+</style>

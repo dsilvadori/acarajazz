@@ -1,0 +1,82 @@
+---
+const ano = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  <svg class="fitas" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <rect y="0" width="1440" height="20" fill="var(--fita-amarela)" />
+    <rect y="20" width="1440" height="20" fill="var(--fita-azul)" />
+    <rect y="40" width="1440" height="20" fill="var(--fita-vermelha)" />
+  </svg>
+
+  <div class="container grade">
+    <div class="marca">
+      <p class="nome"><span>Acara</span>jazz</p>
+      <p>Boteco de baianos. Para todos.</p>
+      <p class="pequeno">Seu boteco baiano na Vila Mariana.</p>
+    </div>
+
+    <div>
+      <h2>Onde</h2>
+      <address>
+        Rua Dona Inácia Uchôa, 89<br />
+        Vila Mariana · São Paulo/SP
+      </address>
+      <p class="pequeno">Qui e sex 17h–23h · Sáb 12h–23h30 · Dom 12h–17h30<br />Quarta: só delivery</p>
+    </div>
+
+    <div>
+      <h2>Fale com a gente</h2>
+      <ul>
+        <li><a href="https://wa.me/5511979564494" target="_blank" rel="noopener">WhatsApp (11) 97956-4494</a></li>
+        <li><a href="mailto:acarajazz.contato@gmail.com">acarajazz.contato@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/o_acarajazz/" target="_blank" rel="noopener">Instagram @o_acarajazz</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>Da mesma turma</h2>
+      <a class="kangaca" href="https://kangaca.com.br" target="_blank" rel="noopener">
+        <strong>Kangaça</strong>
+        <span>Cozinha de encontros ↗</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="container base">
+    <p>© {ano} Acarajazz</p>
+    <a href="/politica-de-privacidade">Política de privacidade</a>
+  </div>
+</footer>
+
+<style>
+  .rodape { background: var(--tinta); color: var(--creme); }
+  .fitas { width: 100%; height: 24px; display: block; }
+
+  .grade {
+    display: grid; gap: 32px;
+    padding-block: 56px 32px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .nome { font-family: var(--fonte-titulo); font-style: italic; font-weight: 900; font-size: 2.4rem; line-height: 1; color: var(--creme); margin-bottom: 8px; }
+  .nome span { color: var(--dende-claro); }
+  h2 { font-family: var(--fonte-fita); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fita-amarela); margin-bottom: 10px; }
+  address { font-style: normal; line-height: 1.5; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  a { color: var(--creme); }
+  a:hover { color: var(--fita-amarela); }
+  .pequeno { font-size: 0.88rem; opacity: 0.75; margin-top: 8px; }
+
+  .kangaca {
+    display: inline-grid; padding: 12px 18px; border-radius: 14px;
+    border: 2px solid rgb(255 255 255 / 0.25); text-decoration: none;
+  }
+  .kangaca strong { font-family: var(--fonte-titulo); font-size: 1.3rem; }
+  .kangaca span { font-size: 0.85rem; opacity: 0.8; }
+
+  .base {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+    padding-block: 18px 28px; border-top: 1px solid rgb(255 255 255 / 0.12);
+    font-size: 0.85rem; opacity: 0.75;
+  }
+</style>

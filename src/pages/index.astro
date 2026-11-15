@@ -3,6 +3,11 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Cardapio from '../components/Cardapio.astro';
 import Horarios from '../components/Horarios.astro';
+import Delivery from '../components/Delivery.astro';
+import SobreBia from '../components/SobreBia.astro';
+import Eventos from '../components/Eventos.astro';
+import Instagram from '../components/Instagram.astro';
+import Rodape from '../components/Rodape.astro';
 import { getCardapio, getHorarios, getAvisoAtivo } from '../lib/db';
 import { agoraSP, statusAgora } from '../lib/horario';
 
@@ -22,5 +27,10 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
   <main>
     <Cardapio categorias={categorias} />
     <Horarios horarios={horarios} status={status} aviso={aviso} />
+    <Delivery />
+    <SobreBia />
+    <Eventos />
+    <Instagram />
   </main>
+  <Rodape />
 </Base>

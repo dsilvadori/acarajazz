@@ -17,8 +17,8 @@ INSERT INTO cardapio_categorias (id, slug, nome, subtitulo, ordem) VALUES
 
 -- (categoria_id, nome, descricao, preco_centavos, autoral, vegetariano, camarao, destaque, ordem)
 INSERT INTO cardapio_itens (categoria_id, nome, descricao, preco_centavos, autoral, vegetariano, camarao, destaque, ordem) VALUES
-  (1, 'Acarajé na mão', 'O tradicional, do jeito do tabuleiro', 3000, 0, 1, 0, 1, 1),
-  (1, 'Acarajé no prato', NULL, 3500, 0, 1, 0, 0, 2),
+  (1, 'Acarajé ou Acarajazz na mão', 'Acarajé tradicional ou Acarajazz, a nossa versão vegana do acarajé', 3000, 0, 1, 0, 1, 1),
+  (1, 'Acarajé ou Acarajazz no prato', 'Acarajé tradicional ou Acarajazz, a nossa versão vegana', 3500, 0, 1, 0, 0, 2),
   (1, 'Abará na mão', 'O tradicional', 3500, 0, 0, 0, 0, 3),
   (1, 'Abará no prato', NULL, 4000, 0, 1, 0, 0, 4),
   (1, 'Wagner Moura', '10 bolinhos de acarajé + recheios', 6000, 0, 1, 0, 1, 5),

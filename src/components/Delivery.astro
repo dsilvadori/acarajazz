@@ -1,0 +1,204 @@
+---
+// Coordenadas da Rua Dona Inácia Uchoa, 89 (OpenStreetMap)
+const CASA = { lat: -23.585259, lng: -46.6347409 };
+const RAIO_KM = 7;
+
+const bairros = [
+  'Vila Mariana', 'Paraíso', 'Vila Clementino', 'Aclimação', 'Moema', 'Saúde',
+  'Liberdade', 'Bela Vista', 'Jardins', 'Cambuci', 'Ipiranga', 'Itaim Bibi', 'Campo Belo',
+];
+---
+
+<section class="delivery" id="delivery" aria-labelledby="delivery-titulo">
+  <div class="container grade">
+    <div class="texto">
+      <p class="sobretitulo">Não dá pra vir?</p>
+      <h2 class="titulo-secao" id="delivery-titulo">O dendê vai até você</h2>
+      <p class="intro">
+        Estamos no <strong>iFood</strong> e no <strong>Keeta</strong>. É só abrir o app e buscar:
+      </p>
+
+      <div class="busca" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <span class="digitado">Acarajazz</span><span class="cursor"></span>
+      </div>
+      <p class="sr-only">Busque por “Acarajazz” no iFood ou no Keeta.</p>
+
+      <div class="apps">
+        <a class="app app-ifood" href="https://www.ifood.com.br/" target="_blank" rel="noopener">
+          <span class="app-nome">iFood</span>
+          <span class="app-acao">Abrir o iFood ↗</span>
+        </a>
+        <div class="app app-keeta">
+          <span class="app-nome">Keeta</span>
+          <span class="app-acao">Abra o app Keeta</span>
+        </div>
+      </div>
+
+      <p class="quarta">🛵 <strong>Quarta-feira é dia de acarajé:</strong> a casa fica fechada, só delivery.</p>
+    </div>
+
+    <div class="area">
+      <div class="mapa" id="mapa-entrega" data-lat={CASA.lat} data-lng={CASA.lng} data-raio={RAIO_KM}>
+        <noscript><p class="mapa-fallback">Entregamos num raio de {RAIO_KM} km da Vila Mariana.</p></noscript>
+      </div>
+
+      <div class="raio">
+        <p><strong>Entregamos num raio de {RAIO_KM} km</strong> a partir da Rua Dona Inácia Uchôa, 89.</p>
+        <p class="bairros">Como {bairros.slice(0, -1).join(', ')} e {bairros.at(-1)}, entre outros.</p>
+        <button type="button" class="botao botao-secundario" id="verificar-local">📍 Estou dentro do raio?</button>
+        <p class="resultado" id="resultado-local" role="status" aria-live="polite"></p>
+      </div>
+
+      <p class="aviso">
+        <strong>Não achou o Acarajazz no app?</strong> Seu endereço pode estar fora do nosso raio de entrega.
+        Vem comer com a gente na <a href="#horarios">casinha</a>!
+      </p>
+    </div>
+  </div>
+</section>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+<style>
+  .delivery {
+    background:
+      radial-gradient(circle at 90% 10%, rgb(244 196 48 / 0.35), transparent 40%),
+      var(--dende);
+    color: #fff;
+    padding-block: clamp(56px, 9vw, 104px);
+  }
+  .grade { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 900px) { .grade { grid-template-columns: 1fr 1.05fr; gap: 56px; } }
+
+  .titulo-secao { color: #fff; }
+  .sobretitulo { color: var(--fita-amarela); }
+  .intro { margin-top: 1rem; font-size: 1.15rem; max-width: 36ch; }
+
+  .busca {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 1rem; padding: 16px 22px;
+    background: #fff; color: var(--tinta);
+    border-radius: 999px; box-shadow: 0 10px 0 -2px var(--vinho);
+    max-width: 380px;
+  }
+  .busca svg { color: var(--tinta-suave); flex: none; }
+  .digitado { font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.5rem; color: var(--vinho); }
+  .cursor { width: 3px; height: 1.5rem; background: var(--dende); animation: pisca 1s steps(1) infinite; }
+  @keyframes pisca { 50% { opacity: 0; } }
+
+  .apps { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.8rem; }
+  .app {
+    display: grid; gap: 2px; min-width: 160px;
+    padding: 14px 20px; border-radius: 18px;
+    text-decoration: none; color: #fff;
+  }
+  .app-nome { font-family: var(--fonte-titulo); font-weight: 900; font-size: 1.5rem; line-height: 1.1; }
+  .app-acao { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
+  .app-ifood { background: #ea1d2c; transition: transform 0.15s ease; }
+  .app-ifood:hover { transform: translateY(-2px); }
+  .app-keeta { background: #ffd100; color: #1d1d1b; }
+
+  .quarta { margin-top: 1.6rem; padding: 12px 16px; background: rgb(0 0 0 / 0.12); border-radius: 14px; max-width: 44ch; }
+
+  .area { display: grid; gap: 16px; }
+  .mapa {
+    height: 320px; border-radius: var(--raio); overflow: hidden;
+    background: var(--creme-2); border: 4px solid #fff;
+    box-shadow: var(--sombra);
+  }
+  .mapa-fallback { padding: 24px; color: var(--tinta); }
+
+  .raio { background: var(--papel); color: var(--tinta); border-radius: var(--raio); padding: 20px 22px; }
+  .bairros { margin-top: 6px; font-size: 0.92rem; color: var(--tinta-suave); }
+  .raio .botao { margin-top: 14px; padding: 0.6em 1.2em; font-size: 0.95rem; }
+  .resultado { margin-top: 10px; font-weight: 700; }
+  .resultado:empty { display: none; }
+
+  .aviso { font-size: 0.95rem; background: rgb(0 0 0 / 0.12); border-radius: 14px; padding: 12px 16px; }
+  .aviso a { color: var(--fita-amarela); font-weight: 700; }
+
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+
+<script>
+  const el = document.getElementById('mapa-entrega') as HTMLElement;
+  const casa = { lat: Number(el.dataset.lat), lng: Number(el.dataset.lng) };
+  const raioKm = Number(el.dataset.raio);
+
+  // Distância em linha reta (fórmula de haversine). O app usa a rota, então é uma estimativa.
+  function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+    const R = 6371;
+    const rad = (x: number) => (x * Math.PI) / 180;
+    const dLat = rad(b.lat - a.lat);
+    const dLng = rad(b.lng - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+
+  let mapa: any;
+  let marcadorVoce: any;
+
+  // Carrega o Leaflet só quando o mapa aparece na tela
+  async function iniciarMapa() {
+    const L = await new Promise<any>((ok, erro) => {
+      if ((window as any).L) return ok((window as any).L);
+      const s = document.createElement('script');
+      s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      s.crossOrigin = '';
+      s.onload = () => ok((window as any).L);
+      s.onerror = erro;
+      document.head.appendChild(s);
+    });
+    mapa = L.map(el, { scrollWheelZoom: false, attributionControl: true }).setView([casa.lat, casa.lng], 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(mapa);
+    L.circle([casa.lat, casa.lng], {
+      radius: raioKm * 1000, color: '#6e0000', weight: 3, fillColor: '#f4c430', fillOpacity: 0.22,
+    }).addTo(mapa);
+    L.circleMarker([casa.lat, casa.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#d9601a', fillOpacity: 1 })
+      .addTo(mapa)
+      .bindTooltip('Acarajazz', { permanent: true, direction: 'top', offset: [0, -8] });
+  }
+
+  new IntersectionObserver((entradas, obs) => {
+    if (entradas.some((e) => e.isIntersecting)) {
+      obs.disconnect();
+      iniciarMapa().catch(() => {
+        el.innerHTML = `<p class="mapa-fallback">Entregamos num raio de ${raioKm} km da Vila Mariana.</p>`;
+      });
+    }
+  }, { rootMargin: '300px' }).observe(el);
+
+  // "Estou dentro do raio?" — a localização fica só no navegador, nada é enviado.
+  const botao = document.getElementById('verificar-local') as HTMLButtonElement;
+  const resultado = document.getElementById('resultado-local') as HTMLElement;
+  botao.addEventListener('click', () => {
+    if (!('geolocation' in navigator)) {
+      resultado.textContent = 'Seu navegador não permite ver a localização. Busque "Acarajazz" no app.';
+      return;
+    }
+    resultado.textContent = 'Procurando você…';
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const voce = { lat: coords.latitude, lng: coords.longitude };
+        const km = distanciaKm(casa, voce);
+        const kmTxt = km.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+        resultado.textContent = km <= raioKm
+          ? `✅ Você está a uns ${kmTxt} km: dentro do raio! Abre o app e busca "Acarajazz".`
+          : `Você está a uns ${kmTxt} km, fora do raio de ${raioKm} km. Mas a casinha te espera na Vila Mariana!`;
+        const L = (window as any).L;
+        if (mapa && L) {
+          marcadorVoce?.remove();
+          marcadorVoce = L.circleMarker([voce.lat, voce.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#2f6db5', fillOpacity: 1 })
+            .addTo(mapa).bindTooltip('Você', { permanent: true, direction: 'top', offset: [0, -8] });
+          mapa.fitBounds(L.latLngBounds([[casa.lat, casa.lng], [voce.lat, voce.lng]]).pad(0.4));
+        }
+      },
+      () => { resultado.textContent = 'Não conseguimos sua localização. Busque "Acarajazz" no app: se aparecer, entregamos aí!'; },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
+    );
+  });
+</script>
