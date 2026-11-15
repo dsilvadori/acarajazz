@@ -1,30 +1,31 @@
-/* Tokens de design do Acarajazz
-   Base: dendê, vinho e creme da marca + as três fitinhas do Bonfim. */
+/* Identidade visual do Acarajazz
+   Fonte: logo-definitivo.png e Banner-curva (vinho + laranja + creme, letras arredondadas). */
 :root {
-  --creme: #fdf3e1;
-  --creme-2: #f8e6c6;
-  --papel: #fffaf1;
-  --tinta: #2b140b;
-  --tinta-suave: #6d4c3a;
-  --dende: #d9601a;
-  --dende-claro: #ec9344;
-  --vinho: #6e0000;
-  --roxo: #4b1d6b;
+  --vinho: #7a0000;
+  --vinho-escuro: #560000;
+  --laranja: #ff9a2e;         /* fundo do banner */
+  --laranja-forte: #f04a00;   /* topo do acarajé no logo */
+  --amarelo: #ffc03f;         /* massa do acarajé no logo */
+  --creme: #fef5e2;           /* círculo do logo */
+  --creme-2: #f9e6c4;
+  --texto: #3a1a10;
+  --texto-suave: #7a5444;
 
-  --fita-amarela: #f4c430;
+  /* Fitinhas do Bonfim (uso sutil) */
+  --fita-amarela: #ffc03f;
   --fita-azul: #2f6db5;
   --fita-vermelha: #d0142c;
 
-  --quiabo: #3f7f3a;
+  --verde: #2f7a3a;
 
-  --fonte-titulo: 'Fraunces', Georgia, serif;
-  --fonte-texto: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --fonte-fita: 'Oswald', 'Arial Narrow', sans-serif;
+  --fonte-titulo: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  --fonte-texto: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --raio: 22px;
-  --sombra: 0 10px 30px -12px rgb(43 20 11 / 0.35);
-  --largura: 1180px;
+  --raio: 24px;
+  --sombra: 0 14px 34px -16px rgb(86 0 0 / 0.45);
+  --largura: 1160px;
   --gutter: clamp(16px, 4vw, 40px);
+  --secao: clamp(64px, 10vw, 120px);
 
   color-scheme: light;
 }
@@ -36,14 +37,14 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--creme);
-  color: var(--tinta);
+  color: var(--texto);
   font-family: var(--fonte-texto);
   font-size: 1.0625rem;
   line-height: 1.6;
   overflow-x: hidden;
 }
 
-h1, h2, h3 { font-family: var(--fonte-titulo); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1, h2, h3 { font-family: var(--fonte-titulo); line-height: 1.05; margin: 0; text-wrap: balance; font-weight: 800; }
 p { margin: 0; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -57,27 +58,37 @@ a { color: inherit; }
 
 :focus-visible { outline: 3px solid var(--fita-azul); outline-offset: 3px; border-radius: 6px; }
 
+/* Títulos de seção no estilo do banner: caixa alta, arredondada, vinho */
+.chamada {
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  color: var(--laranja-forte);
+  margin-bottom: 0.5rem;
+}
+.titulo {
+  font-size: clamp(2.2rem, 5.6vw, 3.6rem);
+  color: var(--vinho);
+  letter-spacing: -0.01em;
+}
+.subtitulo {
+  margin-top: 0.8rem;
+  font-size: 1.15rem;
+  color: var(--texto-suave);
+  max-width: 46ch;
+}
+
 .botao {
-  display: inline-flex; align-items: center; gap: .5em;
-  padding: .85em 1.5em; border-radius: 999px;
-  font-weight: 800; font-size: 1rem; text-decoration: none;
-  transition: transform .15s ease, box-shadow .15s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: .5em;
+  padding: .8em 1.6em; border-radius: 999px;
+  font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.05rem; text-decoration: none;
+  border: 0; cursor: pointer;
+  transition: transform .15s ease, background-color .15s ease;
 }
 .botao:hover { transform: translateY(-2px); }
-.botao-principal { background: var(--vinho); color: var(--creme); box-shadow: 0 6px 0 -1px #3d0000; }
-.botao-secundario { background: transparent; color: var(--vinho); border: 2.5px solid var(--vinho); }
-
-.titulo-secao {
-  font-size: clamp(2.2rem, 6vw, 3.6rem);
-  font-weight: 800;
-  color: var(--vinho);
-  letter-spacing: -0.02em;
-}
-.sobretitulo {
-  font-family: var(--fonte-fita);
-  text-transform: uppercase;
-  letter-spacing: .14em;
-  font-size: .9rem;
-  color: var(--dende);
-  margin-bottom: .6rem;
-}
+.botao-vinho { background: var(--vinho); color: var(--creme); }
+.botao-vinho:hover { background: var(--vinho-escuro); }
+.botao-creme { background: var(--creme); color: var(--vinho); }
+.botao-contorno { background: transparent; color: var(--vinho); box-shadow: inset 0 0 0 2.5px var(--vinho); }

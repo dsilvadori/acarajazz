@@ -3,57 +3,38 @@
 const CASA = { lat: -23.585259, lng: -46.6347409 };
 const RAIO_KM = 7;
 
-const bairros = [
-  'Vila Mariana', 'Paraíso', 'Vila Clementino', 'Aclimação', 'Moema', 'Saúde',
-  'Liberdade', 'Bela Vista', 'Jardins', 'Cambuci', 'Ipiranga', 'Itaim Bibi', 'Campo Belo',
-];
 ---
 
 <section class="delivery" id="delivery" aria-labelledby="delivery-titulo">
   <div class="container grade">
     <div class="texto">
-      <p class="sobretitulo">Não dá pra vir?</p>
-      <h2 class="titulo-secao" id="delivery-titulo">O dendê vai até você</h2>
-      <p class="intro">
-        Estamos no <strong>iFood</strong> e no <strong>Keeta</strong>. É só abrir o app e buscar:
-      </p>
+      <p class="chamada">Delivery</p>
+      <h2 class="titulo" id="delivery-titulo">Não dá pra vir? O dendê vai até você</h2>
+      <p class="subtitulo">Estamos no iFood e no Keeta. Abra o app e busque:</p>
 
       <div class="busca" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        <span class="digitado">Acarajazz</span><span class="cursor"></span>
+        <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <span>Acarajazz</span>
       </div>
       <p class="sr-only">Busque por “Acarajazz” no iFood ou no Keeta.</p>
 
       <div class="apps">
-        <a class="app app-ifood" href="https://www.ifood.com.br/" target="_blank" rel="noopener">
-          <span class="app-nome">iFood</span>
-          <span class="app-acao">Abrir o iFood ↗</span>
-        </a>
-        <div class="app app-keeta">
-          <span class="app-nome">Keeta</span>
-          <span class="app-acao">Abra o app Keeta</span>
-        </div>
+        <a class="botao botao-vinho" href="https://www.ifood.com.br/" target="_blank" rel="noopener">Abrir o iFood ↗</a>
+        <span class="botao botao-contorno keeta">ou no app Keeta</span>
       </div>
 
-      <p class="quarta">🛵 <strong>Quarta-feira é dia de acarajé:</strong> a casa fica fechada, só delivery.</p>
+      <p class="nota">Quarta-feira é só delivery: a casinha abre de quinta a domingo.</p>
     </div>
 
     <div class="area">
       <div class="mapa" id="mapa-entrega" data-lat={CASA.lat} data-lng={CASA.lng} data-raio={RAIO_KM}>
         <noscript><p class="mapa-fallback">Entregamos num raio de {RAIO_KM} km da Vila Mariana.</p></noscript>
       </div>
-
       <div class="raio">
-        <p><strong>Entregamos num raio de {RAIO_KM} km</strong> a partir da Rua Dona Inácia Uchôa, 89.</p>
-        <p class="bairros">Como {bairros.slice(0, -1).join(', ')} e {bairros.at(-1)}, entre outros.</p>
-        <button type="button" class="botao botao-secundario" id="verificar-local">📍 Estou dentro do raio?</button>
+        <p><strong>Entregamos num raio de {RAIO_KM} km</strong> da Vila Mariana. Se o Acarajazz não aparecer no app, seu endereço está fora da área. Aí é só vir na casinha!</p>
+        <button type="button" class="verificar" id="verificar-local">Estou dentro do raio?</button>
         <p class="resultado" id="resultado-local" role="status" aria-live="polite"></p>
       </div>
-
-      <p class="aviso">
-        <strong>Não achou o Acarajazz no app?</strong> Seu endereço pode estar fora do nosso raio de entrega.
-        Vem comer com a gente na <a href="#horarios">casinha</a>!
-      </p>
     </div>
   </div>
 </section>
@@ -61,64 +42,43 @@ const bairros = [
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
 <style>
-  .delivery {
-    background:
-      radial-gradient(circle at 90% 10%, rgb(244 196 48 / 0.35), transparent 40%),
-      var(--dende);
-    color: #fff;
-    padding-block: clamp(56px, 9vw, 104px);
-  }
-  .grade { display: grid; gap: 40px; align-items: start; }
-  @media (min-width: 900px) { .grade { grid-template-columns: 1fr 1.05fr; gap: 56px; } }
+  .delivery { background: var(--laranja); padding-block: var(--secao); }
+  .grade { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 900px) { .grade { grid-template-columns: 1fr 1fr; gap: 64px; } }
 
-  .titulo-secao { color: #fff; }
-  .sobretitulo { color: var(--fita-amarela); }
-  .intro { margin-top: 1rem; font-size: 1.15rem; max-width: 36ch; }
+  .chamada { color: var(--vinho); }
+  .subtitulo { color: var(--vinho-escuro); }
 
   .busca {
     display: flex; align-items: center; gap: 12px;
-    margin-top: 1rem; padding: 16px 22px;
-    background: #fff; color: var(--tinta);
-    border-radius: 999px; box-shadow: 0 10px 0 -2px var(--vinho);
-    max-width: 380px;
+    margin-top: 1.1rem; padding: 14px 24px;
+    background: var(--creme); color: var(--vinho);
+    border-radius: 999px; max-width: 360px;
+    box-shadow: 0 8px 0 -2px var(--vinho);
+    font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.6rem;
   }
-  .busca svg { color: var(--tinta-suave); flex: none; }
-  .digitado { font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.5rem; color: var(--vinho); }
-  .cursor { width: 3px; height: 1.5rem; background: var(--dende); animation: pisca 1s steps(1) infinite; }
-  @keyframes pisca { 50% { opacity: 0; } }
 
-  .apps { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.8rem; }
-  .app {
-    display: grid; gap: 2px; min-width: 160px;
-    padding: 14px 20px; border-radius: 18px;
-    text-decoration: none; color: #fff;
-  }
-  .app-nome { font-family: var(--fonte-titulo); font-weight: 900; font-size: 1.5rem; line-height: 1.1; }
-  .app-acao { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
-  .app-ifood { background: #ea1d2c; transition: transform 0.15s ease; }
-  .app-ifood:hover { transform: translateY(-2px); }
-  .app-keeta { background: #ffd100; color: #1d1d1b; }
+  .apps { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 1.8rem; }
+  .keeta { cursor: default; }
+  .keeta:hover { transform: none; }
 
-  .quarta { margin-top: 1.6rem; padding: 12px 16px; background: rgb(0 0 0 / 0.12); border-radius: 14px; max-width: 44ch; }
+  .nota { margin-top: 1.6rem; font-weight: 700; color: var(--vinho); }
 
-  .area { display: grid; gap: 16px; }
+  .area { display: grid; gap: 14px; }
   .mapa {
-    height: 320px; border-radius: var(--raio); overflow: hidden;
-    background: var(--creme-2); border: 4px solid #fff;
+    height: 340px; border-radius: var(--raio); overflow: hidden;
+    background: var(--creme-2); border: 5px solid var(--creme);
     box-shadow: var(--sombra);
   }
-  .mapa-fallback { padding: 24px; color: var(--tinta); }
-
-  .raio { background: var(--papel); color: var(--tinta); border-radius: var(--raio); padding: 20px 22px; }
-  .bairros { margin-top: 6px; font-size: 0.92rem; color: var(--tinta-suave); }
-  .raio .botao { margin-top: 14px; padding: 0.6em 1.2em; font-size: 0.95rem; }
-  .resultado { margin-top: 10px; font-weight: 700; }
+  .mapa-fallback { padding: 24px; }
+  .raio { background: var(--creme); border-radius: var(--raio); padding: 18px 22px; font-size: 0.98rem; }
+  .verificar {
+    margin-top: 10px; padding: 0; border: 0; background: none; cursor: pointer;
+    font: 700 1rem var(--fonte-titulo); color: var(--vinho);
+    text-decoration: underline; text-underline-offset: 4px;
+  }
+  .resultado { margin-top: 6px; font-weight: 700; }
   .resultado:empty { display: none; }
-
-  .aviso { font-size: 0.95rem; background: rgb(0 0 0 / 0.12); border-radius: 14px; padding: 12px 16px; }
-  .aviso a { color: var(--fita-amarela); font-weight: 700; }
-
-  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
 </style>
 
 <script>
@@ -156,9 +116,9 @@ const bairros = [
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(mapa);
     L.circle([casa.lat, casa.lng], {
-      radius: raioKm * 1000, color: '#6e0000', weight: 3, fillColor: '#f4c430', fillOpacity: 0.22,
+      radius: raioKm * 1000, color: '#7a0000', weight: 3, fillColor: '#ffc03f', fillOpacity: 0.25,
     }).addTo(mapa);
-    L.circleMarker([casa.lat, casa.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#d9601a', fillOpacity: 1 })
+    L.circleMarker([casa.lat, casa.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#f04a00', fillOpacity: 1 })
       .addTo(mapa)
       .bindTooltip('Acarajazz', { permanent: true, direction: 'top', offset: [0, -8] });
   }

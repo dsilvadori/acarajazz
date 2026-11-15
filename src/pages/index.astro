@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Destaques from '../components/Destaques.astro';
 import Cardapio from '../components/Cardapio.astro';
 import Horarios from '../components/Horarios.astro';
 import Delivery from '../components/Delivery.astro';
@@ -25,9 +26,10 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
 <Base>
   <Hero status={status} />
   <main>
+    <Destaques categorias={categorias} />
     <Cardapio categorias={categorias} />
-    <Horarios horarios={horarios} status={status} aviso={aviso} />
     <Delivery />
+    <Horarios horarios={horarios} status={status} aviso={aviso} />
     <SobreBia />
     <Eventos />
     <Instagram />

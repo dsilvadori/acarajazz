@@ -82,8 +82,8 @@ Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leitur
 **Pronto (local):** hero das fitinhas, cardápio e horários (D1), status "aberto agora", delivery com mapa do raio de 7 km e "Estou dentro do raio?", seção da chef Bia (rascunho), formulário de eventos (D1 + aviso por e-mail + Turnstile), feed do Instagram (com fotos de reserva), rodapé e política de privacidade (rascunho).
 
 **Pendências antes de publicar:**
-- [ ] Logo oficial em vetor (hoje o nome está em texto, fonte Fraunces)
-- [ ] Foto da Bia e revisão do texto da seção dela
+- [x] Logo oficial aplicado (PNG 2000 px em docs/referencias/marca/); um SVG ainda seria ideal para nitidez máxima
+- [ ] Confirmar que a foto usada (story de 05/03/2026) é da Bia e revisar o texto da seção dela
 - [ ] Link oficial do Keeta (keeta.com.br **não** é do app de delivery)
 - [ ] Token da Instagram Graph API + renovação automática (Cron)
 - [ ] Chaves reais do Turnstile (hoje: chaves de teste)
@@ -91,3 +91,11 @@ Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leitur
 - [ ] Mapa: os tiles do OpenStreetMap servem para pouco tráfego; avaliar um provedor (ex.: MapTiler, plano gratuito) se o acesso crescer
 
 **Próximas etapas:** mini CRM em `/admin`, página `/curso`, página `/acarabet`.
+
+## 8. Identidade visual
+
+Base: `docs/referencias/marca/` (logo-definitivo.png e banner-curva.pdf).
+- **Cores:** vinho `#7a0000`, laranja do banner `#ff9a2e`, creme `#fef5e2`, laranja do acarajé `#f04a00`, amarelo `#ffc03f`.
+- **Fontes:** Baloo 2 (títulos, arredondada como no banner) e Nunito (texto).
+- **Formas:** ponta em V da flâmula do banner (hero → faixa vinho), arco/círculo do logo nas fotos.
+- **Fitinhas do Bonfim:** só como detalhe: três linhas finas, paradas e curvadas (hero e rodapé), sem texto.

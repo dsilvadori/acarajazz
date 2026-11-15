@@ -10,18 +10,15 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
 <section class="eventos" id="eventos" aria-labelledby="eventos-titulo">
   <div class="container grade">
     <div class="texto">
-      <p class="sobretitulo">Festas e encontros</p>
-      <h2 class="titulo-secao" id="eventos-titulo">Leve a Bahia pro seu evento</h2>
-      <p class="intro">
-        Aniversário, confraternização, casamento ou aquele encontro com os amigos: fazemos aqui na casinha
-        ou levamos o tabuleiro até você.
+      <p class="chamada">Festas e encontros</p>
+      <h2 class="titulo" id="eventos-titulo">Leve a Bahia pro seu evento</h2>
+      <p class="subtitulo">
+        Aniversário, confraternização ou casamento: fazemos aqui na casinha ou levamos o buffet de acarajé,
+        caruru e quitutes baianos até você.
       </p>
-      <ul class="opcoes">
-        <li><strong>No Acarajazz</strong> Reserve o espaço e a gente cuida da comida, do drink e do clima.</li>
-        <li><strong>No seu local</strong> Buffet de acarajé, caruru completo, finger food baiano e mais.</li>
-      </ul>
+      <img class="foto" src="/img/buffet.webp" alt="Mesa de buffet do Acarajazz com quitutes baianos" width="1200" height="900" loading="lazy" decoding="async" />
       <p class="whats">
-        Prefere conversar direto? <a href="https://wa.me/5511979564494" target="_blank" rel="noopener">Chama no WhatsApp</a>
+        Prefere conversar? <a href="https://wa.me/5511979564494" target="_blank" rel="noopener">Chama no WhatsApp</a>
       </p>
     </div>
 
@@ -105,7 +102,7 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
       <div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-br" data-theme="light"></div>
       <p class="erro" data-erro="geral" role="alert"></p>
 
-      <button class="botao botao-principal enviar" type="submit">Pedir orçamento</button>
+      <button class="botao botao-vinho enviar" type="submit">Pedir orçamento</button>
     </form>
   </div>
 </section>
@@ -113,46 +110,42 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <style>
-  .eventos {
-    background: var(--papel);
-    padding-block: clamp(56px, 9vw, 110px);
-  }
+  .eventos { background: #fff8ec; padding-block: var(--secao); }
   .grade { display: grid; gap: 40px; align-items: start; }
   @media (min-width: 940px) { .grade { grid-template-columns: 0.9fr 1.1fr; gap: 64px; } }
 
-  .intro { margin-top: 1rem; font-size: 1.15rem; max-width: 42ch; }
-  .opcoes { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 12px; }
-  .opcoes li { padding: 14px 18px; background: var(--creme); border-radius: 16px; border-left: 5px solid var(--fita-amarela); }
-  .opcoes li:nth-child(2) { border-left-color: var(--fita-azul); }
-  .opcoes strong { display: block; font-family: var(--fonte-titulo); font-size: 1.15rem; color: var(--vinho); }
-  .whats { margin-top: 1.4rem; }
-  .whats a { color: var(--quiabo); font-weight: 800; }
+  .foto {
+    margin-top: 1.6rem; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
+    border-radius: var(--raio); box-shadow: var(--sombra);
+  }
+  .whats { margin-top: 1.2rem; font-weight: 700; }
+  .whats a { color: var(--verde); }
 
   .form {
-    background: var(--creme);
+    background: #fff;
     border-radius: var(--raio);
     padding: clamp(20px, 4vw, 34px);
     display: grid;
     gap: 14px;
     box-shadow: var(--sombra);
-    border-top: 8px solid var(--fita-vermelha);
+    border-top: 8px solid var(--laranja);
   }
   .duas { display: grid; gap: 14px; }
   @media (min-width: 560px) { .duas { grid-template-columns: 1fr 1fr; } }
 
   .campo { display: grid; gap: 6px; }
   .campo[hidden] { display: none; }
-  label, legend { font-weight: 800; font-size: 0.95rem; }
+  label, legend { font-weight: 800; font-size: 0.95rem; color: var(--vinho); }
   input:not([type='radio'], [type='checkbox']), select, textarea {
     width: 100%;
     font: inherit;
     padding: 12px 14px;
     border-radius: 12px;
-    border: 2px solid #e3c9a0;
-    background: #fff;
-    color: var(--tinta);
+    border: 2px solid var(--creme-2);
+    background: var(--creme);
+    color: var(--texto);
   }
-  input:focus, select:focus, textarea:focus { border-color: var(--dende); outline: none; box-shadow: 0 0 0 4px rgb(217 96 26 / 0.15); }
+  input:focus, select:focus, textarea:focus { border-color: var(--laranja); outline: none; box-shadow: 0 0 0 4px rgb(255 154 46 / 0.2); }
   [aria-invalid='true'] { border-color: var(--fita-vermelha) !important; }
 
   fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -161,12 +154,12 @@ const status = Astro.url.searchParams.get('evento'); // fallback sem JS
   .opcao input { position: absolute; opacity: 0; }
   .opcao span {
     display: block; text-align: center; padding: 12px; border-radius: 12px;
-    border: 2px solid #e3c9a0; background: #fff; cursor: pointer;
+    border: 2px solid var(--creme-2); background: var(--creme); cursor: pointer; font-weight: 700;
   }
   .opcao input:checked + span { border-color: var(--vinho); background: var(--vinho); color: var(--creme); }
   .opcao input:focus-visible + span { outline: 3px solid var(--fita-azul); outline-offset: 2px; }
 
-  .consentimento { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 0.92rem; }
+  .consentimento { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 0.92rem; color: var(--texto); }
   .consentimento input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--vinho); flex: none; }
 
   .erro { color: var(--fita-vermelha); font-size: 0.88rem; font-weight: 700; }

@@ -1,97 +1,62 @@
 ---
 // RASCUNHO baseado no Instagram (docs/CONTEUDO-INSTAGRAM.md, seção 7). Revisar com a Bia antes de publicar.
-const trajetoria = [
-  { ano: 'Desde a barriga', texto: 'A receita veio das mulheres da família. Tia Mainha alimentou a Bia de acarajé antes mesmo de ela nascer.' },
-  { ano: '2021', texto: 'Começou no iFood, cozinhando em casa com a ajuda de um primo.' },
-  { ano: 'Depois', texto: 'Barraca de acarajé em frente ao metrô Jabaquara, e então uma garagenzinha.' },
-  { ano: 'Hoje', texto: 'A casinha na Vila Mariana: boteco de baianos, de quinta a domingo.' },
-];
 ---
 
 <section class="bia" id="chef" aria-labelledby="bia-titulo">
   <div class="container grade">
     <figure class="foto">
-      <div class="moldura" role="img" aria-label="Foto da chef Bia Souza (em breve)">
-        <span>Foto da Bia<br /><small>em breve</small></span>
-      </div>
-      <figcaption>Bia Souza, cozinheira e dona do Acarajazz</figcaption>
+      <div class="circulo" aria-hidden="true"></div>
+      <img src="/img/bia.webp" alt="Chef Bia Souza segurando um prato de acarajés" width="720" height="900" loading="lazy" decoding="async" />
     </figure>
 
     <div class="texto">
-      <p class="sobretitulo">Quem frita é ela</p>
-      <h2 class="titulo-secao" id="bia-titulo">Chef Bia Souza</h2>
+      <p class="chamada">Quem frita é ela</p>
+      <h2 class="titulo" id="bia-titulo">Chef Bia Souza</h2>
       <p class="lead">
-        Baiana, a Bia aprendeu o acarajé com as véias da família, suas ancestrais diretas, e trouxe
-        o tabuleiro pra Vila Mariana sem perder o ponto.
+        Baiana, a Bia aprendeu o acarajé com as mulheres da família e trouxe o tabuleiro pra Vila Mariana
+        sem perder o ponto.
       </p>
-
-      <blockquote>
-        <p>“Acarajé não pode virar experiência. Tem que ser comida boa, a ponto.”</p>
-      </blockquote>
-
-      <ol class="linha-tempo">
-        {trajetoria.map((t) => (
-          <li>
-            <span class="ano">{t.ano}</span>
-            <p>{t.texto}</p>
-          </li>
-        ))}
-      </ol>
-
-      <p class="extra">
-        No caminho, teve visita do Wagner Moura (que virou nome de kit no cardápio), matéria na UOL e muita
-        gente atravessando a cidade atrás do cheiro de dendê. A vida é louca, <em>mas nóis é mais</em>.
+      <p>
+        Começou em 2021 vendendo pelo iFood de casa. Depois veio a barraca em frente ao metrô Jabaquara,
+        uma garagenzinha e, hoje, a casinha: boteco de baianos, para todos.
       </p>
+      <blockquote>“Acarajé não pode virar experiência. Tem que ser comida boa, a ponto.”</blockquote>
     </div>
   </div>
 </section>
 
 <style>
-  .bia { background: var(--creme); padding-block: clamp(56px, 9vw, 110px); }
-  .grade { display: grid; gap: 40px; align-items: center; }
+  .bia { background: var(--vinho); color: var(--creme); padding-block: var(--secao); overflow: hidden; }
+  .grade { display: grid; gap: 48px; align-items: center; }
   @media (min-width: 900px) { .grade { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
 
-  .foto { margin: 0; }
-  .moldura {
-    aspect-ratio: 4 / 5;
-    border-radius: 200px 200px var(--raio) var(--raio);
-    background:
-      repeating-linear-gradient(135deg, transparent 0 18px, rgb(217 96 26 / 0.08) 18px 36px),
-      var(--creme-2);
-    border: 6px solid var(--papel);
-    outline: 3px dashed var(--dende);
-    outline-offset: -18px;
-    display: grid; place-items: center; text-align: center;
-    font-family: var(--fonte-titulo); font-size: 1.6rem; font-weight: 800; color: var(--dende);
-    box-shadow: var(--sombra);
-    max-width: 440px; margin-inline: auto;
+  .foto { position: relative; margin: 0 auto; width: min(100%, 420px); }
+  .circulo {
+    position: absolute; inset: -6% -10% auto auto;
+    width: 78%; aspect-ratio: 1; border-radius: 50%;
+    background: var(--laranja);
   }
-  .moldura small { font-family: var(--fonte-texto); font-size: 0.9rem; color: var(--tinta-suave); font-weight: 700; }
-  figcaption { text-align: center; margin-top: 12px; font-size: 0.9rem; color: var(--tinta-suave); }
+  .foto img {
+    position: relative;
+    width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+    border-radius: 999px 999px var(--raio) var(--raio);
+    border: 6px solid var(--creme);
+  }
 
-  .lead { margin-top: 1rem; font-size: 1.2rem; max-width: 46ch; }
+  .chamada { color: var(--amarelo); }
+  .titulo { color: var(--creme); }
+  .lead { margin-top: 1rem; font-size: 1.25rem; font-weight: 700; max-width: 40ch; }
+  .texto p + p { margin-top: 0.8rem; max-width: 48ch; opacity: 0.9; }
 
   blockquote {
-    margin: 1.6rem 0;
-    padding: 18px 22px;
-    border-left: 6px solid var(--fita-vermelha);
-    background: var(--papel);
-    border-radius: 0 var(--raio) var(--raio) 0;
+    margin: 1.8rem 0 0;
+    padding-left: 18px;
+    border-left: 5px solid var(--amarelo);
     font-family: var(--fonte-titulo);
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    font-style: italic;
-    color: var(--vinho);
+    line-height: 1.25;
+    color: var(--amarelo);
+    max-width: 30ch;
   }
-
-  .linha-tempo { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
-  .linha-tempo li {
-    display: grid; grid-template-columns: 9.5em 1fr; gap: 12px;
-    padding: 10px 0; border-bottom: 1px dashed #e3c9a0;
-  }
-  @media (max-width: 480px) { .linha-tempo li { grid-template-columns: 1fr; gap: 0; } }
-  .ano { font-family: var(--fonte-fita); text-transform: uppercase; letter-spacing: 0.1em; color: var(--dende); font-size: 0.85rem; padding-top: 3px; }
-
-  .extra { margin-top: 1.4rem; color: var(--tinta-suave); max-width: 52ch; }
-  .extra em { color: var(--vinho); font-weight: 700; }
 </style>

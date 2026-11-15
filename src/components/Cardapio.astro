@@ -10,166 +10,140 @@ const { categorias } = Astro.props;
 
 <section class="cardapio" id="cardapio" aria-labelledby="cardapio-titulo">
   <div class="container">
-    <p class="sobretitulo">Do tabuleiro pro boteco</p>
-    <h2 class="titulo-secao" id="cardapio-titulo">Cardápio</h2>
+    <div class="topo">
+      <p class="chamada">Cardápio</p>
+      <h2 class="titulo" id="cardapio-titulo">Chegue mais, tu não é cuscuz pra ficar abafado</h2>
+    </div>
 
-    <ul class="legenda" aria-label="Legenda">
-      <li><span class="selo selo-a">A</span> Autoral</li>
-      <li><span class="selo selo-v">V</span> Vegetariano</li>
-      <li><span class="selo selo-c">C</span> Contém camarão</li>
-    </ul>
-
-    <nav class="atalhos" aria-label="Categorias do cardápio">
-      {categorias.map((c) => <a href={`#cat-${c.slug}`}>{c.nome}</a>)}
-    </nav>
-
-    <div class="grade">
-      {categorias.map((c) => (
-        <article class="categoria" id={`cat-${c.slug}`}>
-          <header>
-            <h3>{c.nome}</h3>
-            {c.subtitulo && <p class="subtitulo">{c.subtitulo}</p>}
-          </header>
-          <ul class="itens">
-            {c.itens.map((i) => (
-              <li class:list={['item', { destaque: i.destaque }]}>
-                <div class="linha">
-                  <span class="nome">
-                    {i.nome}
-                    {i.autoral ? <span class="selo selo-a" title="Autoral">A</span> : null}
-                    {i.vegetariano ? <span class="selo selo-v" title="Vegetariano">V</span> : null}
-                    {i.camarao ? <span class="selo selo-c" title="Contém camarão">C</span> : null}
-                  </span>
-                  <span class="pontilhado" aria-hidden="true"></span>
-                  <span class="preco"><small>R$</small> {formatarPreco(i.preco_centavos)}</span>
-                </div>
-                {i.descricao && <p class="descricao">{i.descricao}</p>}
-              </li>
-            ))}
-          </ul>
-        </article>
+    <div class="abas" role="tablist" aria-label="Categorias do cardápio">
+      {categorias.map((c, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`aba-${c.slug}`}
+          aria-controls={`cat-${c.slug}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {c.nome}
+        </button>
       ))}
     </div>
 
-    <p class="rodape-cardapio">
-      Chegue mais! Nossa casinha se faz de comida, afeto e conversa. Alguma questão? Diga.
-      <em>Tu não é cuscuz pra ficar abafado.</em>
-    </p>
+    <div class="paineis">
+      {categorias.map((c) => (
+        <div class="painel" role="tabpanel" id={`cat-${c.slug}`} aria-labelledby={`aba-${c.slug}`}>
+          <h3 class="nome-categoria">{c.nome}{c.subtitulo && <small> · {c.subtitulo}</small>}</h3>
+          <ul class="itens">
+            {c.itens.map((i) => (
+              <li>
+                <div class="linha">
+                  <span class="nome">{i.nome}</span>
+                  <span class="pontos" aria-hidden="true"></span>
+                  <span class="preco">{formatarPreco(i.preco_centavos)}</span>
+                </div>
+                {(i.descricao || i.autoral || i.vegetariano || i.camarao) ? (
+                  <p class="desc">
+                    {i.descricao}
+                    {i.vegetariano ? <span class="tag tag-v">vegetariano</span> : null}
+                    {i.autoral ? <span class="tag">autoral</span> : null}
+                    {i.camarao ? <span class="tag">contém camarão</span> : null}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
 
 <style>
-  .cardapio {
-    background: var(--papel);
-    padding-block: clamp(48px, 8vw, 96px);
-  }
+  .cardapio { background: var(--creme); padding-block: var(--secao); }
+  .topo { text-align: center; }
+  .titulo { max-width: 18ch; margin-inline: auto; }
 
-  .legenda {
-    list-style: none;
-    padding: 0;
-    margin: 1.2rem 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-    font-size: 0.92rem;
-    color: var(--tinta-suave);
-  }
-  .legenda li { display: flex; align-items: center; gap: 6px; }
-
-  .selo {
-    display: inline-grid;
-    place-items: center;
-    width: 1.35em;
-    height: 1.35em;
-    border-radius: 50%;
-    font-family: var(--fonte-texto);
-    font-size: 0.72rem;
-    font-weight: 800;
-    font-style: normal;
-    color: #fff;
-    margin-left: 0.35em;
-    vertical-align: 0.15em;
-  }
-  .legenda .selo { margin-left: 0; }
-  .selo-a { background: var(--dende); }
-  .selo-v { background: var(--quiabo); }
-  .selo-c { background: var(--fita-vermelha); }
-
-  .atalhos {
+  .abas {
+    position: relative;
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    margin: 1.4rem calc(-1 * var(--gutter)) 0;
-    padding: 4px var(--gutter) 10px;
-    scrollbar-width: thin;
+    margin: 2.2rem calc(-1 * var(--gutter)) 0;
+    padding: 4px var(--gutter) 12px;
+    scrollbar-width: none;
+    justify-content: safe center;
   }
-  .atalhos a {
+  .abas::-webkit-scrollbar { display: none; }
+  .abas button {
     flex: none;
-    padding: 0.4em 1em;
+    font: 700 1rem var(--fonte-titulo);
+    padding: 0.5em 1.15em;
     border-radius: 999px;
-    background: var(--creme);
-    border: 2px solid var(--creme-2);
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .atalhos a:hover { border-color: var(--dende); color: var(--vinho); }
-
-  .grade {
-    margin-top: 1.6rem;
-    columns: 1;
-    column-gap: 28px;
-  }
-  @media (min-width: 760px) { .grade { columns: 2; } }
-  @media (min-width: 1100px) { .grade { columns: 3; } }
-
-  .categoria {
-    break-inside: avoid;
-    margin-bottom: 28px;
-    padding: 22px 22px 14px;
-    background: var(--creme);
-    border-radius: var(--raio);
-    border-top: 6px solid var(--dende);
-    scroll-margin-top: 24px;
-  }
-  .categoria:nth-child(3n + 2) { border-top-color: var(--fita-azul); }
-  .categoria:nth-child(3n + 3) { border-top-color: var(--fita-amarela); }
-
-  .categoria h3 {
-    font-size: 1.55rem;
-    font-weight: 800;
+    border: 0;
+    background: var(--creme-2);
     color: var(--vinho);
+    cursor: pointer;
   }
-  .subtitulo {
-    font-family: var(--fonte-fita);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.78rem;
-    color: var(--dende);
-    margin-top: 4px;
+  .abas button[aria-selected='true'] { background: var(--vinho); color: var(--creme); }
+
+  .paineis {
+    max-width: 760px;
+    margin: 1.6rem auto 0;
+    background: #fff;
+    border-radius: var(--raio);
+    padding: clamp(20px, 4vw, 40px);
+    box-shadow: var(--sombra);
   }
+  .nome-categoria { font-size: 1.6rem; color: var(--vinho); margin-bottom: 0.6rem; }
+  .nome-categoria small { font-size: 0.6em; color: var(--laranja-forte); font-weight: 700; }
 
-  .itens { list-style: none; padding: 0; margin: 14px 0 0; }
-  .item { padding: 9px 0; border-bottom: 1px dashed var(--creme-2); }
-  .item:last-child { border-bottom: 0; }
+  /* Sem JS: todas as categorias aparecem em sequência. Com JS: uma por vez. */
+  .com-abas .painel[hidden] { display: none; }
+  .painel + .painel { margin-top: 2rem; }
+  .com-abas .painel + .painel { margin-top: 0; }
 
-  .linha { display: flex; align-items: baseline; gap: 8px; }
-  .nome { font-weight: 800; }
-  .destaque .nome { color: var(--vinho); }
-  .pontilhado { flex: 1; min-width: 12px; border-bottom: 2px dotted #d9b98f; transform: translateY(-4px); }
-  .preco { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .preco small { font-size: 0.72em; color: var(--tinta-suave); }
-  .descricao { font-size: 0.92rem; color: var(--tinta-suave); margin-top: 2px; max-width: 42ch; }
-
-  .rodape-cardapio {
-    margin-top: 12px;
-    text-align: center;
-    font-family: var(--fonte-titulo);
-    font-size: 1.15rem;
-    color: var(--tinta-suave);
-    max-width: 52ch;
-    margin-inline: auto;
+  .itens { list-style: none; padding: 0; margin: 0; }
+  .itens li { padding: 12px 0; border-bottom: 1px solid var(--creme-2); }
+  .itens li:last-child { border-bottom: 0; }
+  .linha { display: flex; align-items: baseline; gap: 10px; }
+  .nome { font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.12rem; color: var(--texto); line-height: 1.25; }
+  .pontos { flex: 1; min-width: 16px; border-bottom: 2px dotted #e2c79c; transform: translateY(-5px); }
+  .preco { font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.12rem; color: var(--vinho); white-space: nowrap; }
+  .preco::before { content: 'R$ '; font-size: 0.75em; font-weight: 600; }
+  .desc { font-size: 0.92rem; color: var(--texto-suave); margin-top: 2px; }
+  .tag {
+    display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 700; background: var(--creme-2); color: var(--vinho); vertical-align: 1px;
   }
-  .rodape-cardapio em { color: var(--vinho); font-weight: 700; }
+  .tag-v { background: #e3f1df; color: var(--verde); }
 </style>
+
+<script>
+  const raiz = document.querySelector<HTMLElement>('#cardapio')!;
+  const abas = [...raiz.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+  const paineis = [...raiz.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+  raiz.querySelector('.paineis')!.classList.add('com-abas');
+
+  function ativar(aba: HTMLButtonElement, foco = false) {
+    for (const a of abas) {
+      const ativa = a === aba;
+      a.setAttribute('aria-selected', String(ativa));
+      a.tabIndex = ativa ? 0 : -1;
+    }
+    for (const p of paineis) p.hidden = p.id !== aba.getAttribute('aria-controls');
+    if (foco) aba.focus();
+    // Rola só a barra de abas (nunca a página)
+    const barra = aba.parentElement!;
+    barra.scrollTo({ left: aba.offsetLeft - (barra.clientWidth - aba.offsetWidth) / 2, behavior: 'smooth' });
+  }
+  ativar(abas[0]);
+
+  abas.forEach((a, i) => {
+    a.addEventListener('click', () => ativar(a));
+    a.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) ativar(abas[(i + d + abas.length) % abas.length], true);
+    });
+  });
+</script>

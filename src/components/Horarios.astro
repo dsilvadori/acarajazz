@@ -12,105 +12,75 @@ const { horarios, status, aviso } = Astro.props;
 const { dia: hoje } = agoraSP();
 
 // Semana começando na segunda
-const ordem = [1, 2, 3, 4, 5, 6, 0];
-const semana = ordem.map((d) => horarios.find((h) => h.dia_semana === d)!).filter(Boolean);
+const semana = [1, 2, 3, 4, 5, 6, 0].map((d) => horarios.find((h) => h.dia_semana === d)).filter((h): h is Horario => !!h);
 
 const mapa = 'https://www.google.com/maps/search/?api=1&query=' +
   encodeURIComponent('Acarajazz, Rua Dona Inácia Uchôa, 89 - Vila Mariana, São Paulo - SP');
 ---
 
-<section class="horarios" id="horarios" aria-labelledby="horarios-titulo">
+<section class="onde" id="onde" aria-labelledby="onde-titulo">
+  <span id="horarios" class="ancora" aria-hidden="true"></span>
   <div class="container grade">
+    <figure class="foto">
+      <img src="/img/casinha.webp" alt="Mesas na calçada do Acarajazz, cheias de gente" width="1200" height="900" loading="lazy" decoding="async" />
+    </figure>
+
     <div class="texto">
-      <p class="sobretitulo">Quando vir</p>
-      <h2 class="titulo-secao" id="horarios-titulo">A casinha abre de quinta a domingo</h2>
-      <p class="intro">Quarta-feira é dia de acarajé: a casa fica fechada, mas o dendê corre solto no <a href="#delivery">delivery</a>.</p>
+      <p class="chamada">Onde e quando</p>
+      <h2 class="titulo" id="onde-titulo">A casinha abre de quinta a domingo</h2>
 
-      <div class="status-wrap"><StatusAgora status={status} tema="escuro" /></div>
-
+      <div class="status-wrap"><StatusAgora status={status} /></div>
       {aviso && <p class="aviso" role="note">{aviso}</p>}
 
-      <address>
-        <strong>Acarajazz</strong><br />
-        Rua Dona Inácia Uchôa, 89<br />
-        Vila Mariana · São Paulo/SP
-      </address>
-      <a class="botao botao-secundario" href={mapa} target="_blank" rel="noopener">Como chegar</a>
-    </div>
+      <table class="tabela">
+        <caption class="sr-only">Dias e horários de funcionamento</caption>
+        <tbody>
+          {semana.map((h) => (
+            <tr class:list={{ hoje: h.dia_semana === hoje, fechado: !h.abre }} aria-current={h.dia_semana === hoje ? 'date' : undefined}>
+              <th scope="row">{DIAS[h.dia_semana]}</th>
+              <td>
+                {h.abre && h.fecha
+                  ? `${formatarHora(h.abre)} – ${formatarHora(h.fecha)}`
+                  : h.so_delivery ? 'Só delivery' : 'Fechado'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-    <table class="tabela">
-      <caption class="sr-only">Dias e horários de funcionamento</caption>
-      <tbody>
-        {semana.map((h) => (
-          <tr class:list={{ hoje: h.dia_semana === hoje, fechado: !h.abre }} aria-current={h.dia_semana === hoje ? 'date' : undefined}>
-            <th scope="row">{DIAS[h.dia_semana]}{h.dia_semana === hoje && <span class="tag-hoje">hoje</span>}</th>
-            <td>
-              {h.abre && h.fecha ? (
-                <>
-                  <span class="faixa-hora">{formatarHora(h.abre)} – {formatarHora(h.fecha)}</span>
-                  {h.cozinha_fecha && <span class="cozinha">cozinha até {formatarHora(h.cozinha_fecha)}</span>}
-                </>
-              ) : h.so_delivery ? (
-                <span class="delivery">Só delivery</span>
-              ) : (
-                <span>Fechado</span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      <address>
+        Rua Dona Inácia Uchôa, 89 · Vila Mariana · São Paulo/SP
+      </address>
+      <a class="botao botao-vinho" href={mapa} target="_blank" rel="noopener">Como chegar ↗</a>
+    </div>
   </div>
 </section>
 
 <style>
-  .horarios {
-    background: var(--vinho);
-    color: var(--creme);
-    padding-block: clamp(56px, 9vw, 104px);
-  }
-  .grade {
-    display: grid;
-    gap: 40px;
-    align-items: center;
-  }
-  @media (min-width: 860px) { .grade { grid-template-columns: 1fr 1fr; gap: 64px; } }
+  .onde { position: relative; background: var(--creme); padding-block: var(--secao); }
+  .ancora { position: absolute; top: 0; }
+  .grade { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 900px) { .grade { grid-template-columns: 1.05fr 1fr; gap: 64px; } }
 
-  .titulo-secao { color: var(--creme); }
-  .sobretitulo { color: var(--fita-amarela); }
-  .intro { margin-top: 1rem; max-width: 40ch; opacity: 0.9; }
-  .intro a { color: var(--fita-amarela); }
-
-  .status-wrap { margin-top: 1.4rem; }
-
-  .aviso {
-    margin-top: 1rem; padding: 0.8em 1em; border-radius: 12px;
-    background: var(--fita-amarela); color: var(--tinta); font-weight: 700;
+  .foto { margin: 0; }
+  .foto img {
+    width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
+    border-radius: 200px 200px var(--raio) var(--raio);
+    border: 6px solid #fff;
+    box-shadow: var(--sombra);
   }
 
-  address { font-style: normal; margin: 1.6rem 0 1.2rem; line-height: 1.5; }
-  .botao-secundario { color: var(--creme); border-color: var(--creme); }
+  .status-wrap { margin-top: 1.2rem; }
+  .aviso { margin-top: 1rem; padding: 0.8em 1em; border-radius: 14px; background: var(--amarelo); color: var(--vinho); font-weight: 700; }
 
-  .tabela {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-    font-size: 1.05rem;
-  }
-  .tabela th, .tabela td { padding: 14px 18px; background: rgb(255 255 255 / 0.07); }
-  .tabela th { text-align: left; border-radius: 14px 0 0 14px; font-weight: 800; white-space: nowrap; }
-  .tabela td { text-align: right; border-radius: 0 14px 14px 0; }
-  .faixa-hora { font-weight: 800; font-variant-numeric: tabular-nums; }
-  .cozinha { display: block; font-size: 0.82rem; opacity: 0.75; }
-  .fechado { opacity: 0.55; }
-  .delivery { color: var(--dende-claro); font-weight: 800; }
-  .fechado:has(.delivery) { opacity: 1; }
+  .tabela { width: 100%; margin-top: 1.4rem; border-collapse: collapse; font-size: 1.05rem; }
+  .tabela th, .tabela td { padding: 9px 12px; border-bottom: 1px solid var(--creme-2); }
+  .tabela th { text-align: left; font-weight: 700; }
+  .tabela td { text-align: right; font-family: var(--fonte-titulo); font-weight: 700; color: var(--vinho); font-variant-numeric: tabular-nums; }
+  .fechado th, .fechado td { color: var(--texto-suave); font-weight: 500; }
+  .hoje th, .hoje td { background: var(--vinho); color: var(--creme); }
+  .hoje th { border-radius: 12px 0 0 12px; }
+  .hoje td { border-radius: 0 12px 12px 0; }
 
-  .hoje th, .hoje td { background: var(--creme); color: var(--vinho); }
-  .hoje .delivery { color: var(--dende); }
-  .tag-hoje {
-    margin-left: 8px; padding: 1px 8px; border-radius: 999px;
-    background: var(--dende); color: #fff; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
-    vertical-align: 0.15em;
-  }
+  address { font-style: normal; margin: 1.4rem 0 1rem; color: var(--texto-suave); }
 </style>

@@ -1,0 +1,108 @@
+---
+import type { CategoriaCardapio } from '../lib/db';
+import { formatarPreco } from '../lib/horario';
+
+interface Props {
+  categorias: CategoriaCardapio[];
+}
+const { categorias } = Astro.props;
+
+// Fotos do Instagram ligadas a itens do cardápio. O preço vem do banco (sempre atualizado).
+const DESTAQUES = [
+  { item: 'Acarajé ou Acarajazz na mão', titulo: 'Acarajé ou Acarajazz', nota: 'Tradicional ou vegano', foto: '/img/pratos/acaraje.webp' },
+  { item: 'Wagner Moura', titulo: 'Kit Wagner Moura', nota: '10 bolinhos + recheios', foto: '/img/pratos/wagner-moura.webp' },
+  { item: 'Camarão praiano do Acarajazz', titulo: 'Camarão praiano', nota: '12 camarões G ao alho e óleo', foto: '/img/pratos/camarao-praiano.webp' },
+  { item: 'Cozido baiano', titulo: 'Cozido baiano', nota: 'Especial de fim de semana', foto: '/img/pratos/cozido.webp' },
+  { item: 'Manjubinha ou peixe do dia', titulo: 'Peixe do dia', nota: 'Com farofa, vinagrete e maionese', foto: '/img/pratos/peixe.webp' },
+  { item: 'Cangaceiro', titulo: 'Cangaceiro', nota: 'Drink da casa: cachaça, limão e rapadura', foto: '/img/pratos/cangaceiro.webp' },
+];
+
+const precos = new Map(categorias.flatMap((c) => c.itens.map((i) => [i.nome, i.preco_centavos] as const)));
+const pratos = DESTAQUES.map((d) => ({ ...d, preco: precos.get(d.item) })).filter((d) => d.preco !== undefined);
+---
+
+<section class="destaques" aria-labelledby="destaques-titulo">
+  <div class="container">
+    <div class="topo">
+      <p class="chamada">Os queridinhos da casa</p>
+      <h2 class="titulo" id="destaques-titulo">Do tabuleiro pro boteco</h2>
+    </div>
+
+    <ul class="pratos">
+      {pratos.map((p) => (
+        <li class="prato">
+          <img src={p.foto} alt={p.titulo} width="800" height="1000" loading="lazy" decoding="async" />
+          <div class="info">
+            <h3>{p.titulo}</h3>
+            <p>{p.nota}</p>
+          </div>
+          <span class="preco"><small>R$</small>{formatarPreco(p.preco!)}</span>
+        </li>
+      ))}
+    </ul>
+
+    <p class="mais"><a class="botao botao-creme" href="#cardapio">Ver o cardápio completo</a></p>
+  </div>
+</section>
+
+<style>
+  .destaques {
+    position: relative;
+    z-index: 1;
+    background: var(--vinho);
+    margin-top: -56px;
+    padding: calc(56px + var(--secao) * 0.8) 0 var(--secao);
+    color: var(--creme);
+  }
+  .topo { text-align: center; }
+  .chamada { color: var(--amarelo); }
+  .titulo { color: var(--creme); }
+
+  .pratos {
+    list-style: none;
+    padding: 0;
+    margin: 2.4rem 0 0;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 900px) { .pratos { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+
+  .prato {
+    position: relative;
+    border-radius: var(--raio);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: var(--vinho-escuro);
+  }
+  .prato img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+  .prato:hover img { transform: scale(1.04); }
+
+  .info {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 48px 16px 16px;
+    background: linear-gradient(transparent, rgb(58 0 0 / 0.92) 55%);
+  }
+  .info h3 { font-size: clamp(1.15rem, 2.4vw, 1.6rem); color: var(--creme); }
+  .info p { font-size: 0.88rem; color: rgb(254 245 226 / 0.85); margin-top: 2px; line-height: 1.35; }
+  @media (max-width: 520px) { .info p { display: none; } }
+
+  .preco {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--amarelo);
+    color: var(--vinho);
+    font-family: var(--fonte-titulo);
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+  .preco small { font-size: 0.7em; margin-right: 2px; }
+
+  .mais { text-align: center; margin-top: 2.4rem; }
+
+  @media (prefers-reduced-motion: reduce) { .prato img { transition: none; } }
+</style>
