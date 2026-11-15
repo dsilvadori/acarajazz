@@ -1,0 +1,139 @@
+---
+import { env } from 'cloudflare:workers';
+import Admin from '../../layouts/Admin.astro';
+import { formatarPreco } from '../../lib/horario';
+
+interface Item {
+  id: number; categoria_id: number; nome: string; descricao: string | null; preco_centavos: number;
+  autoral: number; vegetariano: number; camarao: number; destaque: number; ativo: number; ordem: number;
+}
+interface Categoria { id: number; nome: string; subtitulo: string | null }
+
+/** "30", "30,5", "30,50", "R$ 1.234,00" → centavos */
+function centavos(txt: string): number | null {
+  const limpo = txt.replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.');
+  if (!/^\d+(\.\d{1,2})?$/.test(limpo)) return null;
+  const v = Number(limpo);
+  return Number.isFinite(v) && v >= 0 && v < 100000 ? Math.round(v * 100) : null;
+}
+
+let erro = '';
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  const acao = String(f.get('acao'));
+  const id = Number(f.get('id'));
+  const flag = (k: string) => (f.get(k) === 'on' ? 1 : 0);
+  const nome = String(f.get('nome') ?? '').trim().slice(0, 120);
+  const descricao = String(f.get('descricao') ?? '').trim().slice(0, 300) || null;
+  const preco = centavos(String(f.get('preco') ?? ''));
+
+  if (acao === 'excluir' && id) {
+    await env.DB.prepare('DELETE FROM cardapio_itens WHERE id = ?1').bind(id).run();
+    return Astro.redirect('/admin/cardapio?ok=excluido', 303);
+  }
+  if ((acao === 'salvar' || acao === 'novo') && (!nome || preco === null)) {
+    erro = 'Preencha o nome e um preço válido (ex.: 30 ou 32,50).';
+  } else if (acao === 'salvar' && id) {
+    await env.DB.prepare(
+      `UPDATE cardapio_itens SET nome=?2, descricao=?3, preco_centavos=?4, autoral=?5, vegetariano=?6, camarao=?7, destaque=?8, ativo=?9 WHERE id=?1`,
+    ).bind(id, nome, descricao, preco, flag('autoral'), flag('vegetariano'), flag('camarao'), flag('destaque'), flag('ativo')).run();
+    return Astro.redirect(`/admin/cardapio?ok=salvo#item-${id}`, 303);
+  } else if (acao === 'novo') {
+    const cat = Number(f.get('categoria_id'));
+    const { meta } = await env.DB.prepare(
+      `INSERT INTO cardapio_itens (categoria_id, nome, descricao, preco_centavos, autoral, vegetariano, camarao, ativo, ordem)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, 1, (SELECT COALESCE(MAX(ordem), 0) + 1 FROM cardapio_itens WHERE categoria_id = ?1))`,
+    ).bind(cat, nome, descricao, preco, flag('autoral'), flag('vegetariano'), flag('camarao')).run();
+    return Astro.redirect(`/admin/cardapio?ok=criado#item-${meta.last_row_id}`, 303);
+  }
+}
+
+const [cats, itens] = await env.DB.batch([
+  env.DB.prepare('SELECT id, nome, subtitulo FROM cardapio_categorias ORDER BY ordem'),
+  env.DB.prepare('SELECT * FROM cardapio_itens ORDER BY ordem, id'),
+]);
+const categorias = cats.results as Categoria[];
+const todos = itens.results as Item[];
+const ok = Astro.url.searchParams.get('ok');
+const MENSAGENS: Record<string, string> = { salvo: 'Item salvo.', criado: 'Item criado.', excluido: 'Item excluído.' };
+---
+
+<Admin titulo="Cardápio">
+  <p class="intro">As mudanças aparecem no site em poucos minutos. Desmarque <strong>No site</strong> para esconder um item sem apagar. <strong>Destaque</strong> deixa o nome em vinho no cardápio.</p>
+  {ok && MENSAGENS[ok] && <p class="aviso-ok" role="status">{MENSAGENS[ok]}</p>}
+  {erro && <p class="erro" role="alert">{erro}</p>}
+
+  <nav class="atalhos" aria-label="Categorias">
+    {categorias.map((c) => <a href={`#cat-${c.id}`}>{c.nome}</a>)}
+  </nav>
+
+  {categorias.map((c) => (
+    <section class="painel categoria" id={`cat-${c.id}`}>
+      <h2>{c.nome}{c.subtitulo && <small> · {c.subtitulo}</small>}</h2>
+
+      {todos.filter((i) => i.categoria_id === c.id).map((i) => (
+        <form method="post" class:list={['item', { inativo: !i.ativo }]} id={`item-${i.id}`}>
+          <input type="hidden" name="acao" value="salvar" />
+          <input type="hidden" name="id" value={i.id} />
+          <div class="linha1">
+            <input name="nome" value={i.nome} aria-label="Nome" required />
+            <input name="preco" value={formatarPreco(i.preco_centavos)} aria-label="Preço em reais" inputmode="decimal" class="preco" />
+          </div>
+          <input name="descricao" value={i.descricao ?? ''} aria-label="Descrição" placeholder="Descrição (opcional)" />
+          <div class="linha3">
+            <label><input type="checkbox" name="ativo" checked={!!i.ativo} /> No site</label>
+            <label><input type="checkbox" name="vegetariano" checked={!!i.vegetariano} /> Vegetariano</label>
+            <label><input type="checkbox" name="autoral" checked={!!i.autoral} /> Autoral</label>
+            <label><input type="checkbox" name="camarao" checked={!!i.camarao} /> Contém camarão</label>
+            <label><input type="checkbox" name="destaque" checked={!!i.destaque} /> Destaque</label>
+            <span class="botoes">
+              <button class="botao botao-vinho" type="submit">Salvar</button>
+              <button class="botao botao-perigo" type="submit" name="acao" value="excluir" formnovalidate
+                onclick="return confirm('Excluir este item do cardápio?')">Excluir</button>
+            </span>
+          </div>
+        </form>
+      ))}
+
+      <details class="novo">
+        <summary>+ Adicionar item em {c.nome}</summary>
+        <form method="post" class="item">
+          <input type="hidden" name="acao" value="novo" />
+          <input type="hidden" name="categoria_id" value={c.id} />
+          <div class="linha1">
+            <input name="nome" placeholder="Nome do item" aria-label="Nome" required />
+            <input name="preco" placeholder="Preço (ex.: 32,00)" aria-label="Preço" inputmode="decimal" class="preco" required />
+          </div>
+          <input name="descricao" placeholder="Descrição (opcional)" aria-label="Descrição" />
+          <div class="linha3">
+            <label><input type="checkbox" name="vegetariano" /> Vegetariano</label>
+            <label><input type="checkbox" name="autoral" /> Autoral</label>
+            <label><input type="checkbox" name="camarao" /> Contém camarão</label>
+            <span class="botoes"><button class="botao botao-vinho" type="submit">Adicionar</button></span>
+          </div>
+        </form>
+      </details>
+    </section>
+  ))}
+</Admin>
+
+<style>
+  .intro { color: var(--texto-suave); margin: -6px 0 14px; max-width: 70ch; }
+  .erro { background: #fde3e3; color: #8f0a1c; padding: 10px 14px; border-radius: 12px; font-weight: 700; margin-bottom: 16px; }
+  .atalhos { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; scrollbar-width: none; }
+  .atalhos a { flex: none; padding: 6px 12px; border-radius: 999px; background: #fff; color: var(--vinho); font-weight: 700; text-decoration: none; font-size: 0.9rem; }
+  .categoria { margin-bottom: 16px; scroll-margin-top: 110px; }
+  .categoria h2 { margin-bottom: 8px; }
+  .categoria h2 small { color: var(--laranja-forte); font-size: 0.7em; }
+  .item { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--creme-2); scroll-margin-top: 110px; }
+  .item.inativo { opacity: 0.55; }
+  .linha1 { display: grid; grid-template-columns: 1fr 130px; gap: 8px; }
+  .linha1 input:first-child { font-weight: 700; }
+  .preco { text-align: right; }
+  .linha3 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+  .linha3 label { display: flex; align-items: center; gap: 5px; font-weight: 600; color: var(--texto); }
+  .linha3 input { accent-color: var(--vinho); }
+  .botoes { margin-left: auto; display: flex; gap: 8px; }
+  .novo { margin-top: 10px; }
+  .novo summary { cursor: pointer; font-weight: 700; color: var(--laranja-forte); padding: 6px 0; }
+</style>

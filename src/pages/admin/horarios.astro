@@ -1,0 +1,136 @@
+---
+import { env } from 'cloudflare:workers';
+import Admin from '../../layouts/Admin.astro';
+import { DIAS, agoraSP } from '../../lib/horario';
+import { getHorarios } from '../../lib/db';
+
+const hora = (v: FormDataEntryValue | null) => {
+  const s = String(v ?? '').trim();
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(s) ? s : null;
+};
+const dataISO = (v: FormDataEntryValue | null) => {
+  const s = String(v ?? '');
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null;
+};
+
+let erro = '';
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  const acao = String(f.get('acao'));
+
+  if (acao === 'horarios') {
+    const stmts = [];
+    for (let d = 0; d < 7; d++) {
+      const aberto = f.get(`aberto-${d}`) === 'on';
+      const abre = aberto ? hora(f.get(`abre-${d}`)) : null;
+      const fecha = aberto ? hora(f.get(`fecha-${d}`)) : null;
+      const cozinha = aberto ? hora(f.get(`cozinha-${d}`)) : null;
+      if (aberto && (!abre || !fecha)) { erro = `Confira os horários de ${DIAS[d]}.`; break; }
+      stmts.push(
+        env.DB.prepare('UPDATE horarios SET abre=?2, fecha=?3, cozinha_fecha=?4, so_delivery=?5 WHERE dia_semana=?1')
+          .bind(d, abre, fecha, cozinha, f.get(`delivery-${d}`) === 'on' ? 1 : 0),
+      );
+    }
+    if (!erro) {
+      await env.DB.batch(stmts);
+      return Astro.redirect('/admin/horarios?ok=horarios', 303);
+    }
+  }
+  if (acao === 'novo-aviso') {
+    const texto = String(f.get('texto') ?? '').trim().slice(0, 200);
+    const inicio = dataISO(f.get('inicio'));
+    const fim = dataISO(f.get('fim'));
+    if (!texto || !inicio || !fim || fim < inicio) erro = 'Preencha o texto e as datas do aviso (o fim não pode ser antes do início).';
+    else {
+      await env.DB.prepare('INSERT INTO avisos (texto, inicio, fim) VALUES (?1, ?2, ?3)').bind(texto, inicio, fim).run();
+      return Astro.redirect('/admin/horarios?ok=aviso', 303);
+    }
+  }
+  if (acao === 'excluir-aviso') {
+    await env.DB.prepare('DELETE FROM avisos WHERE id = ?1').bind(Number(f.get('id'))).run();
+    return Astro.redirect('/admin/horarios?ok=aviso-excluido', 303);
+  }
+}
+
+const horarios = await getHorarios();
+const semana = [1, 2, 3, 4, 5, 6, 0].map((d) => horarios.find((h) => h.dia_semana === d)!).filter(Boolean);
+const hoje = agoraSP().dataISO;
+const { results: avisos } = await env.DB.prepare('SELECT * FROM avisos WHERE fim >= ?1 ORDER BY inicio').bind(hoje)
+  .all<{ id: number; texto: string; inicio: string; fim: string }>();
+const br = (iso: string) => iso.split('-').reverse().join('/');
+const ok = Astro.url.searchParams.get('ok');
+const MENSAGENS: Record<string, string> = { horarios: 'Horários salvos.', aviso: 'Aviso criado.', 'aviso-excluido': 'Aviso excluído.' };
+---
+
+<Admin titulo="Horários e avisos">
+  {ok && MENSAGENS[ok] && <p class="aviso-ok" role="status">{MENSAGENS[ok]}</p>}
+  {erro && <p class="erro" role="alert">{erro}</p>}
+
+  <section class="painel">
+    <h2>Horário da semana</h2>
+    <p class="ajuda">Desmarque <strong>Casa aberta</strong> nos dias em que a casa não abre. <strong>Só delivery</strong> aparece no site como “Só delivery”.</p>
+    <form method="post">
+      <input type="hidden" name="acao" value="horarios" />
+      <div class="tabela" role="table" aria-label="Horários">
+        <div class="cab" role="row">
+          <span role="columnheader">Dia</span><span role="columnheader">Casa aberta</span><span role="columnheader">Abre</span>
+          <span role="columnheader">Fecha</span><span role="columnheader">Cozinha fecha</span><span role="columnheader">Só delivery</span>
+        </div>
+        {semana.map((h) => (
+          <div class="dia" role="row">
+            <strong role="cell">{DIAS[h.dia_semana]}</strong>
+            <label role="cell"><input type="checkbox" name={`aberto-${h.dia_semana}`} checked={!!h.abre} /><span class="sr-only">Casa aberta</span></label>
+            <input role="cell" type="time" name={`abre-${h.dia_semana}`} value={h.abre ?? ''} aria-label={`Abre (${DIAS[h.dia_semana]})`} />
+            <input role="cell" type="time" name={`fecha-${h.dia_semana}`} value={h.fecha ?? ''} aria-label={`Fecha (${DIAS[h.dia_semana]})`} />
+            <input role="cell" type="time" name={`cozinha-${h.dia_semana}`} value={h.cozinha_fecha ?? ''} aria-label={`Cozinha fecha (${DIAS[h.dia_semana]})`} />
+            <label role="cell"><input type="checkbox" name={`delivery-${h.dia_semana}`} checked={!!h.so_delivery} /><span class="sr-only">Só delivery</span></label>
+          </div>
+        ))}
+      </div>
+      <button class="botao botao-vinho" type="submit">Salvar horários</button>
+    </form>
+  </section>
+
+  <section class="painel">
+    <h2>Avisos</h2>
+    <p class="ajuda">Para mudanças pontuais (feriado, abertura mais tarde). O aviso aparece no site só entre as datas escolhidas e some sozinho depois.</p>
+    {avisos.length > 0 ? (
+      <ul class="avisos">
+        {avisos.map((a) => (
+          <li>
+            <span><strong>{br(a.inicio)}{a.fim !== a.inicio && ` a ${br(a.fim)}`}</strong> · {a.texto}</span>
+            <form method="post">
+              <input type="hidden" name="acao" value="excluir-aviso" />
+              <input type="hidden" name="id" value={a.id} />
+              <button class="botao botao-perigo" type="submit">Excluir</button>
+            </form>
+          </li>
+        ))}
+      </ul>
+    ) : <p class="ajuda">Nenhum aviso ativo.</p>}
+
+    <form method="post" class="novo-aviso">
+      <input type="hidden" name="acao" value="novo-aviso" />
+      <div class="campo texto"><label for="a-texto">Texto do aviso</label><input id="a-texto" name="texto" maxlength="200" placeholder="Ex.: Feriado dia 20/11: abrimos às 12h." required /></div>
+      <div class="campo"><label for="a-inicio">De</label><input id="a-inicio" type="date" name="inicio" value={hoje} required /></div>
+      <div class="campo"><label for="a-fim">Até</label><input id="a-fim" type="date" name="fim" value={hoje} required /></div>
+      <button class="botao botao-vinho" type="submit">Criar aviso</button>
+    </form>
+  </section>
+</Admin>
+
+<style>
+  .painel { margin-bottom: 16px; }
+  .ajuda { color: var(--texto-suave); font-size: 0.92rem; margin: 4px 0 12px; }
+  .erro { background: #fde3e3; color: #8f0a1c; padding: 10px 14px; border-radius: 12px; font-weight: 700; margin-bottom: 16px; }
+  .tabela { display: grid; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
+  .cab, .dia { display: grid; grid-template-columns: 90px 70px repeat(3, minmax(100px, 1fr)) 70px; gap: 8px; align-items: center; min-width: 560px; }
+  .cab { font-size: 0.8rem; font-weight: 800; color: var(--vinho); }
+  .dia label { display: flex; justify-content: center; }
+  .dia input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--vinho); }
+  .avisos { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 8px; }
+  .avisos li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; background: var(--creme); border-radius: 12px; }
+  .novo-aviso { display: grid; gap: 10px; align-items: end; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .novo-aviso { grid-template-columns: 2fr 1fr 1fr auto; } }
+  .campo { display: grid; gap: 4px; }
+</style>

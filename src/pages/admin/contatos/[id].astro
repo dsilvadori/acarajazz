@@ -1,0 +1,117 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import {
+  atualizarLead, buscarLead, dataBR, ehStatus, excluirLead, lerDados, linkWhatsapp, LOCAIS, STATUS, telefoneBR, TIPOS, TIPOS_EVENTO,
+} from '../../../lib/admin';
+import { FORMATOS, PERFIS } from '../../../lib/curso';
+
+const id = Number(Astro.params.id);
+if (!Number.isInteger(id)) return Astro.redirect('/admin/contatos');
+
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  const acao = String(f.get('acao'));
+  const atual = await buscarLead(id);
+  if (atual && acao === 'excluir' && f.get('confirmar') === 'sim') {
+    await excluirLead(id);
+    return Astro.redirect(`/admin/contatos?tipo=${atual.tipo}&excluido=1`, 303);
+  }
+  if (atual && acao === 'salvar') {
+    const status = String(f.get('status'));
+    await atualizarLead(id, ehStatus(status) ? status : atual.status, String(f.get('notas') ?? '').slice(0, 5000));
+    return Astro.redirect(`/admin/contatos/${id}?salvo=1`, 303);
+  }
+  return Astro.redirect(`/admin/contatos/${id}`, 303);
+}
+
+const lead = await buscarLead(id);
+if (!lead) return Astro.redirect('/admin/contatos');
+
+const d = lerDados(lead);
+const salvo = Astro.url.searchParams.has('salvo');
+
+
+const linhas: [string, string][] =
+  lead.tipo === 'evento'
+    ? [
+        ['Tipo de evento', TIPOS_EVENTO[String(d.tipo_evento)] ?? '—'],
+        ['Onde', LOCAIS[String(d.local)] ?? '—'],
+        ['Endereço / bairro', String(d.endereco ?? '—')],
+        ['Data prevista', d.data ? String(d.data).split('-').reverse().join('/') : '—'],
+        ['Convidados', d.convidados ? String(d.convidados) : '—'],
+        ['Mensagem', String(d.mensagem ?? '—')],
+      ]
+    : [
+        ['Perfil', PERFIS[String(d.perfil)] ?? '—'],
+        ['Formato preferido', FORMATOS[String(d.formato)] ?? '—'],
+        ['Cidade', String(d.cidade ?? '—')],
+        ['Aceita receber novidades', lead.consentimento_marketing ? 'Sim' : 'Não'],
+      ];
+---
+
+<Admin titulo={lead.nome}>
+  <p class="voltar"><a href={`/admin/contatos?tipo=${lead.tipo}`}>← {lead.tipo === 'evento' ? 'Pedidos de evento' : 'Interessados no curso'}</a></p>
+  {salvo && <p class="aviso-ok" role="status">Alterações salvas.</p>}
+
+  <div class="grade">
+    <section class="painel">
+      <p class="meta"><span class="tipo">{TIPOS[lead.tipo]}</span> · recebido em {dataBR(lead.criado_em)} · nº {lead.id}</p>
+      <div class="acoes-contato">
+        {lead.whatsapp && <a class="botao botao-vinho" href={linkWhatsapp(lead.whatsapp, lead.nome)} target="_blank" rel="noopener">WhatsApp {telefoneBR(lead.whatsapp)}</a>}
+        {lead.email && <a class="botao botao-contorno" href={`mailto:${lead.email}`}>{lead.email}</a>}
+      </div>
+      <dl>
+        {linhas.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+        <dt>Origem</dt><dd class="origem">{lead.origem ?? '—'}</dd>
+      </dl>
+    </section>
+
+    <section class="painel">
+      <h2>Acompanhamento</h2>
+      <form method="post" class="form">
+        <input type="hidden" name="acao" value="salvar" />
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          {Object.entries(STATUS).map(([v, t]) => <option value={v} selected={v === lead.status}>{t}</option>)}
+        </select>
+        <label for="notas">Anotações da equipe</label>
+        <textarea id="notas" name="notas" rows="7" placeholder="Ex.: orçamento enviado em 20/11, aguardando resposta…">{lead.notas ?? ''}</textarea>
+        <button class="botao botao-vinho" type="submit">Salvar</button>
+        <p class="atualizado">Última atualização: {dataBR(lead.atualizado_em)}</p>
+      </form>
+
+      <details class="excluir">
+        <summary>Excluir este contato</summary>
+        <p>Use quando a pessoa pedir para apagar os dados (LGPD). Não dá para desfazer.</p>
+        <form method="post">
+          <input type="hidden" name="acao" value="excluir" />
+          <label class="confirmar"><input type="checkbox" name="confirmar" value="sim" required /> Confirmo a exclusão</label>
+          <button class="botao botao-perigo" type="submit">Excluir definitivamente</button>
+        </form>
+      </details>
+    </section>
+  </div>
+</Admin>
+
+<style>
+  .voltar { margin: -8px 0 14px; }
+  .voltar a { color: var(--laranja-forte); font-weight: 700; }
+  .grade { display: grid; gap: 16px; align-items: start; }
+  @media (min-width: 900px) { .grade { grid-template-columns: 1.2fr 1fr; } }
+  .meta { color: var(--texto-suave); font-size: 0.9rem; }
+  .tipo { font-weight: 800; color: var(--laranja-forte); text-transform: uppercase; }
+  .acoes-contato { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 0; }
+  dt { font-weight: 800; color: var(--vinho); }
+  dd { margin: 0; white-space: pre-wrap; }
+  .origem { font-size: 0.85rem; color: var(--texto-suave); word-break: break-all; }
+  @media (max-width: 520px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: 6px; } }
+  .form { display: grid; gap: 8px; margin-top: 10px; }
+  .form .botao { justify-self: start; margin-top: 4px; }
+  .atualizado { font-size: 0.85rem; color: var(--texto-suave); }
+  .excluir { margin-top: 18px; border-top: 1px solid var(--creme-2); padding-top: 12px; }
+  .excluir summary { cursor: pointer; color: var(--fita-vermelha); font-weight: 700; }
+  .excluir p { font-size: 0.9rem; color: var(--texto-suave); margin: 8px 0; }
+  .excluir form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .confirmar { display: flex; gap: 6px; align-items: center; font-weight: 600; }
+</style>

@@ -1,0 +1,98 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import { dataBR, ehStatus, ehTipo, lerDados, linkWhatsapp, listarLeads, LOCAIS, STATUS, telefoneBR, TIPOS, TIPOS_EVENTO } from '../../../lib/admin';
+import { FORMATOS, PERFIS } from '../../../lib/curso';
+
+const q = Astro.url.searchParams;
+const tipoParam = q.get('tipo') ?? 'evento';
+const tipo = ehTipo(tipoParam) ? tipoParam : 'evento';
+const statusParam = q.get('status') ?? '';
+const status = ehStatus(statusParam) ? statusParam : undefined;
+const busca = (q.get('busca') ?? '').trim().slice(0, 80);
+
+const leads = await listarLeads({ tipo, status, busca: busca || undefined });
+
+
+function resumoEvento(dados: Record<string, unknown>) {
+  const d = String(dados.data ?? '');
+  const [a, m, di] = d.split('-');
+  return {
+    data: d ? `${di}/${m}/${a}` : '—',
+    convidados: dados.convidados ? `${dados.convidados} pessoas` : '',
+    tipo: TIPOS_EVENTO[String(dados.tipo_evento)] ?? '',
+    local: LOCAIS[String(dados.local)] ?? '',
+    endereco: String(dados.endereco ?? ''),
+  };
+}
+const exportar = `/admin/contatos/exportar?tipo=${tipo}${status ? `&status=${status}` : ''}${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
+---
+
+<Admin titulo={tipo === 'evento' ? 'Pedidos de evento' : 'Interessados no curso'}>
+  <form class="filtros painel" method="get">
+    <input type="hidden" name="tipo" value={tipo} />
+    <div class="campo">
+      <label for="f-busca">Buscar</label>
+      <input id="f-busca" name="busca" value={busca} placeholder="Nome, e-mail, WhatsApp…" />
+    </div>
+    <div class="campo">
+      <label for="f-status">Status</label>
+      <select id="f-status" name="status">
+        <option value="">Todos</option>
+        {Object.entries(STATUS).map(([v, t]) => <option value={v} selected={v === status}>{t}</option>)}
+      </select>
+    </div>
+    <button class="botao botao-vinho" type="submit">Filtrar</button>
+    <a class="botao botao-contorno" href={exportar}>Exportar CSV</a>
+  </form>
+
+  <p class="contagem">{leads.length} {leads.length === 1 ? 'contato' : 'contatos'}{status && ` · ${STATUS[status]}`}{busca && ` · “${busca}”`}</p>
+
+  {leads.length === 0 ? (
+    <p class="painel vazio">Nenhum contato encontrado.</p>
+  ) : (
+    <ul class="lista">
+      {leads.map((l) => {
+        const d = lerDados(l);
+        const ev = tipo === 'evento' ? resumoEvento(d) : null;
+        return (
+          <li class="painel item">
+            <div class="principal">
+              <a class="nome" href={`/admin/contatos/${l.id}`}>{l.nome}</a>
+              <span class={`selo selo-${l.status}`}>{STATUS[l.status]}</span>
+            </div>
+            {ev ? (
+              <p class="detalhe"><strong>{ev.data}</strong> · {ev.tipo} · {ev.convidados} · {ev.local}{ev.endereco && ` (${ev.endereco})`}</p>
+            ) : (
+              <p class="detalhe">
+                {PERFIS[String(d.perfil)] ?? 'Perfil não informado'}
+                {d.formato ? ` · ${FORMATOS[String(d.formato)]}` : ''}
+                {d.cidade ? ` · ${d.cidade}` : ''}
+              </p>
+            )}
+            <p class="contatos">
+              {l.whatsapp && <a href={linkWhatsapp(l.whatsapp, l.nome)} target="_blank" rel="noopener">WhatsApp {telefoneBR(l.whatsapp)}</a>}
+              {l.email && <a href={`mailto:${l.email}`}>{l.email}</a>}
+              <span class="quando">recebido em {dataBR(l.criado_em)}</span>
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</Admin>
+
+<style>
+  .filtros { display: grid; gap: 12px; align-items: end; grid-template-columns: 1fr; margin-bottom: 14px; }
+  @media (min-width: 760px) { .filtros { grid-template-columns: 2fr 1fr auto auto; } }
+  .campo { display: grid; gap: 4px; }
+  .contagem { margin: 0 0 10px; font-size: 0.9rem; color: var(--texto-suave); }
+  .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .item { display: grid; gap: 6px; }
+  .principal { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .nome { font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.2rem; color: var(--vinho); text-decoration: none; }
+  .nome:hover { text-decoration: underline; }
+  .detalhe { color: var(--texto); }
+  .contatos { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.9rem; }
+  .contatos a { color: var(--verde); font-weight: 700; }
+  .quando { color: var(--texto-suave); }
+</style>

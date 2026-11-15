@@ -68,5 +68,6 @@ export function statusAgora(horarios: Horario[], now = new Date()): Status {
   return { tipo: 'fechado', texto: 'Fechado agora', detalhe: '' };
 }
 
+/** 3000 → "30" · 4250 → "42,50" */
 export const formatarPreco = (centavos: number) =>
-  (centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  (centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: centavos % 100 ? 2 : 0, maximumFractionDigits: 2 });

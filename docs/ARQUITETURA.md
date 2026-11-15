@@ -70,7 +70,11 @@ O D1 local é um SQLite em `.wrangler/state`, sem precisar de conta na Cloudflar
 2. `npx wrangler d1 create acarajazz` → colocar o `database_id` no `wrangler.jsonc`.
 3. `npx wrangler d1 migrations apply acarajazz --remote` e rodar o seed remoto.
 4. Ativar o Email Routing e verificar acarajazz.contato@gmail.com como destino.
-5. Configurar o Cloudflare Access para `/admin` com os e-mails da equipe.
+5. Configurar o Cloudflare Access para `/admin`:
+   - Zero Trust → Access → Applications → *Self-hosted*, domínio `oacarajazz.com`, caminho `/admin` (e também `/admin/*`).
+   - Política *Allow* com os e-mails da equipe; login por código de uso único (One-time PIN).
+   - Copiar o **Application Audience (AUD) Tag** e o domínio da equipe (`<equipe>.cloudflareaccess.com`) para as variáveis `ACCESS_AUD` e `ACCESS_TEAM_DOMAIN` no `wrangler.jsonc`.
+   - Sem essas duas variáveis, o `/admin` fica **bloqueado** em produção (nunca aberto).
 6. `npm run build && npx wrangler deploy`.
 
 ## 6. Limites do plano gratuito (conferir antes do lançamento)
@@ -90,7 +94,9 @@ Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leitur
 - [ ] Revisão jurídica da política de privacidade
 - [ ] Mapa: os tiles do OpenStreetMap servem para pouco tráfego; avaliar um provedor (ex.: MapTiler, plano gratuito) se o acesso crescer
 
-**Próximas etapas:** mini CRM em `/admin`, página `/acaraje-alem-da-receita`, página `/acarabet`.
+**Mini CRM `/admin` (pronto, local):** resumo, contatos de eventos e do curso (filtro, busca, status, anotações, excluir por LGPD), exportação CSV (Excel em português), edição do cardápio, horários e avisos. Em desenvolvimento local o acesso é livre; em produção exige Cloudflare Access + validação do token no próprio site.
+
+**Próximas etapas:** página `/acarabet` (jogo) e validação de cupons no `/admin`.
 
 ## 8. Identidade visual
 

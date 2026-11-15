@@ -1,0 +1,81 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { dataBR, listarLeads, resumo, STATUS, TIPOS } from '../../lib/admin';
+
+const [r, recentes] = await Promise.all([resumo(), listarLeads({}, 8)]);
+
+const cartoes = [
+  { valor: r.eventosNovos, rotulo: 'Pedidos de evento novos', nota: 'aguardando primeiro contato', href: '/admin/contatos?tipo=evento&status=novo', destaque: r.eventosNovos > 0 },
+  { valor: r.eventosAbertos, rotulo: 'Eventos em andamento', nota: 'novos, em contato ou com orçamento', href: '/admin/contatos?tipo=evento' },
+  { valor: r.eventosFechados, rotulo: 'Eventos fechados', nota: `de ${r.eventosTotal} pedidos no total`, href: '/admin/contatos?tipo=evento&status=fechado' },
+  { valor: r.cursoTotal, rotulo: 'Interessados no curso', nota: 'lista do Acarajé Além da Receita', href: '/admin/contatos?tipo=curso' },
+];
+---
+
+<Admin titulo="Resumo">
+  <ul class="cartoes">
+    {cartoes.map((c) => (
+      <li>
+        <a class:list={['cartao', { destaque: c.destaque }]} href={c.href}>
+          <strong>{c.valor}</strong>
+          <span class="rotulo">{c.rotulo}</span>
+          <span class="nota">{c.nota}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <section class="painel recentes">
+    <div class="cab">
+      <h2>Últimos contatos</h2>
+      <div class="exportar">
+        <a class="botao botao-contorno" href="/admin/contatos/exportar?tipo=evento">Exportar eventos (CSV)</a>
+        <a class="botao botao-contorno" href="/admin/contatos/exportar?tipo=curso">Exportar curso (CSV)</a>
+      </div>
+    </div>
+    {recentes.length === 0 ? (
+      <p class="vazio">Nenhum contato ainda. Os pedidos de evento e as inscrições do curso aparecem aqui.</p>
+    ) : (
+      <ul class="lista">
+        {recentes.map((l) => (
+          <li>
+            <a href={`/admin/contatos/${l.id}`}>
+              <span class="tipo">{TIPOS[l.tipo]}</span>
+              <span class="nome">{l.nome}</span>
+              <span class={`selo selo-${l.status}`}>{STATUS[l.status]}</span>
+              <span class="quando">{dataBR(l.criado_em)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <p class="obs">Cupons do Acarabet: a validação no balcão entra aqui quando o jogo estiver no ar.</p>
+</Admin>
+
+<style>
+  .cartoes { list-style: none; padding: 0; margin: 0 0 20px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .cartao {
+    display: grid; gap: 2px; height: 100%; padding: 18px; border-radius: 16px; text-decoration: none;
+    background: #fff; color: var(--texto); box-shadow: 0 6px 20px -14px rgb(86 0 0 / 0.4); border-left: 6px solid var(--creme-2);
+  }
+  .cartao.destaque { border-left-color: var(--laranja); }
+  .cartao strong { font-family: var(--fonte-titulo); font-size: 2.4rem; line-height: 1; color: var(--vinho); }
+  .rotulo { font-weight: 800; }
+  .nota { font-size: 0.85rem; color: var(--texto-suave); }
+
+  .cab { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .exportar { display: flex; flex-wrap: wrap; gap: 8px; }
+  .lista { list-style: none; padding: 0; margin: 0; }
+  .lista a {
+    display: grid; grid-template-columns: 70px 1fr auto auto; gap: 12px; align-items: center;
+    padding: 12px 6px; border-bottom: 1px solid var(--creme-2); text-decoration: none; color: var(--texto);
+  }
+  .lista a:hover { background: var(--creme); }
+  .tipo { font-size: 0.8rem; font-weight: 800; color: var(--laranja-forte); text-transform: uppercase; }
+  .nome { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .quando { font-size: 0.85rem; color: var(--texto-suave); }
+  @media (max-width: 560px) { .lista a { grid-template-columns: 1fr auto; } .tipo, .quando { display: none; } }
+  .obs { margin-top: 16px; font-size: 0.9rem; color: var(--texto-suave); }
+</style>
