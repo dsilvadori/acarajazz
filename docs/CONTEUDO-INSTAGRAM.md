@@ -253,6 +253,8 @@ Hoje os pedidos chegam por **DM e WhatsApp**. O formulário do site entra para o
 
 ## 7. Material para "Sobre a chef Bia Souza"
 
+> ✅ **Confirmado pela equipe (15/11/2026):** Bia é **baiana de ofício** e **cozinha desde os 7 anos**. O Acarajazz **começou em 2016 em feiras gastronômicas**, depois foi para o **delivery** e hoje está na **Vila Mariana**. Ideia central da marca: **"A Bahia não é tema"**. Acarajazz é um **boteco de baianos, para todos**. No site, usar "casa" (e não "casinha").
+
 Pistas encontradas (confirmar com a Bia antes de publicar):
 - A receita do acarajé foi passada pelas **mulheres da família**: "as véias, as minhas ancestrais diretas que me passaram a receita do acarajé. **Tia Mainha**, a responsável por me alimentar de acarajé desde a barriga".
 - **Começo:** em 2021, fazia **iFood de casa** com a ajuda de um primo. Depois veio uma **barraca de acarajé em frente ao metrô Jabaquara**, depois uma **garagem**, e aí o ponto atual na Vila Mariana.

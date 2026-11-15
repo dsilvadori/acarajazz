@@ -23,7 +23,7 @@ const RAIO_KM = 7;
         <span class="botao botao-contorno keeta">ou no app Keeta</span>
       </div>
 
-      <p class="nota">Quarta-feira é só delivery: a casinha abre de quinta a domingo.</p>
+      <p class="nota">Quarta-feira é só delivery: a casa abre de quinta a domingo.</p>
     </div>
 
     <div class="area">
@@ -31,7 +31,7 @@ const RAIO_KM = 7;
         <noscript><p class="mapa-fallback">Entregamos num raio de {RAIO_KM} km da Vila Mariana.</p></noscript>
       </div>
       <div class="raio">
-        <p><strong>Entregamos num raio de {RAIO_KM} km</strong> da Vila Mariana. Se o Acarajazz não aparecer no app, seu endereço está fora da área. Aí é só vir na casinha!</p>
+        <p><strong>Entregamos num raio de {RAIO_KM} km</strong> da Vila Mariana. Se o Acarajazz não aparecer no app, seu endereço está fora da área. Aí é só vir pra casa!</p>
         <button type="button" class="verificar" id="verificar-local">Estou dentro do raio?</button>
         <p class="resultado" id="resultado-local" role="status" aria-live="polite"></p>
       </div>
@@ -148,7 +148,7 @@ const RAIO_KM = 7;
         const kmTxt = km.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
         resultado.textContent = km <= raioKm
           ? `✅ Você está a uns ${kmTxt} km: dentro do raio! Abre o app e busca "Acarajazz".`
-          : `Você está a uns ${kmTxt} km, fora do raio de ${raioKm} km. Mas a casinha te espera na Vila Mariana!`;
+          : `Você está a uns ${kmTxt} km, fora do raio de ${raioKm} km. Mas a casa te espera na Vila Mariana!`;
         const L = (window as any).L;
         if (mapa && L) {
           marcadorVoce?.remove();

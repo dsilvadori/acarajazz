@@ -47,7 +47,7 @@ export function statusAgora(horarios: Horario[], now = new Date()): Status {
     const fecha = paraMin(hoje.fecha);
     if (minutos >= abre && minutos < fecha) {
       const cozinha = hoje.cozinha_fecha ? ` · cozinha até ${formatarHora(hoje.cozinha_fecha)}` : '';
-      return { tipo: 'aberto', texto: 'Casinha aberta', detalhe: `até ${formatarHora(hoje.fecha)}${cozinha}` };
+      return { tipo: 'aberto', texto: 'Casa aberta', detalhe: `até ${formatarHora(hoje.fecha)}${cozinha}` };
     }
     if (minutos < abre) {
       return { tipo: 'fechado', texto: 'Abre hoje', detalhe: `às ${formatarHora(hoje.abre)}` };
