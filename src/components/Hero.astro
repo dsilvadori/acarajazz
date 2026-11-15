@@ -1,0 +1,215 @@
+---
+import type { Status } from '../lib/horario';
+import StatusAgora from './StatusAgora.astro';
+
+interface Props {
+  status: Status;
+}
+const { status } = Astro.props;
+
+const FRASE = 'LEMBRANÇA DO SENHOR DO BONFIM DA BAHIA  ✦  ';
+const texto = FRASE.repeat(8);
+
+// Três fitas por faixa, entrelaçadas. viewBox de cada faixa: 1440 × 300.
+const faixaTopo = [
+  { id: 'fita-t-azul', cor: 'var(--fita-azul)', borda: '#1f4f8a', tinta: '#fff', d: 'M-120,215 C 180,95 470,300 760,190 S 1210,70 1560,205', vel: 38 },
+  { id: 'fita-t-amarela', cor: 'var(--fita-amarela)', borda: '#c99a12', tinta: 'var(--vinho)', d: 'M-120,120 C 230,250 470,40 780,150 S 1250,260 1560,110', vel: 46 },
+  { id: 'fita-t-vermelha', cor: 'var(--fita-vermelha)', borda: '#8f0a1c', tinta: '#fff', d: 'M-120,60 C 260,160 520,10 800,95 S 1180,185 1560,45', vel: 54 },
+];
+const faixaBase = [
+  { id: 'fita-b-vermelha', cor: 'var(--fita-vermelha)', borda: '#8f0a1c', tinta: '#fff', d: 'M-120,150 C 220,40 520,220 820,110 S 1260,30 1560,140', vel: 50 },
+  { id: 'fita-b-amarela', cor: 'var(--fita-amarela)', borda: '#c99a12', tinta: 'var(--vinho)', d: 'M-120,70 C 200,190 560,30 860,140 S 1240,200 1560,60', vel: 42 },
+  { id: 'fita-b-azul', cor: 'var(--fita-azul)', borda: '#1f4f8a', tinta: '#fff', d: 'M-120,200 C 280,130 540,250 840,190 S 1300,110 1560,195', vel: 58 },
+];
+
+---
+
+<header class="hero" id="inicio">
+  <svg class="faixa faixa-topo" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    {faixaTopo.map((f) => (
+      <g class="fita" style={`--balanco:${f.vel / 10}s`}>
+        <path d={f.d} fill="none" stroke={f.borda} stroke-width="52" stroke-linecap="butt" />
+        <path id={f.id} d={f.d} fill="none" stroke={f.cor} stroke-width="46" stroke-linecap="butt" />
+        <text class="fita-texto" fill={f.tinta} dy="7.5">
+          <textPath href={`#${f.id}`} startOffset="0" data-vel={f.vel}>{texto}</textPath>
+        </text>
+      </g>
+    ))}
+  </svg>
+
+  <div class="conteudo container">
+    <p class="local">Rua Dona Inácia Uchôa, 89 · Vila Mariana · SP</p>
+    <h1 class="marca">
+      <span class="marca-acara">Acara</span><span class="marca-jazz">jazz</span>
+    </h1>
+    <p class="slogan">Boteco de baianos. <em>Para todos.</em></p>
+    <p class="apoio">Acarajé de lei, moquecas e comidas típicas, regionais e autorais. A Bahia não é tema: é origem.</p>
+
+    <div class="status-wrap"><StatusAgora status={status} /></div>
+
+    <div class="acoes">
+      <a class="botao botao-principal" href="#cardapio">Ver cardápio</a>
+      <a class="botao botao-secundario" href="#delivery">Peça no delivery</a>
+    </div>
+  </div>
+
+  <svg class="faixa faixa-base" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    {faixaBase.map((f) => (
+      <g class="fita" style={`--balanco:${f.vel / 10}s`}>
+        <path d={f.d} fill="none" stroke={f.borda} stroke-width="52" />
+        <path id={f.id} d={f.d} fill="none" stroke={f.cor} stroke-width="46" />
+        <text class="fita-texto" fill={f.tinta} dy="7.5">
+          <textPath href={`#${f.id}`} startOffset="0" data-vel={f.vel}>{texto}</textPath>
+        </text>
+      </g>
+    ))}
+    <!-- Borda curva que leva para a próxima seção -->
+    <path class="curva" d="M0,250 C 360,175 760,320 1100,240 C 1260,205 1370,215 1440,232 L1440,300 L0,300 Z" />
+  </svg>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: min(100svh, 980px);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 50%, #fff6e3 0%, transparent 70%),
+      radial-gradient(circle at 15% 50%, rgb(217 96 26 / 0.10), transparent 45%),
+      radial-gradient(circle at 85% 55%, rgb(110 0 0 / 0.08), transparent 45%),
+      var(--creme);
+    overflow: hidden;
+  }
+
+  .faixa {
+    width: 100%;
+    height: clamp(150px, 27vh, 290px);
+    overflow: visible;
+  }
+  .faixa-topo { margin-top: -10px; }
+
+  .fita {
+    animation: balanco var(--balanco) ease-in-out infinite alternate;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .fita:nth-child(2) { animation-delay: -1.5s; }
+  .fita:nth-child(3) { animation-delay: -3s; }
+  @keyframes balanco {
+    from { transform: translateY(-5px) rotate(-0.4deg); }
+    to   { transform: translateY(5px) rotate(0.4deg); }
+  }
+
+  .fita-texto {
+    font-family: var(--fonte-fita);
+    font-weight: 600;
+    font-size: 21px;
+    letter-spacing: 0.08em;
+  }
+
+  .curva { fill: var(--papel); }
+
+  .conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-block: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .local {
+    font-family: var(--fonte-fita);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.82rem;
+    color: var(--tinta-suave);
+  }
+
+  .marca {
+    font-size: clamp(4rem, 17vw, 9.5rem);
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    margin: 0.12em 0 0.08em;
+  }
+  .marca-acara { color: var(--dende); }
+  .marca-jazz { color: var(--vinho); }
+
+  .slogan {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.4rem, 3.6vw, 2.1rem);
+    font-weight: 700;
+  }
+  .slogan em { color: var(--dende); }
+
+  .apoio {
+    max-width: 36ch;
+    text-wrap: pretty;
+    margin-top: 0.6rem;
+    color: var(--tinta-suave);
+  }
+
+  .status-wrap { margin-top: 1.4rem; }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 1.4rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fita { animation: none; }
+  }
+</style>
+
+<script>
+  // Faz o texto correr ao longo de cada fita. Sem JS (ou com movimento reduzido), as fitas ficam paradas.
+  const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const caminhos = [...document.querySelectorAll<SVGTextPathElement>('.hero textPath')];
+  let ultimo = 0;
+  let deslocamento = 0;
+  let rodando = false;
+
+  // Largura de uma repetição da frase, medida depois que a fonte carrega.
+  const larguras = new Map<SVGTextPathElement, number>();
+  function medir() {
+    for (const tp of caminhos) {
+      const texto = tp.parentElement as unknown as SVGTextContentElement;
+      const total = texto.getComputedTextLength();
+      larguras.set(tp, total / 8);
+    }
+  }
+
+  function quadro(t: number) {
+    if (!rodando) return;
+    const dt = ultimo ? (t - ultimo) / 1000 : 0;
+    ultimo = t;
+    deslocamento += dt;
+    for (const tp of caminhos) {
+      const vel = Number(tp.dataset.vel);
+      const w = larguras.get(tp) || 1;
+      tp.setAttribute('startOffset', String(-((deslocamento * vel) % w)));
+    }
+    requestAnimationFrame(quadro);
+  }
+
+  function atualizar() {
+    rodando = !reduzir.matches && document.visibilityState === 'visible';
+    ultimo = 0;
+    if (rodando) requestAnimationFrame(quadro);
+  }
+
+  document.fonts.ready.then(() => {
+    medir();
+    atualizar();
+  });
+  reduzir.addEventListener('change', atualizar);
+  document.addEventListener('visibilitychange', atualizar);
+</script>

@@ -1,0 +1,45 @@
+---
+import type { Status } from '../lib/horario';
+
+interface Props {
+  status: Status;
+  tema?: 'claro' | 'escuro';
+}
+const { status, tema = 'claro' } = Astro.props;
+---
+
+<p class:list={['status', `status-${status.tipo}`, `tema-${tema}`]}>
+  <strong><span class="ponto" aria-hidden="true"></span>{status.texto}</strong>
+  {status.detalhe && <span class="detalhe">{status.detalhe}</span>}
+</p>
+
+<style>
+  .status {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.4em;
+    padding: 0.5em 1.15em;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  strong { display: inline-flex; align-items: center; gap: 0.45em; }
+  .detalhe::before { content: '· '; }
+
+  .tema-claro { background: var(--papel); border: 2px solid var(--creme-2); }
+  .tema-escuro { background: rgb(255 255 255 / 0.1); }
+
+  .ponto { width: 10px; height: 10px; border-radius: 50%; background: #b9a294; flex: none; }
+  .status-aberto .ponto { background: var(--quiabo); box-shadow: 0 0 0 4px rgb(63 127 58 / 0.2); }
+  .tema-escuro.status-aberto .ponto { background: #7ed37a; box-shadow: 0 0 0 4px rgb(126 211 122 / 0.25); }
+  .status-delivery .ponto { background: var(--dende); box-shadow: 0 0 0 4px rgb(217 96 26 / 0.2); }
+
+  /* No celular: título em cima, detalhe embaixo, sem o "·" solto */
+  @media (max-width: 460px) {
+    .status { flex-direction: column; border-radius: 18px; }
+    .detalhe::before { content: ''; }
+    .detalhe { opacity: 0.85; }
+  }
+</style>
