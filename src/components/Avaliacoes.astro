@@ -1,5 +1,5 @@
 ---
-import { AVALIACOES, LINK_AVALIAR } from '../data/avaliacoes';
+import { AVALIACOES, LINK_AVALIAR, NOTA_GOOGLE } from '../data/avaliacoes';
 ---
 
 <section class="avaliacoes" id="avaliacoes" aria-labelledby="avaliacoes-titulo">
@@ -7,6 +7,11 @@ import { AVALIACOES, LINK_AVALIAR } from '../data/avaliacoes';
     <div class="topo">
       <p class="chamada">Avaliações</p>
       <h2 class="titulo" id="avaliacoes-titulo">Quem prova, conta</h2>
+      <p class="nota-geral">
+        <strong>{NOTA_GOOGLE.media}</strong>
+        <span class="estrelas-geral" aria-hidden="true">★★★★★</span>
+        <span>{NOTA_GOOGLE.total} avaliações no Google</span>
+      </p>
     </div>
 
     {AVALIACOES.length > 0 && (
@@ -34,12 +39,21 @@ import { AVALIACOES, LINK_AVALIAR } from '../data/avaliacoes';
   .topo { text-align: center; }
   .chamada { color: var(--vinho); }
 
-  .lista {
-    list-style: none; padding: 0; margin: 2.4rem 0 0;
-    display: grid; gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  .nota-geral {
+    display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px;
+    margin-top: 1rem; padding: 8px 20px; border-radius: 999px; background: var(--creme); color: var(--vinho); font-weight: 700;
   }
-  .cartao { background: var(--creme); border-radius: var(--raio); padding: 24px; box-shadow: var(--sombra); display: flex; flex-direction: column; gap: 12px; }
+  .nota-geral strong { font-family: var(--fonte-titulo); font-size: 1.6rem; line-height: 1; }
+  .estrelas-geral { color: var(--laranja-forte); letter-spacing: 2px; }
+
+  .lista { list-style: none; padding: 0; margin: 2.4rem 0 0; columns: 1; column-gap: 20px; }
+  @media (min-width: 700px) { .lista { columns: 2; } }
+  @media (min-width: 1050px) { .lista { columns: 3; } }
+  .cartao {
+    break-inside: avoid; margin-bottom: 20px;
+    background: var(--creme); border-radius: var(--raio); padding: 24px; box-shadow: var(--sombra);
+    display: flex; flex-direction: column; gap: 12px;
+  }
   .estrelas { color: var(--laranja-forte); font-size: 1.3rem; letter-spacing: 2px; }
   .estrelas span { color: var(--creme-2); }
   blockquote { margin: 0; font-size: 1.02rem; color: var(--texto); flex: 1; }

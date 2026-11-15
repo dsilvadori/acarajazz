@@ -27,16 +27,26 @@ export const MATERIAS: Materia[] = [
     imagem: '/img/casinha.webp',
   },
   {
+    veiculo: 'Agência Mural',
+    tipo: 'Portal',
+    titulo: 'Entrevista: mulheres negras foram empurradas pelo desemprego para o empreendedorismo',
+    link: 'https://agenciamural.org.br/mulheres-negras-foram-empurradas-pelo-desemprego-para-o-empreendedorismo/',
+    data: 'jul/2021',
+    imagem: '/img/bia-curso.webp',
+  },
+  {
     veiculo: 'Panelaço do João Gordo',
     tipo: 'YouTube',
     titulo: 'Acarajé vegano com a chef Bia Souza e Daniel Ganjaman',
     link: 'https://www.youtube.com/watch?v=WmwgxqWTDv0',
+    data: 'dez/2016',
     imagem: 'https://i.ytimg.com/vi/WmwgxqWTDv0/hqdefault.jpg',
   },
 ];
 
 /*
  * PENDENTES (sem link confirmado — não aparecem no site):
+ * - Globo: matéria prevista (nov/2026) — entra como primeiro cartão quando sair
  * - g1: matéria(s) sobre o Acarajazz
  * - UOL: matéria gravada no Acarajazz com a chef Debinha (dez/2025)
  * - Paladar (Estadão): link original da série "Achadinhos do Paladar"
