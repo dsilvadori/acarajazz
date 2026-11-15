@@ -1,0 +1,37 @@
+---
+// Chamada curta para a página do curso (lista de interesse)
+---
+
+<section class="chamada-curso" aria-labelledby="chamada-curso-titulo">
+  <div class="container faixa">
+    <img class="icone" src="/img/icone-acaraje-512.png" alt="" width="512" height="512" loading="lazy" />
+    <div class="texto">
+      <p class="selo">Em breve · Curso com a chef Bia Souza</p>
+      <h2 id="chamada-curso-titulo">Acarajé Além da Receita</h2>
+      <p>História, ancestralidade e técnica para aprender a fazer o acarajé e entender tudo o que ele carrega.</p>
+    </div>
+    <a class="botao botao-vinho" href="/acaraje-alem-da-receita">Quero saber primeiro</a>
+  </div>
+</section>
+
+<style>
+  .chamada-curso { background: var(--laranja); padding-block: clamp(36px, 6vw, 56px); }
+  .faixa {
+    display: grid;
+    gap: 18px 32px;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+  }
+  @media (min-width: 860px) {
+    .faixa { grid-template-columns: auto 1fr auto; justify-items: start; text-align: left; }
+  }
+  .icone { width: 96px; height: 96px; filter: drop-shadow(0 6px 10px rgb(86 0 0 / 0.25)); }
+  .selo {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: var(--vinho); color: var(--creme);
+    font-family: var(--fonte-titulo); font-weight: 700; font-size: 0.85rem;
+  }
+  h2 { margin-top: 8px; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--vinho); }
+  .texto p:last-child { margin-top: 4px; color: var(--vinho-escuro); max-width: 52ch; }
+</style>

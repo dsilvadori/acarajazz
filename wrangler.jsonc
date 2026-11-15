@@ -22,9 +22,9 @@
     "EMAIL_DESTINO": "acarajazz.contato@gmail.com",
     // Chave pública do Turnstile. Esta é a chave de TESTE da Cloudflare (sempre aprova); trocar na produção.
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
-    // Cloudflare Access do /admin (preencher ao configurar o Access; vazio = /admin bloqueado em produção)
-    "ACCESS_TEAM_DOMAIN": "",
-    "ACCESS_AUD": ""
+    // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
+    "ADMIN_EMAIL": "acarajazz.contato@gmail.com"
   }
-  // Segredos (não ficam aqui): TURNSTILE_SECRET, INSTAGRAM_TOKEN → `wrangler secret put` ou .dev.vars
+  // Segredos (não ficam aqui): TURNSTILE_SECRET, INSTAGRAM_TOKEN, ADMIN_SENHA_HASH, ADMIN_SESSAO_SEGREDO
+  // → `npx wrangler secret put <NOME>` em produção, ou .dev.vars no desenvolvimento
 }

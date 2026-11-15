@@ -1,0 +1,83 @@
+---
+import '../../styles/global.css';
+import { COOKIE, criarSessao, lerSessao, tentarLogin } from '../../lib/auth';
+
+// Só aceita voltar para páginas do próprio painel
+const voltaParam = Astro.url.searchParams.get('volta') ?? '/admin';
+const volta = voltaParam.startsWith('/admin') && !voltaParam.startsWith('//') ? voltaParam : '/admin';
+
+if (await lerSessao(Astro.cookies.get(COOKIE)?.value)) return Astro.redirect(volta, 303);
+
+let erro = '';
+let emailDigitado = '';
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  emailDigitado = String(f.get('email') ?? '').trim();
+  const senha = String(f.get('senha') ?? '');
+  const ip = Astro.request.headers.get('cf-connecting-ip') ?? Astro.clientAddress ?? 'local';
+  const r = await tentarLogin(emailDigitado, senha, ip);
+  if (r.ok) {
+    const { valor, maxAge } = await criarSessao(emailDigitado.toLowerCase());
+    Astro.cookies.set(COOKIE, valor, {
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: 'strict',
+      path: '/admin',
+      maxAge,
+    });
+    return Astro.redirect(volta, 303);
+  }
+  erro =
+    r.motivo === 'bloqueado'
+      ? 'Muitas tentativas erradas. Espere 15 minutos e tente de novo.'
+      : r.motivo === 'configuracao'
+        ? 'O login do painel ainda não foi configurado no servidor.'
+        : 'E-mail ou senha incorretos.';
+}
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Entrar · Painel Acarajazz</title>
+    <link rel="icon" href="/favicon-64.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" />
+  </head>
+  <body>
+    <main class="caixa">
+      <img src="/img/logo.webp" alt="Acarajazz" width="160" height="160" />
+      <h1>Painel Acarajazz</h1>
+      {erro && <p class="erro" role="alert">{erro}</p>}
+      <form method="post">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="username" required value={emailDigitado} autofocus={!emailDigitado} />
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password" required autofocus={!!emailDigitado} />
+        <button class="botao botao-vinho" type="submit">Entrar</button>
+      </form>
+      <a class="voltar" href="/">← Voltar ao site</a>
+    </main>
+  </body>
+</html>
+
+<style>
+  body { min-height: 100svh; display: grid; place-items: center; background: var(--laranja); padding: 24px 16px; }
+  .caixa {
+    width: min(100%, 380px); background: var(--creme); border-radius: var(--raio);
+    padding: 28px 24px; box-shadow: var(--sombra); text-align: center;
+  }
+  img { width: 120px; height: auto; margin: 0 auto 4px; }
+  h1 { font-size: 1.6rem; color: var(--vinho); margin-bottom: 16px; }
+  form { display: grid; gap: 6px; text-align: left; }
+  label { font-weight: 800; font-size: 0.9rem; color: var(--vinho); margin-top: 6px; }
+  input { font: inherit; padding: 11px 14px; border-radius: 12px; border: 2px solid var(--creme-2); background: #fff; color: var(--texto); }
+  input:focus { outline: none; border-color: var(--laranja); }
+  .botao { margin-top: 14px; justify-content: center; }
+  .erro { background: #fde3e3; color: #8f0a1c; padding: 10px 12px; border-radius: 12px; font-weight: 700; margin-bottom: 8px; }
+  .voltar { display: inline-block; margin-top: 18px; color: var(--vinho); font-weight: 700; font-size: 0.9rem; }
+</style>

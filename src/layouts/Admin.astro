@@ -34,7 +34,10 @@ const ativo = (m: (typeof menu)[number]) =>
     <header class="topo">
       <div class="barra">
         <a class="marca" href="/admin"><img src="/favicon-64.png" alt="" width="34" height="34" /> Painel Acarajazz</a>
-        <span class="usuario">{Astro.locals.usuario}</span>
+        <span class="sessao">
+          <span class="usuario">{Astro.locals.usuario}</span>
+          <form method="post" action="/admin/sair"><button type="submit" class="sair">Sair</button></form>
+        </span>
       </div>
       <nav class="abas" aria-label="Painel">
         {menu.map((m) => <a href={m.href} aria-current={ativo(m) ? 'page' : undefined}>{m.texto}</a>)}
@@ -53,7 +56,11 @@ const ativo = (m: (typeof menu)[number]) =>
   .admin .topo { background: var(--vinho); color: var(--creme); position: sticky; top: 0; z-index: 10; }
   .admin .barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px var(--gutter) 6px; }
   .admin .marca { display: flex; align-items: center; gap: 10px; font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--creme); }
+  .admin .sessao { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .admin .usuario { font-size: 0.85rem; opacity: 0.8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin .sair { font: 700 0.85rem var(--fonte-texto); color: var(--creme); background: transparent; border: 2px solid rgb(254 245 226 / 0.5); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .admin .sair:hover { border-color: var(--creme); }
+  @media (max-width: 520px) { .admin .usuario { display: none; } }
   .admin .abas { display: flex; gap: 4px; overflow-x: auto; padding: 0 var(--gutter); scrollbar-width: none; }
   .admin .abas a {
     flex: none; padding: 10px 14px; text-decoration: none; color: var(--creme); opacity: 0.8;

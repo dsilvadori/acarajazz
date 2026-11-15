@@ -12,7 +12,7 @@
 | Framework | **Astro 7** + adaptador `@astrojs/cloudflare` (renderização no servidor, com páginas estáticas quando possível) |
 | Banco de dados | **Cloudflare D1** (SQLite) |
 | Mini CRM | Páginas em `/admin` no próprio site |
-| Login do admin | **Cloudflare Access** (código por e-mail, até 50 usuários grátis) |
+| Login do admin | **Login fixo** (e-mail + senha). A senha fica só como hash PBKDF2 em segredo da Cloudflare; sessão de 12 h em cookie assinado; bloqueio após 5 erros em 15 min |
 | Notificação de leads | **E-mail** para acarajazz.contato@gmail.com via Email Routing (`send_email`) |
 | Anti-spam | **Cloudflare Turnstile** |
 | Feed do Instagram | Instagram Graph API (conta Business) + Cron Trigger para atualizar o feed e renovar o token |
@@ -70,16 +70,17 @@ O D1 local é um SQLite em `.wrangler/state`, sem precisar de conta na Cloudflar
 2. `npx wrangler d1 create acarajazz` → colocar o `database_id` no `wrangler.jsonc`.
 3. `npx wrangler d1 migrations apply acarajazz --remote` e rodar o seed remoto.
 4. Ativar o Email Routing e verificar acarajazz.contato@gmail.com como destino.
-5. Configurar o Cloudflare Access para `/admin`:
-   - Zero Trust → Access → Applications → *Self-hosted*, domínio `oacarajazz.com`, caminho `/admin` (e também `/admin/*`).
-   - Política *Allow* com os e-mails da equipe; login por código de uso único (One-time PIN).
-   - Copiar o **Application Audience (AUD) Tag** e o domínio da equipe (`<equipe>.cloudflareaccess.com`) para as variáveis `ACCESS_AUD` e `ACCESS_TEAM_DOMAIN` no `wrangler.jsonc`.
-   - Sem essas duas variáveis, o `/admin` fica **bloqueado** em produção (nunca aberto).
+5. Configurar o login do `/admin` (segredos, nunca no código):
+   - `node scripts/gerar-hash-senha.mjs` → digitar a senha → copiar o resultado.
+   - `npx wrangler secret put ADMIN_SENHA_HASH` → colar o hash.
+   - `npx wrangler secret put ADMIN_SESSAO_SEGREDO` → colar um texto aleatório longo (ex.: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`).
+   - O e-mail de acesso fica em `ADMIN_EMAIL` no `wrangler.jsonc`.
+   - Para **trocar a senha**: gerar um novo hash e repetir o `secret put ADMIN_SENHA_HASH`.
 6. `npm run build && npx wrangler deploy`.
 
 ## 6. Limites do plano gratuito (conferir antes do lançamento)
 
-Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leituras por dia · Access: até 50 usuários · Turnstile: ilimitado. Isso é bem acima da demanda prevista para o Acarajazz.
+Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leituras por dia · Turnstile: ilimitado. Isso é bem acima da demanda prevista para o Acarajazz.
 
 ## 7. Status do desenvolvimento (15/11/2026)
 
@@ -94,7 +95,7 @@ Workers: cerca de 100 mil requisições por dia · D1: 5 GB e milhões de leitur
 - [ ] Revisão jurídica da política de privacidade
 - [ ] Mapa: os tiles do OpenStreetMap servem para pouco tráfego; avaliar um provedor (ex.: MapTiler, plano gratuito) se o acesso crescer
 
-**Mini CRM `/admin` (pronto, local):** resumo, contatos de eventos e do curso (filtro, busca, status, anotações, excluir por LGPD), exportação CSV (Excel em português), edição do cardápio, horários e avisos. Em desenvolvimento local o acesso é livre; em produção exige Cloudflare Access + validação do token no próprio site.
+**Mini CRM `/admin` (pronto, local):** resumo, contatos de eventos e do curso (filtro, busca, status, anotações, excluir por LGPD), exportação CSV (Excel em português), edição do cardápio, horários e avisos. Acesso com login fixo (e-mail + senha) também no desenvolvimento local; a senha local fica em `.dev.vars` (fora do Git), como hash.
 
 **Próximas etapas:** página `/acarabet` (jogo) e validação de cupons no `/admin`.
 
