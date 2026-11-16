@@ -26,7 +26,7 @@ export const MATERIAS: Materia[] = [
     // Republicação no Portal Tela. Trocar pelo link original do Paladar (Estadão) quando tivermos.
     link: 'https://www.portaltela.com/cotidiano/curiosidades/2026/06/14/achadinho-acarajazz-bar-baiano-oculto-na-vila-mariana/',
     data: 'jun/2026',
-    imagem: '/img/casinha.webp',
+    imagem: '/img/midia/paladar.webp',
   },
   {
     veiculo: 'Agência Mural',
