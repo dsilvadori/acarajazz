@@ -15,6 +15,6 @@ export const FOTOS_CASA: FotoCasa[] = [
   { src: '/img/equipe/eliana-bolo.webp', alt: 'Chef da casa, de lenço branco e dólmã estampada, levando um bolo de aniversário', largura: 800, altura: 1000 },
   { src: '/img/equipe/eliana-calcada.webp', alt: 'Chef da casa, de óculos e cabelo ruivo, abraçada com uma amiga na porta do Acarajazz', largura: 800, altura: 1000 },
   { src: '/img/equipe/cabelo-rosa.webp', alt: 'Integrante da equipe de cabelo rosa e avental, fazendo sinal com a mão na porta da casa', largura: 592, altura: 740 },
-  { src: '/img/equipe/gemeas.webp', alt: 'Duas mulheres da família, de cabelo grisalho, brindando atrás de um bolo', largura: 480, altura: 640 },
-  { src: '/img/equipe/publico.webp', alt: 'Salão cheio, com público e roda de música', largura: 656, altura: 820 },
+  { src: '/img/equipe/mae-da-bia.webp', alt: 'Mãe da Bia, de blusa branca e calça jeans, com uma bolsa vermelha na mão', largura: 540, altura: 675 },
+  { src: '/img/equipe/samba.webp', alt: 'Roda de samba na calçada em frente à casa, com público em volta das mesas', largura: 648, altura: 810 },
 ];
