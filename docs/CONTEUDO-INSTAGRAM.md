@@ -262,7 +262,7 @@ Pistas encontradas (confirmar com a Bia antes de publicar):
 - **Começo:** em 2021, fazia **iFood de casa** com a ajuda de um primo. Depois veio uma **barraca de acarajé em frente ao metrô Jabaquara**, depois uma **garagem**, e aí o ponto atual na Vila Mariana.
 - **Aniversário do Acarajazz:** 8 de setembro (completou 3 anos de casa em 08/09/2026).
 - **Destaques:** matéria da **UOL** (dez/2025), visita do ator **Wagner Moura** (que deu nome a um kit), investimento do **ICL** com consultoria profissional (abr/2026), contato com o chef pesquisador **Carlos Ribeiro**, fritou acarajés em evento com a chef **Carmem Virgínia**.
-- **Equipe:** **Eliana Ambrico** é chef de cozinha e confeiteira e a **sócia operacional**.
+- **Equipe:** **Eliana Ambrico** é chef de cozinha e confeiteira, e amiga da Bia (não é sócia).
 - **Expansão:** abriu o **Kangaça** em jan/2026.
 - **Personalidade:** tatuada, bem-humorada, intensa: "A vida é louca, mas nóis é mais."
 

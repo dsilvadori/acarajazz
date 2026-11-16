@@ -68,7 +68,12 @@
       },
       "saida": {
         "x": 108,
-        "y": 170,
+        "y": 154,
+        "camada": "salao"
+      },
+      "corredor": {
+        "x": 98,
+        "y": 154,
         "camada": "salao"
       },
       "mesa_tios": {
@@ -77,8 +82,8 @@
         "camada": "salao"
       },
       "mesa_frente": {
-        "x": 124,
-        "y": 240,
+        "x": 98,
+        "y": 224,
         "camada": "salao"
       }
     },
@@ -87,6 +92,7 @@
         "bancada",
         "portinha",
         "saida",
+        "corredor",
         "mesa_frente"
       ],
       "servir_tios": [

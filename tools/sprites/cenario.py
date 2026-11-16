@@ -356,12 +356,14 @@ POSICOES = {
     'pontos': {
         'bancada': {'x': 70, 'y': 146, 'camada': 'atras_do_balcao'},
         'portinha': {'x': 108, 'y': 146, 'camada': 'atras_do_balcao'},
-        'saida': {'x': 108, 'y': 170, 'camada': 'salao'},
+        'saida': {'x': 108, 'y': 154, 'camada': 'salao'},
+        # corredor livre à esquerda das gêmeas (o corpo delas começa em x 130; o da Bia vai até x+29)
+        'corredor': {'x': 98, 'y': 154, 'camada': 'salao'},
         'mesa_tios': {'x': 66, 'y': 200, 'camada': 'salao'},
-        'mesa_frente': {'x': 124, 'y': 240, 'camada': 'salao'},
+        'mesa_frente': {'x': 98, 'y': 224, 'camada': 'salao'},  # logo atrás do casal, servindo
     },
     'rotas': {
-        'servir_mesa_frente': ['bancada', 'portinha', 'saida', 'mesa_frente'],
+        'servir_mesa_frente': ['bancada', 'portinha', 'saida', 'corredor', 'mesa_frente'],
         'servir_tios': ['bancada', 'portinha', 'saida', 'mesa_tios'],
     },
     'regras_animacao': {

@@ -2,7 +2,7 @@
 """
 Easter eggs do Acarabet: personagens que aparecem no cenário.
 
-  Eliana      → chef e sócia: cabelo ruivo preso em rabo de cavalo, magrinha, camisa estampada com gola vermelha, calça preta
+  Eliana      → chef e amiga: cabelo ruivo preso em rabo de cavalo, magrinha, camisa estampada com gola vermelha, calça preta
   Gêmeas      → mãe e tia da Bia (da foto): cabelo grisalho comprido e ondulado, blusas brancas;
                 uma com colar de contas vermelhas e pulseiras, a outra com cordão preto e pingente de madeira
   Valentina   → filha da Bia (da foto): cachos escuros com mecha loira, óculos rosados, camiseta vermelha, colete preto
@@ -27,7 +27,7 @@ C.update({
     'pele_clara': hx('f2cdb0'), 'pele_clara_sombra': hx('d6a587'),
     'pele_media': hx('c48d63'), 'pele_media_sombra': hx('9c6a45'),
     'pele_bia': C['pele'], 'pele_bia_sombra': C['pele_sombra'],
-    'pele_val': hx('eec3a0'), 'pele_val_sombra': hx('cf9c78'), 'oculos_val': hx('6a2c8c'),
+    'pele_val': hx('eec3a0'), 'pele_val_sombra': hx('cf9c78'), 'oculos_val': hx('b27fd8'),
     'grisalho_escuro': hx('8f8a84'), 'grisalho_escuro_luz': hx('bdb8b1'), 'grisalho_escuro_sombra': hx('615c57'),
     'grisalho': hx('dedad3'), 'grisalho_sombra': hx('a9a39c'),
     'mostarda': hx('e2b43c'), 'mostarda_sombra': hx('b8892a'),

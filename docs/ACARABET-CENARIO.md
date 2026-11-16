@@ -80,6 +80,7 @@ Um **corte da casa**, como uma casinha de bonecas, em três faixas:
 - Animações extras (para cada roupa), geradas por `tools/sprites/bia_lado.py`:
   `andando_lado_6q` (de perfil, virada pra direita; o jogo espelha pra esquerda), `servindo_lado_6q` (com a bandeja: acarajé e cumbuca) e `andando_costas_4q`.
 - O balcão tem uma **portinha na ponta direita** (x 123–136) por onde ela sai para o salão.
+- Pra levar o acarajé ao casal ela sai pela portinha, vai um pouco pra esquerda e desce por um **corredor livre à esquerda das gêmeas** (nunca passa por dentro delas), parando logo atrás do casal: rota `bancada → portinha → saida → corredor → mesa_frente` em `src/data/acarabet/salao.json`.
 - Pontos de parada e rotas ficam em `src/data/acarabet/salao.json` (`pontos`, `rotas`, `regras_animacao`):
   - andando mais na horizontal → de lado (com a bandeja quando leva o prato);
   - descendo → de frente; subindo → de costas;
