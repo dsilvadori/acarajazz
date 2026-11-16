@@ -1,12 +1,25 @@
 ---
-// RASCUNHO baseado no Instagram (docs/CONTEUDO-INSTAGRAM.md, seção 7). Revisar com a Bia antes de publicar.
+// Slide de fotos da Bia (troca em fade automático). Para mudar: editar a lista e colocar a foto (720×900) em public/img/.
+const fotos = [
+  { src: '/img/bia.webp', alt: 'Chef Bia Souza de turbante branco segurando um prato de acarajés' },
+  { src: '/img/bia-peixe.webp', alt: 'Chef Bia Souza segurando um peixe em frente ao Acarajazz' },
+  { src: '/img/bia-massa.webp', alt: 'Chef Bia Souza batendo a massa do acarajé na cozinha da casa' },
+  { src: '/img/bia-familia.webp', alt: 'Duas mulheres da família da Bia celebrando no Acarajazz', legenda: 'As mulheres da família' },
+];
 ---
 
 <section class="bia" id="chef" aria-labelledby="bia-titulo">
   <div class="container grade">
     <figure class="foto">
       <div class="circulo" aria-hidden="true"></div>
-      <img src="/img/bia.webp" alt="Chef Bia Souza, baiana de ofício, segurando um prato de acarajés" width="720" height="900" loading="lazy" decoding="async" />
+      <div class="slides">
+        {fotos.map((f, i) => (
+          <figure class:list={['slide', { ativa: i === 0 }]}>
+            <img src={f.src} alt={f.alt} width="720" height="900" loading="lazy" decoding="async" />
+            {f.legenda && <figcaption>{f.legenda}</figcaption>}
+          </figure>
+        ))}
+      </div>
     </figure>
 
     <div class="texto">
@@ -44,12 +57,23 @@
     width: 78%; aspect-ratio: 1; border-radius: 50%;
     background: var(--laranja);
   }
-  .foto img {
+  .slides {
     position: relative;
-    width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+    aspect-ratio: 4 / 5;
     border-radius: 999px 999px var(--raio) var(--raio);
     border: 6px solid var(--creme);
+    overflow: hidden;
+    background: var(--vinho-escuro);
   }
+  .slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1.2s ease; }
+  .slide.ativa { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; }
+  .slide figcaption {
+    position: absolute; inset: auto 0 0 0; padding: 36px 16px 14px; text-align: center;
+    background: linear-gradient(transparent, rgb(58 0 0 / 0.85));
+    font-family: var(--fonte-titulo); font-weight: 700; color: var(--creme);
+  }
+  @media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
 
   .chamada { color: var(--amarelo); }
   .titulo { color: var(--creme); }
@@ -73,3 +97,22 @@
     max-width: 36ch;
   }
 </style>
+
+<script>
+  // Fade automático das fotos da Bia (pausa fora da tela, com a aba escondida e com "reduzir movimento")
+  {
+    const slides = [...document.querySelectorAll<HTMLElement>('#chef .slide')];
+    const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (slides.length > 1 && !reduzir) {
+      let atual = 0;
+      let visivel = false;
+      new IntersectionObserver(([e]) => (visivel = e.isIntersecting)).observe(slides[0].parentElement!);
+      setInterval(() => {
+        if (!visivel || document.hidden) return;
+        slides[atual].classList.remove('ativa');
+        atual = (atual + 1) % slides.length;
+        slides[atual].classList.add('ativa');
+      }, 4500);
+    }
+  }
+</script>

@@ -6,6 +6,8 @@ export interface Materia {
   link: string;
   data?: string; // texto livre, ex.: 'out/2025'
   imagem?: string;
+  /** Enquadramento da capa (CSS object-position), ex.: 'center 25%' */
+  posicao?: string;
 }
 
 export const MATERIAS: Materia[] = [
@@ -15,7 +17,7 @@ export const MATERIAS: Materia[] = [
     titulo: 'Surpresa culinária: Pamela Lucciola recebe os acarajés da chef Bia Souza',
     link: 'https://www.youtube.com/watch?v=D1tSDp2GX_U',
     data: 'out/2025',
-    imagem: 'https://i.ytimg.com/vi/D1tSDp2GX_U/hqdefault.jpg',
+    imagem: '/img/midia/band.webp',
   },
   {
     veiculo: 'Achadinhos do Paladar',
@@ -32,7 +34,8 @@ export const MATERIAS: Materia[] = [
     titulo: 'Entrevista: mulheres negras foram empurradas pelo desemprego para o empreendedorismo',
     link: 'https://agenciamural.org.br/mulheres-negras-foram-empurradas-pelo-desemprego-para-o-empreendedorismo/',
     data: 'jul/2021',
-    imagem: '/img/bia-curso.webp',
+    imagem: '/img/bia-laranja.webp',
+    posicao: 'center 30%',
   },
   {
     veiculo: 'Panelaço do João Gordo',
