@@ -94,3 +94,4 @@ export function fritando(ligar: boolean) {
     chiado = null;
   }
 }
+
