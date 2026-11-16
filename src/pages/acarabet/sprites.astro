@@ -2,6 +2,7 @@
 // Prévia interna dos sprites do jogo (não aparece no Google).
 // Sprites gerados por tools/sprites/bia.py (Bia) e tools/sprites/personagens.py (easter eggs)
 import Base from '../../layouts/Base.astro';
+import salao from '../../data/acarabet/salao.json';
 
 const ESCALA = 6;
 const roupas = [
@@ -18,6 +19,16 @@ const animacoes = [
   { arquivo: 'comemorando_4q', nome: 'Comemorando', quadros: 4, fps: 8 },
   { arquivo: 'preocupada_2q', nome: 'Preocupada (algo queimou)', quadros: 2, fps: 4 },
 ];
+const pos = salao.posicoes;
+const gato = pos.por_do_sol[2];
+const cena = [
+  { s: 'npc_eliana_parada_2q', q: 2, fps: 2, ...pos.eliana },
+  { s: 'npc_tios_mesa_parada_2q', q: 2, fps: 2, w: 64, ...pos.tios_mesa },
+  { s: 'npc_gemea_mae_parada_2q', q: 2, fps: 2, ...pos.gemea_mae },
+  { s: 'npc_gemea_tia_parada_2q', q: 2, fps: 2, ...pos.gemea_tia },
+  { s: 'npc_valentina_parada_2q', q: 2, fps: 2, ...pos.valentina },
+  { s: 'gato_sentado_4q', q: 4, fps: 4, w: 24, h: 17, x: gato.x, y: gato.y },
+];
 const easterEggs = [
   { arquivo: 'npc_eliana_parada_2q', nome: 'Eliana', desc: 'Chef e sócia', quadros: 2, fps: 2 },
   { arquivo: 'npc_eliana_acenando_2q', nome: 'Eliana acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
@@ -27,6 +38,8 @@ const easterEggs = [
   { arquivo: 'npc_gemea_tia_acenando_2q', nome: 'Gêmea (tia) acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
   { arquivo: 'npc_valentina_parada_2q', nome: 'Valentina', desc: 'Filha', quadros: 2, fps: 2 },
   { arquivo: 'npc_valentina_acenando_2q', nome: 'Valentina acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
+  { arquivo: 'npc_tios_mesa_parada_2q', nome: 'Tio Luizinho e Toninho', desc: 'Na mesa, com acarajé e cerveja', quadros: 2, fps: 2, w: 64 },
+  { arquivo: 'npc_tios_mesa_brindando_3q', nome: 'Brindando', desc: 'Ao tocar neles', quadros: 3, fps: 4, w: 64 },
   { arquivo: 'gato_sentado_4q', nome: 'Pôr do Sol', desc: 'Sentado, balançando o rabo', quadros: 4, fps: 4, w: 24, h: 17 },
   { arquivo: 'gato_dormindo_2q', nome: 'Pôr do Sol dormindo', desc: 'Num cantinho do cenário', quadros: 2, fps: 1, w: 24, h: 17 },
 ];
@@ -72,14 +85,26 @@ const easterEggs = [
     </section>
     ))}
 
+    <h2 class="secao">Cenário: o salão</h2>
+    <p class="desc">Camadas de tools/sprites/cenario.py (180×320, ampliado 2×). Posições em src/data/acarabet/salao.json.</p>
+    <div class="cena" role="img" aria-label="Salão do Acarajazz com a Bia no balcão e os personagens">
+      <img src="/jogo/cenario/salao_fundo.png" alt="" width="180" height="320" />
+      <div class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/bia_baiana_parada_2q.png');--e:1;left:${pos.bia.x}px;top:${pos.bia.y}px`}></div>
+      <img src="/jogo/cenario/salao_balcao.png" alt="" width="180" height="320" />
+      <div class="sprite fitas" style="--q:4;--dur:1.6s;--img:url('/jogo/cenario/salao_fitas_4q.png');--e:1;--w:180;--h:40;left:0;top:0"></div>
+      {cena.map((c) => (
+        <div class="sprite" style={`--q:${c.q};--dur:${c.q / c.fps}s;--img:url('/jogo/sprites/${c.s}.png');--e:1;--w:${c.w ?? 32};--h:${c.h ?? 48};left:${c.x}px;top:${c.y}px`}></div>
+      ))}
+    </div>
+
     <h2 class="secao">Easter eggs</h2>
     <p class="desc">Personagens escondidos no cenário.</p>
     <ul class="grade">
       {easterEggs.map((a) => (
-        <li class="cartao">
+        <li class:list={['cartao', { largo: (a.w ?? 32) > 32 }]}>
           <div
             class="sprite"
-            style={`--q:${a.quadros};--dur:${a.quadros / a.fps}s;--img:url('/jogo/sprites/${a.arquivo}.png');--e:${ESCALA};--w:${a.w ?? 32};--h:${a.h ?? 48}`}
+            style={`--q:${a.quadros};--dur:${a.quadros / a.fps}s;--img:url('/jogo/sprites/${a.arquivo}.png');--e:${(a.w ?? 32) > 32 ? 4 : ESCALA};--w:${a.w ?? 32};--h:${a.h ?? 48}`}
             role="img"
             aria-label={`Animação: ${a.nome}`}
           ></div>
@@ -111,6 +136,11 @@ const easterEggs = [
     animation: rodar var(--dur) steps(var(--q)) infinite;
   }
   @keyframes rodar { to { background-position: calc(var(--w, 32) * -1px * var(--q) * var(--e)) 0; } }
+  .largo { grid-column: span 2; }
+  .cena { position: relative; width: 180px; height: 320px; transform: scale(2); transform-origin: top left; margin-bottom: 340px; }
+  .cena > * { position: absolute; left: 0; top: 0; image-rendering: pixelated; }
+  .cena .sprite { margin: 0; }
+  @media (max-width: 560px) { .largo { grid-column: auto; } }
   .secao { font-size: 1.8rem; color: var(--vinho); margin: 40px 0 4px; }
   h2 { font-size: 1.15rem; color: var(--vinho); margin-top: 10px; }
   .cartao p { font-size: 0.85rem; color: var(--texto-suave); }

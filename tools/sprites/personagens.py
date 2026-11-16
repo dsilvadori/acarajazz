@@ -6,6 +6,8 @@ Easter eggs do Acarabet: personagens que aparecem no cenário.
   Gêmeas      → mãe e tia da Bia (da foto): cabelo grisalho comprido e ondulado, blusas brancas;
                 uma com colar de contas vermelhas e pulseiras, a outra com cordão preto e pingente de madeira
   Valentina   → filha da Bia (da foto): cachos escuros com mecha loira, óculos rosados, camiseta vermelha, colete preto
+  Mesa dos tios → tio Luizinho (cabelo preto bem curtinho, polo cinza, relógio) e Toninho, pai da Bia (cabelo branco bem curtinho, camisa verde de palmeirense),
+                  sentados à mesa com acarajé e cerveja; ao tocar, brindam. Quadro 64×48.
   Pôr do Sol  → gatinho laranja listrado e branco (peito, patas e focinho brancos, rabo em anéis), da foto (sentado balançando o rabo e dormindo)
 
 Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×17), contorno marrom-dendê.
@@ -31,6 +33,12 @@ C.update({
     'verde': hx('2e9e4f'),
     'gato': C['laranja'], 'gato_listra': C['laranja_sombra'], 'gato_creme': hx('f7d9b0'),  # laranja forte, como antes
     'ruivo': hx('c8572a'), 'ruivo_luz': hx('e8803f'), 'ruivo_sombra': hx('8a3518'),
+    'pele_luiz': hx('6e432a'), 'pele_luiz_sombra': hx('4f2d1b'), 'boca_luiz': hx('5a2a20'),
+    'pele_toninho': hx('dcab84'), 'pele_toninho_sombra': hx('b9875f'), 'boca_toninho': hx('9a5644'),
+    'polo': hx('d6d1c3'), 'polo_sombra': hx('aea793'),
+    'luiz_brilho': hx('8e5a39'), 'toninho_brilho': hx('f0c7a3'),
+    'verde_palmeiras': hx('0f6b3c'), 'verde_palmeiras_sombra': hx('0a4c2a'),
+    'cerveja': hx('f2b632'), 'espuma': hx('fff6dc'),
     'vermelho': hx('d9473e'), 'vermelho_sombra': hx('a8322b'),
 })
 
@@ -421,6 +429,132 @@ def recorte_gato(q):
     return [row[GX:GX + GW] for row in q[GY:GY + GH]]
 
 
+# ─── Mesa dos tios: tio Luizinho e Toninho (pai da Bia), quadro 64×48 ──────────
+MW = 64
+
+
+def compor_em(q, parte, ox=0, contorno=True):
+    """Como compor(), mas num quadro de qualquer largura e com deslocamento horizontal."""
+    h, w = len(q), len(q[0])
+    px = {(x + ox, y): c for (x, y), c in parte.px.items()}
+    if contorno:
+        for (x, y) in px:
+            for vx, vy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                v = (x + vx, y + vy)
+                if v not in px and 0 <= v[0] < w and 0 <= v[1] < h:
+                    q[v[1]][v[0]] = C['contorno']
+    for (x, y), cor in list(px.items()) + [((x + ox, y), c) for (x, y), c in parte.detalhes.items()]:
+        if 0 <= x < w and 0 <= y < h:
+            q[y][x] = cor
+
+
+def homem_sentado(quem, dy=0, olhos='abertos', feliz=False):
+    """Busto de quem está sentado atrás da mesa (a mesa cobre da cintura pra baixo)."""
+    if quem == 'luizinho':
+        pele, sombra, boca = 'pele_luiz', 'pele_luiz_sombra', 'boca_luiz'
+        camisa, camisa_s, larg = 'polo', 'polo_sombra', (7, 24)
+    else:
+        pele, sombra, boca = 'pele_toninho', 'pele_toninho_sombra', 'boca_toninho'
+        camisa, camisa_s, larg = 'verde_palmeiras', 'verde_palmeiras_sombra', (9, 22)  # palmeirense
+    tronco_p = Parte()
+    for y in range(24, 35):
+        x0, x1 = larg
+        if y == 24:
+            x0, x1 = x0 + 1, x1 - 1
+        for x in range(x0, x1 + 1):
+            tronco_p.p(x, y + dy, camisa_s if x >= x1 - 1 else camisa)
+    # gola e botões
+    tronco_p.d(14, 24 + dy, camisa_s); tronco_p.d(17, 24 + dy, camisa_s)
+    for y in (26, 28) if quem == 'toninho' else (26,):
+        tronco_p.d(16, y + dy, camisa_s)
+    if quem == 'luizinho':  # gola de polo
+        tronco_p.ret(13, 24 + dy, 14, 25 + dy, camisa_s); tronco_p.ret(17, 24 + dy, 18, 25 + dy, camisa_s)
+    if quem == 'toninho':  # golinha branca
+        tronco_p.d(14, 24 + dy, 'branco'); tronco_p.d(17, 24 + dy, 'branco')
+    cabeca = Parte()
+    cabeca.elipse(16, 14.5 + dy, 6.1, 5.2, pele)  # cabeça redondinha (cabelo raspadinho)
+    if quem == 'luizinho':  # rosto mais cheinho
+        cabeca.elipse(16, 18 + dy, 6.8, 6.0, pele, ymin=12 + dy)
+    rosto(cabeca, dy, pele, sombra, boca=boca, olhos=olhos,
+          sobrancelha='olho' if quem == 'luizinho' else 'grisalho_escuro_sombra', feliz=feliz)
+    # cabelo bem curtinho, rente à cabeça (pintado por cima do couro, sem volume)
+    cor, luz = ('olho', 'castanho') if quem == 'luizinho' else ('grisalho', 'branco')
+    topo = 12 if quem == 'luizinho' else 11  # linha do cabelo na testa
+    for (x, y) in list(cabeca.px):
+        lado = x <= 10 or x >= 21
+        limite = (topo + 3) if lado else topo
+        if y - dy <= limite:
+            cabeca.d(x, y, luz if (x * 3 + y) % 5 == 0 else cor)
+    cabelo = Parte()  # (nada por cima: o cabelo já está na cabeça)
+    return tronco_p, cabeca, cabelo, pele, camisa
+
+
+def braco_mesa(p, ombro, cotovelo, mao, pele, manga):
+    braco(p, ombro, cotovelo, mao, pele, manga, 0.4)
+
+
+def copo(x, y):
+    p = Parte()
+    p.ret(x, y, x + 2, y + 3, 'cerveja')
+    p.ret(x, y, x + 2, y, 'espuma')
+    p.d(x, y + 1, 'espuma')  # brilho do vidro
+    return p
+
+
+def mesa_tios(brinde=0, respira=0, olhos='abertos'):
+    """brinde: 0 = parados com os braços na mesa; 1 = levantando o copo; 2 = tim-tim!"""
+    q = [[None] * MW for _ in range(H)]
+    feliz = brinde > 0
+    pessoas = []
+    for quem, ox in (('luizinho', 0), ('toninho', 32)):
+        t, cab, cabelo, pele, camisa = homem_sentado(quem, respira if quem == 'luizinho' else 0, olhos, feliz)
+        pessoas.append((quem, ox, t, cab, cabelo, pele, camisa))
+    # corpos e cabeças
+    for quem, ox, t, cab, cabelo, pele, camisa in pessoas:
+        compor_em(q, t, ox)
+        compor_em(q, cab, ox)
+        compor_em(q, cabelo, ox)
+    # mesa de madeira
+    mesa = Parte()
+    mesa.ret(2, 34, 61, 36, 'madeira')
+    mesa.ret(2, 34, 61, 34, 'madeira_luz')
+    for x in range(4, 60, 7):
+        mesa.d(x, 35, 'madeira_luz')
+    mesa.ret(5, 37, 7, 47, 'madeira'); mesa.ret(56, 37, 58, 47, 'madeira')
+    compor_em(q, mesa)
+    prato = Parte()  # pratinho com acarajé no meio
+    prato.ret(27, 33, 36, 33, 'branco'); prato.ret(26, 34, 37, 34, 'branco_sombra')
+    prato.elipse(31.5, 32.0, 3.2, 1.6, 'barra')
+    prato.d(30, 31, 'amarelo'); prato.d(32, 31, 'amarelo'); prato.d(31, 32, 'laranja_sombra')
+    compor_em(q, prato)
+    # braços: o de fora fica na mesa; o de dentro segura o copo (e brinda)
+    for quem, ox, t, cab, cabelo, pele, camisa in pessoas:
+        luiz = quem == 'luizinho'
+        fora, dentro = Parte(), Parte()
+        if luiz:
+            braco_mesa(fora, (7, 25), (5, 30), (8, 33), pele, camisa)
+            fora.d(7, 32, 'metal_luz'); fora.d(8, 32, 'metal')  # relógio
+        else:
+            braco_mesa(fora, (22, 25), (25, 30), (22, 33), pele, camisa)
+        compor_em(q, fora, ox)
+        if brinde == 0:
+            mx, my = (21, 32) if luiz else (8, 32)
+        elif brinde == 1:
+            mx, my = (23, 26) if luiz else (6, 26)
+        else:
+            mx, my = (26, 22) if luiz else (3, 22)
+        ombro = (24, 25) if luiz else (9, 25)
+        cot = ((25, 30) if luiz else (6, 30)) if brinde < 2 else ((26, 27) if luiz else (5, 27))
+        braco_mesa(dentro, ombro, cot, (mx, my), pele, camisa)
+        compor_em(q, dentro, ox)
+        cx = mx + ox + (1 if luiz else -2)
+        compor_em(q, copo(cx, my - 3))
+    if brinde == 2:  # brilhinho do tim-tim
+        for x, y in ((31, 15), (30, 14), (33, 14), (32, 13)):
+            q[y][x] = C['amarelo']
+    return q
+
+
 # ─── Saída ────────────────────────────────────────────────────────────────────
 def animacoes():
     A = {
@@ -430,6 +564,8 @@ def animacoes():
         'npc_valentina_acenando': [valentina(acenando=1), valentina(acenando=2)],
         'gato_sentado': [recorte_gato(gato_sentado(i, piscando=(i == 2))) for i in range(4)],
         'gato_dormindo': [recorte_gato(gato_dormindo(0)), recorte_gato(gato_dormindo(1))],
+        'npc_tios_mesa_parada': [mesa_tios(), mesa_tios(respira=1, olhos='fechados')],
+        'npc_tios_mesa_brindando': [mesa_tios(1), mesa_tios(2), mesa_tios(1)],
     }
     for g in GEMEAS:
         A[f'npc_{g}_parada'] = [gemea(g), gemea(g, 1, 'fechados')]

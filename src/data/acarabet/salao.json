@@ -1,0 +1,65 @@
+{
+  "largura": 180,
+  "altura": 320,
+  "posicoes": {
+    "bia": {
+      "x": 70,
+      "y": 146,
+      "camada": "atras_do_balcao",
+      "sprite": "bia_<roupa>_<animacao>"
+    },
+    "eliana": {
+      "x": 2,
+      "y": 152,
+      "sprite": "npc_eliana"
+    },
+    "tios_mesa": {
+      "x": 4,
+      "y": 214,
+      "sprite": "npc_tios_mesa",
+      "largura": 64
+    },
+    "gemea_mae": {
+      "x": 98,
+      "y": 208,
+      "sprite": "npc_gemea_mae"
+    },
+    "gemea_tia": {
+      "x": 122,
+      "y": 208,
+      "sprite": "npc_gemea_tia"
+    },
+    "valentina": {
+      "x": 146,
+      "y": 150,
+      "sprite": "npc_valentina"
+    },
+    "por_do_sol": [
+      {
+        "x": 78,
+        "y": 300,
+        "sprite": "gato_dormindo",
+        "onde": "debaixo da mesa de chita"
+      },
+      {
+        "x": 142,
+        "y": 161,
+        "sprite": "gato_dormindo",
+        "onde": "no banquinho da salinha"
+      },
+      {
+        "x": 108,
+        "y": 160,
+        "sprite": "gato_sentado",
+        "onde": "em cima do balcão"
+      }
+    ],
+    "lousa_texto": {
+      "x": 12,
+      "y": 63,
+      "largura": 35,
+      "altura": 6,
+      "cor": "#eef0e6"
+    }
+  }
+}
