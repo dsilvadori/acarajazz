@@ -27,7 +27,7 @@ C.update({
     'pele_clara': hx('f2cdb0'), 'pele_clara_sombra': hx('d6a587'),
     'pele_media': hx('c48d63'), 'pele_media_sombra': hx('9c6a45'),
     'pele_bia': C['pele'], 'pele_bia_sombra': C['pele_sombra'],
-    'pele_val': hx('eec3a0'), 'pele_val_sombra': hx('cf9c78'),
+    'pele_val': hx('eec3a0'), 'pele_val_sombra': hx('cf9c78'), 'oculos_val': hx('6a2c8c'),
     'grisalho_escuro': hx('8f8a84'), 'grisalho_escuro_luz': hx('bdb8b1'), 'grisalho_escuro_sombra': hx('615c57'),
     'grisalho': hx('dedad3'), 'grisalho_sombra': hx('a9a39c'),
     'mostarda': hx('e2b43c'), 'mostarda_sombra': hx('b8892a'),
@@ -348,10 +348,10 @@ def gemea(qual, respira=0, olhos='abertos', acenando=0):
 # ─── Valentina (filha), da foto ──────────────────────────────────────────────
 def valentina(respira=0, olhos='abertos', acenando=0):
     dy = respira
-    atras, frente = cabelo_comprido(dy, 'olho', 'castanho_luz', 'contorno', mecha='mostarda', ate=23, volume=1)
+    atras, frente = cabelo_comprido(dy, 'olho', 'castanho_luz', 'contorno', mecha='mostarda', ate=20, volume=1)  # chanel na altura do queixo
     cabeca = Parte()
     rosto(cabeca, dy, 'pele_val', 'pele_val_sombra', boca='batom_sombra', olhos=olhos,
-          sobrancelha='castanho', oculos=True, cor_oculos='cabelo_rosa', feliz=acenando > 0)
+          sobrancelha='castanho', oculos=True, cor_oculos='oculos_val', feliz=acenando > 0)
 
     def roupa(x, y):
         if x <= 11 or x >= 20:
