@@ -10,7 +10,7 @@ argolas douradas e tatuagens nos braços.
 
 Roupas (skins), mostrando a diversidade do Acarajazz:
   baiana  → turbante colorido, bata branca de renda, saia rodada com barra laranja
-  dolma   → dólmã laranja com recorte bege e detalhes vinho, calça escura, cachinhos roxos e rosa e lencinho claro com detalhes coloridos e nozinho na frente
+  dolma   → dólmã laranja com recorte bege e detalhes vinho, calça escura, cachos roxos e rosa e lenço branco com fitinhas do Bonfim onduladas
   preta   → camiseta preta com o acarajé do logo, calça preta, tênis branco, lenço estampado
 
 Uso:  python3 tools/sprites/bia.py [--previa arquivo.png]
@@ -402,16 +402,35 @@ def turbante(dy=0):
     return p
 
 
-def lenco(dy=0):
-    """Lenço estampado amarrado, com os cachos estourando por cima e pontas caindo do lado."""
-    fundo, b1, b2, barra, ponta = 'barra', 'amarelo', 'azul', 'vinho', 'amarelo'
+def lenco(dy=0, roupa='preta'):
+    """Lenço amarrado, com os cachos estourando por cima e pontas caindo do lado.
+    Despojada: laranja estampado. Dólmã: branco com linhas onduladas verde, amarela e azul (fitinhas do Bonfim)."""
     p = Parte()
-    p.elipse(16, 11.0 + dy, 7.2, 4.2, fundo, ymax=13 + dy)
-    for (x, y) in list(p.px):
-        if x % 3 == 0 and y % 2 == 0:
-            p.d(x, y, b1)
-        elif x % 6 == 2 and y % 2 == 1:
-            p.d(x, y, b2)
+    if roupa == 'dolma':
+        fundo, barra, ponta = 'branco', 'branco_sombra', 'fita'
+        p.elipse(16, 11.0 + dy, 7.2, 4.2, fundo, ymax=13 + dy)
+        for (x, y) in list(p.px):
+            if x >= 21:
+                p.p(x, y, 'branco_sombra')
+        # três linhas onduladas, como fitinhas do Senhor do Bonfim
+        import math
+        for cor, x0, x1, base, fase in (('fita', 9, 18, 9.0, 0.0), ('amarelo', 13, 23, 10.5, 2.0), ('azul', 10, 21, 12.0, 4.0)):
+            ultimo = None
+            for x in range(x0, x1 + 1):
+                y = round(base + 1.2 * math.sin((x + fase) / 2.2)) + dy
+                if ultimo is not None and abs(y - ultimo) > 1:  # liga os degraus da curva
+                    y = ultimo + (1 if y > ultimo else -1)
+                if (x, y) in p.px:
+                    p.d(x, y, cor)
+                ultimo = y
+    else:
+        fundo, b1, b2, barra, ponta = 'barra', 'amarelo', 'azul', 'vinho', 'amarelo'
+        p.elipse(16, 11.0 + dy, 7.2, 4.2, fundo, ymax=13 + dy)
+        for (x, y) in list(p.px):
+            if x % 3 == 0 and y % 2 == 0:
+                p.d(x, y, b1)
+            elif x % 6 == 2 and y % 2 == 1:
+                p.d(x, y, b2)
     for x in range(9, 24):
         if (x, 13 + dy) in p.px:
             p.p(x, 13 + dy, barra)
@@ -425,49 +444,6 @@ def cachos_topo(dy=0):
     """Volume de cachos saindo por cima do lenço."""
     p = Parte()
     cachos(p, [(10, 6), (12, 4), (14, 3), (16, 3), (18, 4), (20, 6), (11, 8), (13, 6), (15, 5), (17, 5), (19, 8)], dy)
-    return p
-
-
-# lenço claro: quase todo branco, com detalhezinhos coloridos
-ESTAMPA = ('branco', 'branco', 'branco', 'azul', 'branco', 'branco', 'batom', 'branco', 'branco', 'branco',
-           'amarelo', 'branco', 'branco', 'fita', 'branco', 'branco', 'branco', 'batom', 'branco', 'azul')
-
-
-def estampa(p, dy, passo=None):
-    """Estampa do lenço da foto: voltas em diagonal com faixas de larguras diferentes."""
-    for (x, y) in list(p.px):
-        u = x + round((y - dy) * 0.7)
-        p.p(x, y, ESTAMPA[u % len(ESTAMPA)])
-
-
-def lenco_amarrado(dy=0):
-    """Lencinho estampado, pequeno e justo, deixando os cachos escaparem por cima."""
-    p = Parte()
-    p.elipse(16, 12.0 + dy, 6.8, 2.8, 'batom', ymax=12 + dy)
-    estampa(p, dy)
-    for (x, y) in list(p.px):
-        if x >= 21 and p.px[(x, y)] == C['branco']:
-            p.p(x, y, 'branco_sombra')
-    for x in range(9, 24):
-        if (x, 12 + dy) in p.px:
-            p.d(x, 12 + dy, 'branco_sombra')  # barra na testa
-    return p
-
-
-def no_do_lenco(dy=0):
-    """Nozinho na frente, no alto da testa, com as duas pontinhas."""
-    p = Parte()
-    p.ret(15, 8 + dy, 17, 10 + dy, 'branco')
-    p.p(14, 8 + dy, 'branco'); p.p(18, 8 + dy, 'branco')
-    p.p(13, 7 + dy, 'branco'); p.p(19, 7 + dy, 'branco')
-    p.d(17, 10 + dy, 'branco_sombra'); p.d(16, 9 + dy, 'batom'); p.d(13, 7 + dy, 'azul'); p.d(19, 7 + dy, 'amarelo')
-    return p
-
-
-def cachos_escapando(dy=0):
-    """Pouquinho de cachos roxos e rosa aparecendo por cima do lencinho."""
-    p = Parte()
-    cachos(p, [(10, 8), (12, 7), (14, 6), (17, 6), (19, 7), (21, 8)], dy)
     return p
 
 
@@ -532,15 +508,10 @@ def bia(roupa, pose):
     if roupa == 'baiana':
         compor(q, cachos_laterais(dy + dyc))
         compor(q, turbante(dy + dyc))
-    elif roupa == 'dolma':
-        compor(q, cachos_escapando(dy + dyc))
-        compor(q, cachos_laterais(dy + dyc))
-        compor(q, lenco_amarrado(dy + dyc))
-        compor(q, no_do_lenco(dy + dyc))
-    else:
+    else:  # dólmã e despojada: mesmo cabelo e mesmo lenço, muda só a cor do lenço
         compor(q, cachos_topo(dy + dyc))
         compor(q, cachos_laterais(dy + dyc))
-        compor(q, lenco(dy + dyc))
+        compor(q, lenco(dy + dyc, roupa))
     for f in pose.get('frente', []):
         compor(q, f(dy + dyc))
     for (x, y, cor) in pose.get('pixels', []):
