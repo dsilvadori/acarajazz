@@ -43,6 +43,8 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
     return s;
   };
   npc(pos.eliana.x, pos.eliana.y, 'npc_eliana_parada', 'npc_eliana_acenando');
+  // Vic, irmão da Bia: atrás do balcão lavando louça (não reage, nem na festa)
+  cena.add.sprite(pos.vic.x, pos.vic.y, 'atlas').setOrigin(0, 0).setDepth(1).play('npc_vic_lavando');
   npc(pos.tios_mesa.x, pos.tios_mesa.y, 'npc_tios_mesa_parada', 'npc_tios_mesa_brindando');
   npc(pos.gemea_mae.x, pos.gemea_mae.y, 'npc_gemea_mae_parada', 'npc_gemea_mae_acenando');
   npc(pos.gemea_tia.x, pos.gemea_tia.y, 'npc_gemea_tia_parada', 'npc_gemea_tia_acenando');

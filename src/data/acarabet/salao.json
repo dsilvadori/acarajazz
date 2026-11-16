@@ -13,6 +13,13 @@
       "y": 152,
       "sprite": "npc_eliana"
     },
+    "vic": {
+      "x": 38,
+      "y": 143,
+      "camada": "atras_do_balcao",
+      "sprite": "npc_vic",
+      "onde": "atrás do balcão, lavando louça (não reage)"
+    },
     "tios_mesa": {
       "x": 4,
       "y": 214,

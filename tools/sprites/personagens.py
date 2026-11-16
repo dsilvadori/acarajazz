@@ -16,6 +16,7 @@ Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×17), co
 Uso:  python3 tools/sprites/personagens.py [--previa arquivo.png]
 Gera: public/jogo/sprites/npc_<nome>_<animacao>_<n>q.png e gato_<animacao>_<n>q.png
 """
+import math
 import os
 import sys
 
@@ -30,6 +31,8 @@ C.update({
     'grisalho_escuro': hx('8f8a84'), 'grisalho_escuro_luz': hx('bdb8b1'), 'grisalho_escuro_sombra': hx('615c57'),
     'grisalho': hx('dedad3'), 'grisalho_sombra': hx('a9a39c'),
     'mostarda': hx('e2b43c'), 'mostarda_sombra': hx('b8892a'),
+    'pele_vic': hx('dcae88'), 'pele_vic_sombra': hx('bb8a63'), 'boca_vic': hx('9a5a48'),
+    'cachos_vic': hx('1e120c'), 'cachos_vic_luz': hx('4a2c1c'), 'cachos_vic_sombra': hx('0f0806'),
     'castanho': hx('4a2c1c'), 'castanho_luz': hx('7a4a2a'),
     'jeans': hx('3f6ea8'),
     'verde': hx('2e9e4f'),
@@ -368,6 +371,61 @@ def valentina(respira=0, olhos='abertos', acenando=0):
     b = bracos(dy, 'pele_val', 'preto', acenando, manga_ate=0.4)
     pernas = pernas_calca('tatuagem', 'preto')
     return montar(pernas + [t] + b + [atras, cabeca, (frente, False)])
+
+
+# ─── Vic (irmão da Bia): adolescente, todo de preto alternativo, cabelo cacheado bem volumoso ─────
+def cachos_vic(dy):
+    """Cabelo cacheado escuro e cheio: volume em volta da cabeça (atrás) e cachinhos caindo na testa (frente)."""
+    atras, frente = Parte(), Parte()
+    centros = []
+    for k in range(15):  # arco largo em volta da cabeça
+        a = math.pi * (0.95 + k * 1.1 / 14)
+        centros.append((16 + 8.2 * math.cos(a), 15.5 + 7.6 * math.sin(a)))
+    centros += [(8.2, 18.5), (23.8, 18.5), (8.8, 21.5), (23.2, 21.5), (12, 8), (16, 7.2), (20, 8)]
+    bolinhas_cabelo(atras, centros, dy, 'cachos_vic', 'cachos_vic_luz', 'cachos_vic_sombra', r=2.4)
+    # cachinhos na testa, caindo um pouco por cima das sobrancelhas
+    bolinhas_cabelo(frente, [(11.5, 12.2), (14.5, 11.6), (17.5, 11.6), (20.5, 12.2), (13, 13.6), (19, 13.6)], dy,
+                    'cachos_vic', 'cachos_vic_luz', 'cachos_vic_sombra', r=1.8)
+    for (x, y) in ((10, 10), (16, 9), (22, 10), (9, 16), (23, 16)):  # brilhinho dos cachos
+        atras.d(x, y + dy, 'cachos_vic_luz')
+    return atras, frente
+
+
+def vic(k=0, olhos='abertos'):
+    """Atrás do balcão lavando louça (k = quadro do movimento da esponja/prato)."""
+    dy = 1  # um pouquinho mais baixo que os adultos
+    atras, frente = cachos_vic(dy)
+    cabeca = Parte()
+    rosto(cabeca, dy, 'pele_vic', 'pele_vic_sombra', boca='pele_vic', olhos=olhos, sobrancelha='cachos_vic', blush=False)
+    cabeca.d(15, 20 + dy, 'boca_vic'); cabeca.d(16, 20 + dy, 'boca_vic')  # cara séria, concentrado na louça
+
+    def roupa(x, y):
+        if x <= 11 or x >= 20:
+            return 'preto_luz'  # casaco longo preto aberto por cima
+        return 'preto'  # camiseta preta
+
+    t = tronco(dy, roupa)
+    # estampa branca da camiseta (de banda)
+    for (x, y) in ((15, 27), (16, 27), (14, 28), (17, 28), (14, 29), (15, 29), (16, 29), (17, 29), (15, 30), (16, 30)):
+        t.d(x, y + dy, 'branco')
+    t.d(15, 28 + dy, 'preto'); t.d(16, 28 + dy, 'preto')
+    t.d(11, 26 + dy, 'preto'); t.d(20, 26 + dy, 'preto')  # dobra da gola do casaco
+    # braços pra frente, nas mangas compridas do casaco, mexendo o prato dentro da cuba
+    hx_ = (11, 13, 15, 13)[k]
+    e, d = Parte(), Parte()
+    braco(e, (8, 25 + dy), (7, 29 + dy), (hx_, 30 + dy), 'pele_vic', 'preto_luz', manga_ate=1.0)
+    braco(d, (22, 25 + dy), (24, 29 + dy), (hx_ + 7, 30 + dy), 'pele_vic', 'preto_luz', manga_ate=1.0)
+    for b, mx in ((e, hx_), (d, hx_ + 7)):  # mãos aparecendo na ponta da manga
+        b.p(mx, 30 + dy, 'pele_vic'); b.p(mx + 1, 30 + dy, 'pele_vic')
+    prato = Parte()
+    prato.elipse(hx_ + 4.5, 29.5 + dy, 3.6, 1.4, 'branco')
+    prato.d(hx_ + 3, 29 + dy, 'branco_sombra')
+    cuba = Parte()  # cuba de inox com espuma, em cima do tampo do balcão
+    cuba.ret(7, 31 + dy, 25, 32 + dy, 'metal_luz')
+    for i, x in enumerate(range(8, 25, 3)):
+        cuba.elipse(x + (k % 2), 30.6 + dy - (i + k) % 2, 1.4, 1.1, 'branco')  # espuma
+    pernas = pernas_calca('preto', 'preto')
+    return montar(pernas + [t, atras, cabeca, (frente, False), e, d, prato, cuba])
 
 
 # ─── Pôr do Sol (gato laranja e branco), quadro 24×17 ─────────────────────────
@@ -731,6 +789,7 @@ def animacoes():
         'npc_eliana_acenando': [eliana(acenando=1), eliana(acenando=2)],
         'npc_valentina_parada': [valentina(), valentina(1, 'fechados')],
         'npc_valentina_acenando': [valentina(acenando=1), valentina(acenando=2)],
+        'npc_vic_lavando': [vic(0), vic(1), vic(2, 'fechados'), vic(3)],
         'gato_sentado': [recorte_gato(gato_sentado(i, piscando=(i == 2))) for i in range(4)],
         'gato_dormindo': [recorte_gato(gato_dormindo(0)), recorte_gato(gato_dormindo(1))],
         'npc_tios_mesa_parada': [mesa_tios(), mesa_tios(respira=1, olhos='fechados')],

@@ -343,6 +343,7 @@ def fitas(quadro):
 POSICOES = {
     'bia': {'x': 70, 'y': 146, 'camada': 'atras_do_balcao', 'sprite': 'bia_<roupa>_<animacao>'},
     'eliana': {'x': 2, 'y': 152, 'sprite': 'npc_eliana'},
+    'vic': {'x': 38, 'y': 143, 'camada': 'atras_do_balcao', 'sprite': 'npc_vic', 'onde': 'atrás do balcão, lavando louça (não reage)'},
     'tios_mesa': {'x': 4, 'y': 214, 'sprite': 'npc_tios_mesa', 'largura': 64},
     'gemea_mae': {'x': 126, 'y': 196, 'sprite': 'npc_gemea_mae'},
     'gemea_tia': {'x': 148, 'y': 196, 'sprite': 'npc_gemea_tia'},
