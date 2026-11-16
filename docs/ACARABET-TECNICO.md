@@ -203,7 +203,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 1. **Lavar o feijão:** feijão-fradinho (branco com o olhinho preto), que já vem quebrado da loja; o processo é só lavar, com a torneira aberta caindo água na bacia.
 2. **Triturar:** no multiprocessador industrial, com um botão só. Três levas: um toque liga, e a pessoa tem que parar na hora certa (ponteiro na faixa verde).
 3. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
-4. **Temperos:** picar cebola e pimentão (toques na faca) e fazer a pimenta, jogando as pimentas no dendê.
+4. **Temperos:** picar cebola e pimentão (toques na faca) e fazer a pimenta: jogar as pimentas no dendê e mexer em círculos.
 5. **Vatapá:** castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê, nessa ordem; depois mexer até dar o ponto. O nome de cada ingrediente aparece na tela ("PRÓXIMO: …" e ao tocar).
 6. **Caruru:** cortar o quiabo e juntar os ingredientes do vatapá, **menos a farinha**.
 7. **Salada:** só tomate verde picado.

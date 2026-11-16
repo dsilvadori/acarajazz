@@ -19,7 +19,7 @@ export const ETAPAS: InfoEtapa[] = [
   { id: 'lavar', cena: 'Lavar', nome: 'LAVAR O FEIJÃO', instrucao: 'O FEIJÃO-FRADINHO JÁ VEM QUEBRADO. ESFREGUE NA ÁGUA PRA DEIXAR ELE LIMPINHO!' },
   { id: 'triturar', cena: 'Triturar', nome: 'TRITURAR', instrucao: 'TOQUE NO BOTÃO VERDE PRA LIGAR O MULTIPROCESSADOR. TOQUE DE NOVO PRA PARAR QUANDO O PONTEIRO ESTIVER NA FAIXA VERDE!' },
   { id: 'bater', cena: 'Bater', nome: 'BATER A MASSA', instrucao: 'TOQUE RAPIDINHO NA TELA PRA BATER. A MASSA VAI CRESCENDO ATÉ FICAR BRANQUINHA E LEVINHA!' },
-  { id: 'temperos', cena: 'Temperos', nome: 'TEMPEROS', instrucao: 'TOQUE NA CEBOLA E NO PIMENTÃO PRA PICAR. DEPOIS JOGUE AS PIMENTAS NO DENDÊ PRA FAZER A PIMENTA!' },
+  { id: 'temperos', cena: 'Temperos', nome: 'TEMPEROS', instrucao: 'TOQUE NA CEBOLA E NO PIMENTÃO PRA PICAR. DEPOIS JOGUE AS PIMENTAS NO DENDÊ E MEXA EM CÍRCULOS PRA FAZER A PIMENTA!' },
   { id: 'vatapa', cena: 'Vatapa', nome: 'VATAPÁ', instrucao: 'TOQUE NOS INGREDIENTES NA ORDEM DA RECEITA. DEPOIS MEXA EM CÍRCULOS ATÉ DAR O PONTO.' },
   { id: 'caruru', cena: 'Caruru', nome: 'CARURU', instrucao: 'ARRASTE O QUIABO PRA TÁBUA. DEPOIS TOQUE NOS INGREDIENTES PRA IREM PRA PANELA.' },
   { id: 'salada', cena: 'Salada', nome: 'SALADA', instrucao: 'TOQUE PRA PICAR QUANDO A FACA ESTIVER EM CIMA DO TOMATE VERDE. CUIDADO COM O DEDO!' },

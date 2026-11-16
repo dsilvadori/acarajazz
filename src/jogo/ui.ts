@@ -83,9 +83,17 @@ export function botao(
   c.add([g, t]);
   c.setSize(w + 6, h + 6);
   c.setInteractive({ useHandCursor: true });
-  c.on('pointerdown', () => { desenha(true); t.y = 0; tocar('clique'); });
-  c.on('pointerout', () => { desenha(false); t.y = -1; });
-  c.on('pointerup', () => { desenha(false); t.y = -1; acao(); });
+  // só vale o toque que começou no botão (um toque que "atravessa" uma camada HTML não dispara nada)
+  let apertado = false;
+  c.on('pointerdown', () => { apertado = true; desenha(true); t.y = 0; tocar('clique'); });
+  c.on('pointerout', () => { apertado = false; desenha(false); t.y = -1; });
+  c.on('pointerup', () => {
+    if (!apertado) return;
+    apertado = false;
+    desenha(false);
+    t.y = -1;
+    acao();
+  });
   return c;
 }
 

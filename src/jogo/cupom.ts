@@ -15,6 +15,10 @@ function camada(html: string) {
   const el = document.createElement('div');
   el.className = 'aj-camada';
   el.innerHTML = html;
+  // os toques na camada não chegam no jogo por baixo (o Phaser escuta o "soltar" na janela inteira)
+  for (const tipo of ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend']) {
+    el.addEventListener(tipo, (e) => e.stopPropagation());
+  }
   raiz.appendChild(el);
   return el;
 }
