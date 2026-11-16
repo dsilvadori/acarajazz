@@ -2,7 +2,7 @@
 
 > O que é preciso, em tecnologia, para o jogo rodar em qualquer navegador: simples, bonito e funcional.
 > Complementa o [briefing de arte do jogo](https://claude.ai/artifact/7z2pXWuYi4hDxWdmSoq6Ap) e a seção 4.7 do [BRIEFING.md](BRIEFING.md).
-> Última atualização: 15/11/2026
+> Última atualização: 16/11/2026 · ✅ **primeira versão jogável implementada** (ver seção 10).
 
 ---
 
@@ -121,7 +121,7 @@ No balcão: equipe abre a página de validação, digita o código
 |---|---|
 | **API do cupom** (função serverless) | Recebe nome + WhatsApp, garante 1 cupom por número, gera um código impossível de adivinhar. |
 | **Banco de dados** | Tabela `cupons`: código, nome, WhatsApp, data de emissão, status (emitido/usado), data de uso. Os dados também viram **leads** de clientes. |
-| **Página de validação** (`/acarabet/validar`) | Para a equipe, protegida por senha/PIN; funciona no celular do balcão. Busca o código, mostra nome e status e tem o botão "Marcar como usado". |
+| **Página de validação** (`/admin/cupons`) | Para a equipe, dentro do painel (mesmo login do `/admin`); funciona no celular do balcão. Busca o código, mostra nome e status e tem o botão "Marcar como usado". |
 | **Trava no aparelho** | Marca no `localStorage` que o cupom já foi gerado, para não pedir os dados de novo (só conforto; a regra vale no servidor). |
 | **Anti-abuso** | Limite de pedidos por IP e verificação anti-robô invisível (ex.: Cloudflare Turnstile). |
 
@@ -168,8 +168,35 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 
 - [x] Cupom vale só na loja física.
 - [ ] Ajustar o texto do briefing de arte (remover a menção ao iFood).
-- [ ] Valor do desconto (proposta: 10% na primeira compra).
-- [ ] Validade do cupom após a emissão (proposta: 30 dias).
-- [ ] Definir hospedagem + banco (junto com a stack do site).
-- [ ] Quem da equipe terá acesso à página de validação.
-- [ ] Nome final do jogo ("Acarabet" é provisório no briefing de arte).
+- [ ] Valor do desconto: **em uso a proposta de 10%** (trocar em `src/lib/acarabet.ts`, constante `DESCONTO`), aguardando aprovação.
+- [ ] Validade do cupom: **em uso a proposta de 30 dias** (`VALIDADE_DIAS` no mesmo arquivo), aguardando aprovação.
+- [x] Hospedagem + banco: Cloudflare Workers + D1, junto com o site.
+- [x] Acesso à validação: quem tem login do painel `/admin` (aba **Cupons Acarabet**).
+- [x] Nome do jogo: **Acarabet**.
+
+---
+
+## 10. Como ficou a implementação (16/11/2026)
+
+| Parte | Onde | Observação |
+|---|---|---|
+| Página do jogo | `src/pages/acarabet/index.astro` | Apresentação, "como funciona" e **regulamento visível**. O jogo abre em tela cheia por cima da página (`/acarabet#jogar`); botão ✕ ou "voltar" do celular fecham. |
+| Chamada na Home | `src/components/ChamadaAcarabet.astro` | Faixa vinho com a Bia comemorando, antes de Eventos. Link "Acarabet" também no menu. |
+| Motor | Phaser **3.90.0** | Carregado só quando a pessoa toca em **Jogar** (import dinâmico): a página em si continua leve. |
+| Código do jogo | `src/jogo/` | `main.ts` (liga o Phaser), `estado.ts` (etapas, estrelas, satisfação, medição), `cenas/` (título, pedido, 9 minijogos de preparo, servir, prêmio e cupom), `cupom.ts` (formulário, compartilhar, plano C do Instagram), `som.ts`. |
+| Close dos preparos | `cenas/Etapa.ts` | Nas etapas de preparo a câmera chega perto: parede de chita de girassol, a **Bia ampliada 2× da cintura pra cima** reagindo (mexendo, batendo, comemorando, preocupada) e a bancada de madeira com os objetos. |
+| Arte | `tools/sprites/*.py` → `public/jogo/` | Tudo gerado por script: `atlas.png` + `atlas.json` (todas as animações e objetos numa imagem só, ~40 KB), fontes em pixel (`fonte_clara`, `fonte_escura`), cenário do salão e do close. Para refazer: `python3 tools/sprites/atlas.py` (e `cenario.py`, `fonte.py`). |
+| Escala sem borrar | `main.ts` | O fator de ampliação é **inteiro em pixels do aparelho** (ex.: ×1,5 em CSS num celular 2× = 3 pixels reais por pixel do jogo). Sobra de tela vira moldura listrada. Celular deitado mostra "vire o celular". |
+| Sons | `som.ts` | Sintetizados na hora com Web Audio (**nenhum arquivo de som pra baixar**), mudos até o primeiro toque, botão de som em todas as telas. |
+| API do cupom | `src/pages/api/acarabet/cupom.ts` | 1 cupom por WhatsApp (quem repete recebe o mesmo), código `ACJ-XXXXXX`, Turnstile, limite de 10 pedidos por IP por hora. |
+| Medição | `src/pages/api/acarabet/evento.ts` | Eventos da seção 8 gravados na tabela `jogo_eventos` (migração `0003_acarabet.sql`). |
+| Validação no balcão | `src/pages/admin/cupons.astro` | Em vez de uma página separada com PIN, fica **dentro do painel** (já tem login): buscar código → ver nome, validade e status → **Marcar como usado**. Mostra também o funil dos últimos 30 dias. |
+| Imagem dos Stories | `cenas/Premio.ts` | Desenhada em 180 × 320 e ampliada 6× → **1080 × 1920**. Compartilhar → baixar → mostrar na tela (Instagram). |
+
+**Regras de jogo implementadas**
+- Cada etapa dá 1 a 3 estrelas; refazer guarda sempre a melhor nota.
+- O casal fica satisfeito com **20 das 30 estrelas**. Se não ficar, a Bia refaz as etapas mais fracas e serve de novo; na terceira rodada o casal aceita de qualquer jeito (ninguém sai sem cupom).
+- O pedido (com ou sem pimenta) é sorteado a cada partida e conta na etapa de montar.
+- Tocar nos personagens do salão (Eliana, gêmeas, Valentina, tios, Pôr do Sol) faz eles acenarem/brindarem: são os easter eggs.
+
+**Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Moer, Vatapa, Caruru, Vinagrete, Camarao, Bater, Fritar, Montar, Servir, Premio, Cupom).

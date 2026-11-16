@@ -1,0 +1,44 @@
+---
+// Chamada do jogo Acarabet na Home
+import { DESCONTO } from '../lib/acarabet';
+---
+
+<section class="chamada-jogo" aria-labelledby="chamada-jogo-titulo">
+  <div class="container faixa">
+    <div class="bia" role="img" aria-label="A Bia em pixel art comemorando"></div>
+    <div class="texto">
+      <p class="selo">Jogo grátis · sem dinheiro e sem aposta</p>
+      <h2 id="chamada-jogo-titulo">Acarabet: a aposta em que todo mundo ganha</h2>
+      <p>Faça um acarajé com a Bia, do feijão até a mesa, em 10 minijogos. Caprichou? Ganha {DESCONTO} de desconto na primeira compra, na loja.</p>
+    </div>
+    <a class="botao botao-amarelo" href="/acarabet#jogar">Jogar agora</a>
+  </div>
+</section>
+
+<style>
+  .chamada-jogo {
+    background: var(--vinho);
+    color: var(--creme);
+    padding-block: clamp(36px, 6vw, 56px);
+  }
+  .faixa { display: grid; gap: 18px 32px; align-items: center; justify-items: center; text-align: center; }
+  @media (min-width: 860px) {
+    .faixa { grid-template-columns: auto 1fr auto; justify-items: start; text-align: left; }
+  }
+  .bia {
+    width: 96px; height: 144px;
+    background: url('/jogo/sprites/bia_baiana_comemorando_4q.png') 0 0 / 384px 144px no-repeat;
+    image-rendering: pixelated;
+    animation: bia-festa 0.5s steps(4) infinite;
+  }
+  @keyframes bia-festa { to { background-position: -384px 0; } }
+  @media (prefers-reduced-motion: reduce) { .bia { animation: none; } }
+  .selo {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: var(--amarelo); color: var(--vinho);
+    font-family: var(--fonte-titulo); font-weight: 700; font-size: 0.85rem;
+  }
+  h2 { margin-top: 8px; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--creme); }
+  .texto p:last-child { margin-top: 4px; max-width: 54ch; color: var(--creme-2); }
+  .botao-amarelo { background: var(--amarelo); color: var(--vinho); }
+</style>

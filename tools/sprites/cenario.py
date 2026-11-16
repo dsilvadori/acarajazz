@@ -278,6 +278,45 @@ def balcao():
     return q
 
 
+BANCADA = 112  # no close, a bancada começa aqui (a Bia fica atrás, aparecendo da cintura pra cima)
+
+
+def close_parede():
+    """Close da cozinha: parede de chita de girassol, prateleira e fitinhas no alto."""
+    q = tela()
+    for y in range(LH):
+        for x in range(LW):
+            pinta(q, x, y, girassol(x, y))
+    ret(q, 0, 26, LW - 1, 28, 'madeira')  # prateleira
+    ref = Parte()
+    for i, x in enumerate(range(6, LW - 8, 13)):
+        if i % 3 == 0:
+            ref.ret(x, 16, x + 5, 25, 'agua_marinha'); ref.ret(x, 16, x + 5, 16, 'agua_marinha_sombra')
+        elif i % 3 == 1:
+            ref.ret(x + 2, 13, x + 3, 17, 'folha_escura'); ref.ret(x, 18, x + 5, 25, 'folha')
+        else:
+            ref.ret(x, 19, x + 6, 25, 'barra'); ref.ret(x, 19, x + 6, 19, 'amarelo')
+    peca(q, ref)
+    return q
+
+
+def close_bancada():
+    """Tampo da bancada de madeira visto de cima (camada da frente do close)."""
+    q = tela()
+    for y in range(BANCADA, LH):
+        for x in range(LW):
+            faixa = (y - BANCADA) // 22
+            cor = 'madeira_luz' if faixa % 2 == 0 else 'bege'
+            if (y - BANCADA) % 22 == 0:
+                cor = 'madeira'
+            elif (x * 7 + y * 3 + faixa * 11) % 37 == 0:
+                cor = 'madeira'  # veio da madeira
+            pinta(q, x, y, cor)
+    ret(q, 0, BANCADA, LW - 1, BANCADA + 2, 'madeira')  # borda de trás
+    ret(q, 0, BANCADA + 3, LW - 1, BANCADA + 3, 'taco3')
+    return q
+
+
 FITAS = ('fita', 'amarelo', 'azul', 'batom', 'branco', 'cabelo_rosa', 'laranja', 'roxo', 'agua_marinha')
 
 
@@ -345,11 +384,13 @@ def main():
     salvar_png(os.path.join(saida, 'salao_fundo.png'), f)
     salvar_png(os.path.join(saida, 'salao_balcao.png'), bal)
     salvar_png(os.path.join(saida, 'salao_fitas_4q.png'), [sum((q[y] for q in quadros), []) for y in range(40)])
+    salvar_png(os.path.join(saida, 'close_parede.png'), close_parede())
+    salvar_png(os.path.join(saida, 'close_bancada.png'), close_bancada())
     dados = os.path.join(raiz, 'src', 'data', 'acarabet')
     os.makedirs(dados, exist_ok=True)
     with open(os.path.join(dados, 'salao.json'), 'w') as arq:
         json.dump({'largura': LW, 'altura': LH, 'posicoes': POSICOES}, arq, ensure_ascii=False, indent=2)
-    print('cenário: fundo, balcão e fitas (4 quadros)')
+    print('cenário: salão (fundo, balcão, fitas) e close (parede, bancada)')
 
     if '--previa' in sys.argv:  # composição com todo mundo no lugar
         destino = sys.argv[sys.argv.index('--previa') + 1]

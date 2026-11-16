@@ -12,6 +12,7 @@ const menu = [
   { href: '/admin/contatos?tipo=curso', base: '/admin/contatos', tipo: 'curso', texto: 'Curso' },
   { href: '/admin/cardapio', texto: 'Cardápio' },
   { href: '/admin/horarios', texto: 'Horários e avisos' },
+  { href: '/admin/cupons', texto: 'Cupons Acarabet' },
 ];
 const tipoAtual = Astro.url.searchParams.get('tipo');
 const ativo = (m: (typeof menu)[number]) =>

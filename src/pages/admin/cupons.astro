@@ -1,0 +1,143 @@
+---
+import { env } from 'cloudflare:workers';
+import Admin from '../../layouts/Admin.astro';
+import { DESCONTO_TEXTO, cupomPorCodigo, validade, vencido } from '../../lib/acarabet';
+import { agoraSP } from '../../lib/horario';
+
+const hoje = agoraSP().dataISO;
+const br = (iso: string) => iso.slice(0, 10).split('-').reverse().join('/');
+let aviso = '';
+
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  const codigo = String(f.get('codigo') ?? '').trim().toUpperCase();
+  if (f.get('acao') === 'usar') {
+    const c = await cupomPorCodigo(codigo);
+    if (c && c.status === 'emitido' && !vencido(c, hoje)) {
+      await env.DB.prepare(`UPDATE cupons SET status = 'usado', usado_em = datetime('now') WHERE id = ?1 AND status = 'emitido'`).bind(c.id).run();
+      await env.DB.prepare(`INSERT INTO jogo_eventos (nome, dados) VALUES ('cupom_usado', ?1)`).bind(JSON.stringify({ codigo })).run();
+      return Astro.redirect(`/admin/cupons?codigo=${encodeURIComponent(codigo)}&ok=usado`, 303);
+    }
+    aviso = 'Esse cupom não pode ser usado (confira o status abaixo).';
+  }
+}
+
+const busca = (Astro.url.searchParams.get('codigo') ?? '').trim().toUpperCase();
+const cupom = busca ? await cupomPorCodigo(busca.startsWith('ACJ-') ? busca : `ACJ-${busca}`) : null;
+const situacao = cupom ? (cupom.status === 'usado' ? 'usado' : vencido(cupom, hoje) ? 'vencido' : 'valido') : null;
+
+const totais = (await env.DB.prepare(
+  `SELECT COUNT(*) AS emitidos, SUM(status = 'usado') AS usados FROM cupons`,
+).first<{ emitidos: number; usados: number | null }>())!;
+const { results: recentes } = await env.DB.prepare(
+  `SELECT codigo, nome, status, emitido_em, usado_em FROM cupons ORDER BY id DESC LIMIT 15`,
+).all<{ codigo: string; nome: string; status: string; emitido_em: string; usado_em: string | null }>();
+const { results: medicao } = await env.DB.prepare(
+  `SELECT nome, COUNT(*) AS n FROM jogo_eventos WHERE criado_em > datetime('now', '-30 days') GROUP BY nome`,
+).all<{ nome: string; n: number }>();
+const m = Object.fromEntries(medicao.map((r) => [r.nome, r.n]));
+const funil = [
+  ['Partidas começadas', m.jogo_iniciado ?? 0],
+  ['Partidas terminadas', m.jogo_concluido ?? 0],
+  ['Cupons gerados', m.cupom_gerado ?? 0],
+  ['Imagens compartilhadas', m.imagem_compartilhada ?? 0],
+  ['Imagens baixadas', m.imagem_baixada ?? 0],
+  ['Cupons usados no balcão', m.cupom_usado ?? 0],
+] as const;
+---
+
+<Admin titulo="Cupons do Acarabet">
+  <section class="painel validar">
+    <h2>Validar no balcão</h2>
+    <p class="ajuda">O cliente mostra o Stories publicado e o código. Digite o código, confira o nome e marque como usado. Vale {DESCONTO_TEXTO}, só na loja.</p>
+    <form method="get" class="busca">
+      <label for="codigo">Código do cupom</label>
+      <div class="linha">
+        <input id="codigo" name="codigo" value={busca} placeholder="ACJ-XXXXXX" autocomplete="off" autocapitalize="characters" required />
+        <button class="botao" type="submit">Buscar</button>
+      </div>
+    </form>
+
+    {Astro.url.searchParams.get('ok') === 'usado' && <p class="ok" role="status">Pronto! Cupom marcado como usado. Pode aplicar o desconto.</p>}
+    {aviso && <p class="erro" role="alert">{aviso}</p>}
+
+    {busca && !cupom && <p class="erro" role="alert">Nenhum cupom com esse código.</p>}
+    {cupom && (
+      <div class:list={['resultado', situacao]}>
+        <p class="selo-grande">
+          {situacao === 'valido' ? '✅ Válido' : situacao === 'usado' ? '⛔ Já usado' : '⌛ Vencido'}
+        </p>
+        <dl>
+          <dt>Código</dt><dd><strong>{cupom.codigo}</strong></dd>
+          <dt>Nome</dt><dd>{cupom.nome}</dd>
+          <dt>Emitido em</dt><dd>{br(cupom.emitido_em)}</dd>
+          <dt>Válido até</dt><dd>{br(validade(cupom.emitido_em))}</dd>
+          {cupom.usado_em && (<><dt>Usado em</dt><dd>{br(cupom.usado_em)}</dd></>)}
+        </dl>
+        {situacao === 'valido' && (
+          <form method="post">
+            <input type="hidden" name="acao" value="usar" />
+            <input type="hidden" name="codigo" value={cupom.codigo} />
+            <button class="botao" type="submit">Marcar como usado</button>
+          </form>
+        )}
+      </div>
+    )}
+  </section>
+
+  <section class="painel">
+    <h2>Últimos 30 dias</h2>
+    <ul class="funil">
+      {funil.map(([rotulo, n]) => <li><strong>{n}</strong><span>{rotulo}</span></li>)}
+    </ul>
+    <p class="ajuda">No total: {totais.emitidos} cupons emitidos, {totais.usados ?? 0} usados.</p>
+  </section>
+
+  <section class="painel">
+    <h2>Cupons recentes</h2>
+    {recentes.length === 0 ? <p class="ajuda">Nenhum cupom ainda.</p> : (
+      <ul class="lista">
+        {recentes.map((c) => (
+          <li>
+            <a href={`/admin/cupons?codigo=${c.codigo}`}>
+              <span class="cod">{c.codigo}</span>
+              <span class="nome">{c.nome}</span>
+              <span class={`selo selo-${c.status}`}>{c.status === 'usado' ? 'Usado' : vencido(c, hoje) ? 'Vencido' : 'Válido'}</span>
+              <span class="quando">{br(c.emitido_em)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Admin>
+
+<style>
+  .painel + .painel { margin-top: 16px; }
+  h2 { font-size: 1.3rem; color: var(--vinho); margin-bottom: 8px; }
+  .ajuda { color: var(--texto-suave); font-size: 0.95rem; }
+  .busca label { font-weight: 700; display: block; margin: 10px 0 4px; }
+  .linha { display: flex; gap: 8px; flex-wrap: wrap; }
+  .linha input { flex: 1 1 180px; font: 700 1.3rem var(--fonte-titulo); letter-spacing: 0.06em; padding: 0.4em 0.6em; border: 2px solid var(--vinho); border-radius: 12px; text-transform: uppercase; min-width: 0; }
+  .ok { background: #e6f4e4; color: #1f5a1b; padding: 10px 14px; border-radius: 12px; margin-top: 12px; font-weight: 700; }
+  .erro { background: #fde8e6; color: #8f1b10; padding: 10px 14px; border-radius: 12px; margin-top: 12px; font-weight: 700; }
+  .resultado { margin-top: 14px; padding: 16px; border-radius: 14px; border: 3px solid #c9c9c9; }
+  .resultado.valido { border-color: #2f8f3a; background: #f2faf1; }
+  .resultado.usado, .resultado.vencido { border-color: #b8306a; background: #fdf1f4; }
+  .selo-grande { font: 800 1.5rem var(--fonte-titulo); margin-bottom: 8px; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 14px; }
+  dt { color: var(--texto-suave); }
+  dd { margin: 0; }
+  .funil { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .funil li { background: var(--creme, #fef5e2); border-radius: 12px; padding: 12px; display: grid; }
+  .funil strong { font: 800 1.6rem var(--fonte-titulo); color: var(--vinho); }
+  .funil span { font-size: 0.85rem; color: var(--texto-suave); }
+  .lista { list-style: none; padding: 0; margin: 0; }
+  .lista a { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 10px 4px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
+  .cod { font-weight: 800; font-family: var(--fonte-titulo); letter-spacing: 0.04em; }
+  .nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .quando { color: var(--texto-suave); font-size: 0.85rem; }
+  .selo { font-size: 0.8rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: #e6f4e4; color: #1f5a1b; }
+  .selo-usado { background: #eee; color: #555; }
+  @media (max-width: 520px) { .lista a { grid-template-columns: 1fr auto; } .quando, .nome { grid-column: 1; } }
+</style>

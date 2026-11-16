@@ -1,0 +1,195 @@
+---
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Cabecalho from '../../components/Cabecalho.astro';
+import Rodape from '../../components/Rodape.astro';
+import { DESCONTO, DESCONTO_TEXTO, ENDERECO_LOJA, VALIDADE_DIAS } from '../../lib/acarabet';
+
+const siteKey = env.TURNSTILE_SITE_KEY ?? '';
+const passos = [
+  { n: '1', titulo: 'Escolha a roupa da Bia', texto: 'Baiana, dólmã laranja ou despojada. O casal já está na mesa esperando o acarajé.' },
+  { n: '2', titulo: 'Faça o acarajé do zero', texto: 'São 10 minijogos rapidinhos: lavar o feijão, moer, vatapá, caruru, vinagrete, camarão, bater a massa, fritar, montar e servir.' },
+  { n: '3', titulo: 'Ganhe o seu cupom', texto: `Caprichou? O casal fica feliz e você ganha ${DESCONTO} na primeira compra. Não deu? Refaz as etapas: aqui ninguém sai sem prêmio.` },
+];
+const regras = [
+  `O jogo é 100% gratuito: não tem dinheiro, aposta nem sorte. Quem completa o jogo e deixa o cliente satisfeito sempre ganha.`,
+  `O prêmio é ${DESCONTO_TEXTO} no Acarajazz, válido somente na loja física (${ENDERECO_LOJA}). Não vale no iFood nem no Keeta.`,
+  'É 1 cupom por pessoa (por número de WhatsApp). Dá pra jogar quantas vezes quiser, mas o jogo não gera outro cupom.',
+  'Para usar, mostre no balcão o Stories publicado marcando @o_acarajazz e o código do cupom.',
+  `O cupom vale por ${VALIDADE_DIAS} dias depois de gerado e não é cumulativo com outras promoções.`,
+  'Para pegar o cupom é preciso ter 18 anos ou autorização do responsável. Jogar é livre para todo mundo.',
+];
+---
+
+<Base
+  title="Acarabet · O jogo do Acarajazz"
+  description={`Faça um acarajé com a Bia em 10 minijogos e ganhe ${DESCONTO} na primeira compra na loja do Acarajazz. Jogo grátis, sem dinheiro e sem aposta.`}
+>
+  <Cabecalho home={false} />
+  <main>
+    <section class="topo">
+      <div class="container grade">
+        <div class="texto">
+          <p class="selo">Jogo grátis · sem dinheiro e sem aposta</p>
+          <h1>Acarabet</h1>
+          <p class="sub">A aposta em que todo mundo ganha.</p>
+          <p>Ajude a Bia a fazer um acarajé do feijão até a mesa e ganhe <strong>{DESCONTO} de desconto</strong> na sua primeira compra na loja.</p>
+          <button class="botao botao-amarelo jogar" type="button" data-jogar>Jogar agora</button>
+          <p class="obs">Funciona no celular e no computador. Leva uns 5 minutos.</p>
+        </div>
+        <div class="vitrine" aria-hidden="true">
+          <div class="bia"></div>
+          <div class="casal"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container como">
+      <h2>Como funciona</h2>
+      <ol class="passos">
+        {passos.map((p) => (
+          <li><span class="n">{p.n}</span><h3>{p.titulo}</h3><p>{p.texto}</p></li>
+        ))}
+      </ol>
+      <p class="centro"><button class="botao botao-vinho" type="button" data-jogar>Bora jogar</button></p>
+    </section>
+
+    <section class="container regulamento" id="regulamento">
+      <h2>Regulamento</h2>
+      <ul>{regras.map((r) => <li>{r}</li>)}</ul>
+      <p class="obs">Seus dados (nome e WhatsApp) são usados para gerar o cupom e, se você autorizar, para enviar novidades. Veja a <a href="/politica-de-privacidade">política de privacidade</a>.</p>
+    </section>
+  </main>
+  <Rodape />
+
+  <div id="jogo" class="aj" hidden data-site-key={siteKey} data-desconto={DESCONTO} data-validade={VALIDADE_DIAS} data-endereco={ENDERECO_LOJA}>
+    <div class="aj-barra">
+      <span>Acarabet</span>
+      <button type="button" class="aj-fechar" aria-label="Fechar o jogo">✕</button>
+    </div>
+    <div class="aj-tela" role="application" aria-label="Jogo Acarabet"></div>
+    <div class="aj-vire" aria-live="polite"><div class="bia-andando"></div><p>Vire o celular em pé pra jogar 🙂</p></div>
+    <p class="aj-carregando">Carregando…</p>
+  </div>
+</Base>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
+<script>
+  const jogo = document.getElementById('jogo')!;
+  let fechar: (() => void) | null = null;
+
+  async function abrir() {
+    if (!jogo.hidden) return;
+    jogo.hidden = false;
+    document.documentElement.classList.add('jogando');
+    if (location.hash !== '#jogar') history.pushState({ jogo: true }, '', '#jogar');
+    jogo.classList.add('carregando');
+    try {
+      const { iniciarJogo } = await import('../../jogo/main');
+      fechar = iniciarJogo(jogo, {
+        siteKey: jogo.dataset.siteKey ?? '',
+        desconto: jogo.dataset.desconto ?? '10%',
+        validadeDias: Number(jogo.dataset.validade ?? 30),
+        endereco: jogo.dataset.endereco ?? '',
+      });
+    } finally {
+      jogo.classList.remove('carregando');
+    }
+  }
+
+  function sair() {
+    fechar?.();
+    fechar = null;
+    jogo.querySelectorAll('.aj-camada').forEach((c) => c.remove());
+    jogo.hidden = true;
+    document.documentElement.classList.remove('jogando');
+  }
+
+  document.querySelectorAll('[data-jogar]').forEach((b) => b.addEventListener('click', abrir));
+  jogo.querySelector('.aj-fechar')!.addEventListener('click', () => (location.hash === '#jogar' ? history.back() : sair()));
+  window.addEventListener('popstate', () => { if (location.hash !== '#jogar') sair(); });
+  if (location.hash === '#jogar') abrir();
+</script>
+
+<style>
+  .topo { background: var(--vinho); color: var(--creme); padding-block: clamp(40px, 8vw, 88px); overflow: hidden; }
+  .grade { display: grid; gap: 32px; align-items: center; }
+  @media (min-width: 860px) { .grade { grid-template-columns: 1.2fr 1fr; } }
+  .selo {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: var(--amarelo); color: var(--vinho); font: 700 0.85rem var(--fonte-titulo);
+  }
+  h1 { font-size: clamp(3rem, 10vw, 5.5rem); line-height: 1; margin-top: 12px; color: var(--creme); }
+  .sub { font: 700 clamp(1.3rem, 3vw, 1.7rem) var(--fonte-titulo); color: var(--amarelo); margin: 6px 0 12px; }
+  .texto p { max-width: 50ch; }
+  .jogar { margin-top: 22px; font-size: 1.25rem; padding: 0.8em 1.8em; }
+  .botao-amarelo { background: var(--amarelo); color: var(--vinho); }
+  .obs { font-size: 0.9rem; opacity: 0.85; margin-top: 10px; }
+  .vitrine { display: flex; gap: 20px; justify-content: center; align-items: flex-end; }
+  .bia, .casal, .bia-andando { image-rendering: pixelated; }
+  .bia { width: 128px; height: 192px; background: url('/jogo/sprites/bia_baiana_mexendo_4q.png') 0 0 / 512px 192px; animation: quadros4 0.5s steps(4) infinite; }
+  .casal { width: 192px; height: 144px; background: url('/jogo/sprites/cliente_casal_comendo_4q.png') 0 0 / 768px 144px; animation: quadros4c 1s steps(4) infinite; }
+  @keyframes quadros4 { to { background-position: -512px 0; } }
+  @keyframes quadros4c { to { background-position: -768px 0; } }
+  @media (max-width: 520px) { .casal { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .bia, .casal, .bia-andando { animation: none; } }
+
+  .como, .regulamento { padding-block: clamp(48px, 8vw, 80px) 0; }
+  .regulamento { padding-bottom: clamp(48px, 8vw, 80px); }
+  h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); color: var(--vinho); margin-bottom: 18px; }
+  .passos { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .passos li { background: var(--creme); border-radius: var(--raio); padding: 22px; box-shadow: var(--sombra); }
+  .passos .n { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--laranja-forte); color: var(--creme); font: 800 1.1rem var(--fonte-titulo); }
+  .passos h3 { font-size: 1.25rem; color: var(--vinho); margin: 10px 0 4px; }
+  .centro { text-align: center; margin-top: 24px; }
+  .regulamento ul { display: grid; gap: 10px; padding-left: 1.2em; max-width: 75ch; }
+  .regulamento .obs { color: var(--texto-suave); opacity: 1; }
+</style>
+
+<style is:global>
+  html.jogando, html.jogando body { overflow: hidden; }
+  .aj {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: #3b1408 repeating-linear-gradient(135deg, transparent 0 14px, rgb(122 0 0 / 0.55) 14px 28px, transparent 28px 42px, rgb(217 96 26 / 0.25) 42px 56px);
+    overscroll-behavior: contain;
+    font-family: var(--fonte-texto);
+  }
+  .aj[hidden] { display: none; }
+  .aj-barra { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 8px 0 14px; color: var(--creme); font: 800 1.1rem var(--fonte-titulo); flex: none; }
+  .aj-fechar { width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--creme); color: var(--vinho); font-size: 1.2rem; font-weight: 800; cursor: pointer; }
+  .aj-tela { flex: 1; min-height: 0; display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .aj-tela canvas { display: block; image-rendering: pixelated; box-shadow: 0 0 0 3px #3b1408, 0 10px 40px rgb(0 0 0 / 0.5); }
+  .aj-carregando { display: none; position: absolute; inset: 0; place-items: center; color: var(--creme); font: 700 1.2rem var(--fonte-titulo); }
+  .aj.carregando .aj-carregando { display: grid; }
+  .aj-vire { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--creme); font: 700 1.2rem var(--fonte-titulo); text-align: center; background: #3b1408; }
+  .aj-vire .bia-andando { width: 64px; height: 96px; background: url('/jogo/sprites/bia_baiana_andando_lado_6q.png') 0 0 / 384px 96px; animation: vire 0.6s steps(6) infinite; }
+  @keyframes vire { to { background-position: -384px 0; } }
+  @media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
+    .aj-vire { display: flex; }
+  }
+
+  /* Camadas em HTML por cima do jogo (formulário do cupom, imagem dos Stories) */
+  .aj-camada { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 16px; background: rgb(59 20 8 / 0.75); overflow: auto; }
+  .aj-form, .aj-imagem {
+    width: min(100%, 360px); background: var(--creme); color: var(--texto); border: 3px solid #3b1408; box-shadow: 6px 6px 0 rgb(59 20 8 / 0.5);
+    padding: 18px; display: grid; gap: 10px; max-height: 100%; overflow: auto;
+  }
+  .aj-form h2 { font-size: 1.4rem; color: var(--vinho); margin: 0; }
+  .aj-sub, .aj-nota { font-size: 0.85rem; color: var(--texto-suave); margin: 0; }
+  .aj-form label { display: grid; gap: 4px; font-weight: 700; font-size: 0.95rem; }
+  .aj-form input:not([type=checkbox]) { font: 600 16px var(--fonte-texto); padding: 10px 12px; border: 2px solid #3b1408; border-radius: 0; background: #fff; }
+  .aj-form .aj-check { grid-template-columns: auto 1fr; align-items: start; gap: 8px; font-weight: 600; font-size: 0.9rem; }
+  .aj-check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--laranja-forte); }
+  .aj-erro { color: #b3122a; font-size: 0.85rem; font-weight: 700; min-height: 0; }
+  .aj-erro:empty { display: none; }
+  .aj-armadilha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .aj-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .aj-botao { flex: 1 1 auto; border: 2px solid #3b1408; background: var(--laranja-forte); color: var(--creme); font: 800 1rem var(--fonte-titulo); padding: 10px 14px; cursor: pointer; text-align: center; text-decoration: none; box-shadow: 0 3px 0 #3b1408; }
+  .aj-botao:disabled { opacity: 0.6; }
+  .aj-voltar { background: var(--creme); color: var(--vinho); }
+  .aj-imagem img { width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #3b1408; }
+  .aj-imagem p { margin: 0; font-size: 0.95rem; }
+</style>
