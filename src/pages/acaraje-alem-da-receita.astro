@@ -8,6 +8,14 @@ import { formulariosAbertos } from '../lib/leads';
 const abertos = formulariosAbertos();
 
 const siteKey = env.TURNSTILE_SITE_KEY;
+
+// Slide do topo: fotos da Bia (troca em fade automático)
+const fotosBia = [
+  { src: '/img/bia.webp', alt: 'Chef Bia Souza de turbante branco segurando um prato de acarajés' },
+  { src: '/img/bia-laranja.webp', alt: 'Chef Bia Souza de turbante laranja e dólmã, preparando um pedido' },
+  { src: '/img/bia-curso.webp', alt: 'Chef Bia Souza de bata branca e turbante florido, com uma cumbuca de barro' },
+  { src: '/img/bia-retrato.webp', alt: 'Retrato da chef Bia Souza em frente ao Acarajazz' },
+];
 const okSemJs = Astro.url.searchParams.get('lista') === 'ok';
 
 const eixos = [
@@ -53,8 +61,19 @@ const publicos = [
           <a class="botao botao-vinho" href="#lista">Quero saber primeiro</a>
           <p class="nota">Ainda sem data. Quem entra na lista recebe o aviso antes de todo mundo.</p>
         </div>
-        <figure class="topo-foto">
-          <img src="/img/pratos/acaraje.webp" alt="Acarajés dourados com vatapá e camarão" width="800" height="1000" fetchpriority="high" />
+        <figure class="topo-foto slides" aria-label="Fotos da chef Bia Souza">
+          {fotosBia.map((f, i) => (
+            <img
+              src={f.src}
+              alt={f.alt}
+              width="720"
+              height="900"
+              class:list={{ ativa: i === 0 }}
+              fetchpriority={i === 0 ? 'high' : 'low'}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          ))}
         </figure>
       </div>
     </section>
@@ -210,6 +229,23 @@ const publicos = [
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <script>
+  // Fade automático das fotos da Bia (pausa fora da tela e com "reduzir movimento")
+  {
+    const fotos = [...document.querySelectorAll<HTMLImageElement>('.slides img')];
+    const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (fotos.length > 1 && !reduzir) {
+      let atual = 0;
+      let visivel = true;
+      new IntersectionObserver(([e]) => (visivel = e.isIntersecting)).observe(fotos[0].parentElement!);
+      setInterval(() => {
+        if (!visivel || document.hidden) return;
+        fotos[atual].classList.remove('ativa');
+        atual = (atual + 1) % fotos.length;
+        fotos[atual].classList.add('ativa');
+      }, 4500);
+    }
+  }
+
   const formEl = document.getElementById('form-curso') as HTMLFormElement | null;
   if (formEl) {
   const form = formEl;
@@ -260,22 +296,34 @@ const publicos = [
   /* Topo */
   .topo { background: var(--laranja); color: var(--vinho); padding-block: clamp(32px, 6vw, 80px) clamp(48px, 8vw, 96px); overflow: hidden; }
   .topo-grade { display: grid; gap: 40px; align-items: center; }
-  @media (min-width: 900px) { .topo-grade { grid-template-columns: 1.15fr 0.85fr; gap: 64px; } }
+  @media (min-width: 900px) { .topo-grade { grid-template-columns: 1fr 1fr; gap: 56px; } }
   .selo {
     display: inline-block; padding: 6px 14px; border-radius: 999px;
     background: var(--vinho); color: var(--creme);
     font-family: var(--fonte-titulo); font-weight: 800; font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase;
   }
-  h1 { margin-top: 1rem; font-size: clamp(2.8rem, 8vw, 5.2rem); line-height: 0.95; color: var(--vinho); }
-  h1 span { display: block; color: var(--creme); text-shadow: 3px 3px 0 var(--vinho); }
+  h1 { margin-top: 1rem; font-size: clamp(2.6rem, 5.4vw, 4.6rem); line-height: 0.95; color: var(--vinho); }
+  h1 span { display: block; color: var(--creme); text-shadow: 3px 3px 0 var(--vinho); white-space: nowrap; }
   .sub { margin: 1.2rem 0 1.8rem; font-size: 1.2rem; max-width: 40ch; color: var(--vinho-escuro); }
   .nota { margin-top: 1rem; font-size: 0.92rem; color: var(--vinho-escuro); opacity: 0.8; }
-  .topo-foto { margin: 0 auto; width: min(100%, 400px); }
-  .topo-foto img {
-    width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
-    border-radius: 999px 999px var(--raio) var(--raio); border: 6px solid var(--creme);
+  .topo-foto { margin: 0 auto; width: min(100%, 520px); }
+  .slides {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px var(--raio) var(--raio);
+    border: 6px solid var(--creme);
     box-shadow: var(--sombra);
+    overflow: hidden;
+    background: var(--creme-2);
   }
+  .slides img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .slides img.ativa { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .slides img { transition: none; } }
 
   /* Essência */
   .essencia { background: var(--vinho); color: var(--creme); padding-block: var(--secao); text-align: center; }
