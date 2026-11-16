@@ -19,7 +19,8 @@ const animacoes = [
   { arquivo: 'comemorando_4q', nome: 'Comemorando', quadros: 4, fps: 8 },
   { arquivo: 'preocupada_2q', nome: 'Preocupada (algo queimou)', quadros: 2, fps: 4 },
   { arquivo: 'andando_lado_6q', nome: 'Andando de lado', quadros: 6, fps: 10 },
-  { arquivo: 'servindo_lado_6q', nome: 'Servindo (com a bandeja)', quadros: 6, fps: 10 },
+  { arquivo: 'servindo_lado_6q', nome: 'Servindo de lado (com a bandeja)', quadros: 6, fps: 10 },
+  { arquivo: 'servindo_4q', nome: 'Servindo de frente (com a bandeja)', quadros: 4, fps: 8 },
   { arquivo: 'andando_costas_4q', nome: 'Andando de costas', quadros: 4, fps: 8 },
 ];
 const pos = salao.posicoes;
@@ -191,7 +192,7 @@ const easterEggs = [
       new Promise<void>((fim) => {
         const dx = para.x - de.x, dy = para.y - de.y;
         if (Math.abs(dx) >= Math.abs(dy)) anim(bandeja ? 'servindo_lado' : 'andando_lado', 6, 10, dx < 0);
-        else if (dy > 0) anim('andando', 4, 8);
+        else if (dy > 0) anim(bandeja ? 'servindo' : 'andando', 4, 8);
         else anim('andando_costas', 4, 8);
         const dur = (Math.hypot(dx, dy) / VEL) * 1000;
         const t0 = performance.now();
