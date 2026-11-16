@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Miniaturas de compartilhamento</title>
+<!-- Modelo das imagens de compartilhamento (1200×630). Gerar: node tools/og/gerar.mjs -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" />
+<style>
+  :root { --vinho: #7a0000; --laranja: #ff9a2e; --laranja-forte: #f04a00; --amarelo: #ffc03f; --creme: #fef5e2; --texto: #3a1a10; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: var(--vinho); }
+  .card { display: none; width: 1200px; height: 630px; position: relative; overflow: hidden; font-family: 'Nunito', sans-serif; }
+  .card.ativo { display: grid; grid-template-columns: 600px 600px; }
+  .texto { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 56px 40px 56px 64px; }
+  .logo { width: 108px; height: 108px; border-radius: 50%; box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
+  h1 { font: 800 74px/0.95 'Baloo 2', sans-serif; letter-spacing: -1px; }
+  .sub { font: 800 30px/1.2 'Nunito', sans-serif; }
+  .rodape { font: 700 22px/1.3 'Nunito', sans-serif; opacity: 0.9; }
+  .selo { align-self: flex-start; padding: 8px 18px; border-radius: 999px; font: 800 20px 'Nunito', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+  .foto { position: relative; background-size: cover; background-position: center; }
+  /* faixa de fitinhas no alto */
+  .fitas { position: absolute; left: 0; right: 0; top: 0; height: 14px; z-index: 3;
+    background: repeating-linear-gradient(90deg, #ffc03f 0 40px, #2f6db5 40px 80px, #d0142c 80px 120px, #2f7a3a 120px 160px, #fef5e2 160px 200px); }
+
+  /* Home e páginas gerais: laranja do banner + foto do acarajé */
+  #home .texto, #privacidade .texto { background: var(--laranja); color: var(--vinho); }
+  #home h1 span, #privacidade h1 span { color: var(--creme); text-shadow: 0 3px 0 var(--laranja-forte); }
+  #home .foto, #privacidade .foto { background-image: url('../../public/img/pratos/acaraje.webp'); background-position: center 0%; }
+  #home .selo, #privacidade .selo { background: var(--vinho); color: var(--creme); }
+
+  /* Curso: vinho + foto da chef */
+  #curso .texto { background: var(--vinho); color: var(--creme); }
+  #curso h1 span { color: var(--amarelo); }
+  #curso .selo { background: var(--amarelo); color: var(--vinho); }
+  #curso .foto { background-image: url('../../public/img/bia-curso.webp'); background-position: center 20%; }
+
+  /* Acarabet: pixel art do salão */
+  #acarabet .texto { background: var(--vinho); color: var(--creme); }
+  #acarabet h1 { font-size: 96px; color: var(--amarelo); text-shadow: 0 5px 0 var(--laranja-forte); }
+  #acarabet .selo { background: #3f9b4b; color: #fff; }
+  #acarabet .foto { background: #3b1408; image-rendering: pixelated; }
+  #acarabet .cena { position: absolute; left: 50%; top: 50%; width: 540px; height: 960px; transform: translate(-50%, -38%);
+    background: url('../../public/jogo/cenario/salao_fundo.png') 0 0 / 540px 960px, #3b1408; image-rendering: pixelated; }
+  #acarabet .cena::after { content: ''; position: absolute; inset: 0; background: url('../../public/jogo/cenario/salao_balcao.png') 0 0 / 540px 960px; image-rendering: pixelated; }
+  #acarabet .bia { position: absolute; z-index: 4; left: calc(50% - 96px); bottom: 18px; width: 192px; height: 288px; image-rendering: pixelated;
+    background: url('../../public/jogo/sprites/bia_baiana_comemorando_4q.png') 0 0 / 768px 288px; filter: drop-shadow(0 10px 0 rgb(0 0 0 / 0.35)); }
+</style>
+</head>
+<body>
+  <div class="card" id="home">
+    <div class="fitas"></div>
+    <div class="texto">
+      <img class="logo" src="../../public/img/logo-512.png" alt="" />
+      <h1>Acarajazz <span>boteco de baianos</span></h1>
+      <p class="sub">Acarajé, moquecas e comida baiana de verdade, com a chef Bia Souza.</p>
+      <p class="selo">Vila Mariana · São Paulo</p>
+    </div>
+    <div class="foto"></div>
+  </div>
+
+  <div class="card" id="privacidade">
+    <div class="fitas"></div>
+    <div class="texto">
+      <img class="logo" src="../../public/img/logo-512.png" alt="" />
+      <h1>Acarajazz <span>privacidade</span></h1>
+      <p class="sub">Como cuidamos dos dados que você envia pelo site.</p>
+      <p class="selo">oacarajazz.com</p>
+    </div>
+    <div class="foto"></div>
+  </div>
+
+  <div class="card" id="curso">
+    <div class="fitas"></div>
+    <div class="texto">
+      <p class="selo">Curso · lista de interesse aberta</p>
+      <h1>Acarajé <span>Além da Receita</span></h1>
+      <p class="sub">História, ancestralidade, técnica e prática com a chef Bia Souza.</p>
+      <p class="rodape">Acarajazz · Vila Mariana, SP</p>
+    </div>
+    <div class="foto"></div>
+  </div>
+
+  <div class="card" id="acarabet">
+    <div class="fitas"></div>
+    <div class="texto">
+      <p class="selo">Jogo grátis · sem aposta</p>
+      <h1>Acarabet</h1>
+      <p class="sub">A aposta em que todo mundo ganha. Faça um acarajé com a Bia, do feijão até a mesa.</p>
+      <p class="rodape">Caprichou? Ganha desconto na loja do Acarajazz.</p>
+    </div>
+    <div class="foto"><div class="cena"></div><div class="bia"></div></div>
+  </div>
+
+  <script>
+    const id = location.hash.slice(1) || 'home';
+    document.getElementById(id).classList.add('ativo');
+  </script>
+</body>
+</html>

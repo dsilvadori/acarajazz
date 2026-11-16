@@ -6,12 +6,28 @@ interface Props {
   description?: string;
   /** Páginas internas (ex.: prévias do jogo) não aparecem no Google */
   noindex?: boolean;
+  /** Imagem de compartilhamento 1200×630 em /public (gerada por tools/og/gerar.mjs) */
+  imagem?: string;
+  imagemAlt?: string;
+  /** Dados estruturados (schema.org) da página */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 const {
   title = 'Acarajazz · Boteco de baianos na Vila Mariana',
   description = 'Boteco de baianos. Para todos. Acarajé, moquecas e comidas típicas, regionais e autorais na Vila Mariana, São Paulo.',
   noindex = false,
+  imagem = '/og/home.jpg',
+  imagemAlt = 'Acarajé do Acarajazz, boteco de baianos na Vila Mariana, São Paulo',
+  schema,
 } = Astro.props;
+
+// canonical no domínio oficial; imagem e URL de compartilhamento no endereço em que a página foi aberta
+// (assim a miniatura funciona também antes do domínio apontar pro site)
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const origem = Astro.url.origin;
+const urlPagina = new URL(Astro.url.pathname, origem);
+const urlImagem = new URL(imagem, origem);
+const NOME_SITE = 'Acarajazz';
 ---
 
 <!doctype html>
@@ -23,15 +39,31 @@ const {
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#ff9a2e" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:locale" content="pt_BR" />
-    <meta property="og:type" content="website" />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/img/logo-512.png" />
-    <meta property="og:image" content={new URL('/img/logo-512.png', Astro.site)} />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- Compartilhamento (WhatsApp, Instagram, Facebook, LinkedIn, X) -->
+    <meta property="og:site_name" content={NOME_SITE} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={urlPagina} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={urlImagem} />
+    <meta property="og:image:secure_url" content={urlImagem} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imagemAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={urlImagem} />
+    <meta name="twitter:image:alt" content={imagemAlt} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

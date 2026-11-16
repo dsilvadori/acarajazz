@@ -32,11 +32,15 @@ const publicos = [
   'Interessados em cultura afro-brasileira',
   'Quem vive longe da Bahia e sente saudade',
 ];
+import { schemaCurso } from '../lib/seo';
 ---
 
 <Base
   title="Acarajé Além da Receita · Curso com a chef Bia Souza"
   description="Um curso de imersão na cultura do acarajé: história, ancestralidade, técnica e prática com a chef Bia Souza, do Acarajazz. Entre na lista de interesse."
+  imagem="/og/curso.jpg"
+  imagemAlt="Chef Bia Souza, do Acarajazz, no curso Acarajé Além da Receita"
+  schema={schemaCurso(Astro.site!, Astro.url.origin)}
 >
   <Cabecalho home={false} />
 

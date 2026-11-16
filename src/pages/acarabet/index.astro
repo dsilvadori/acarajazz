@@ -19,11 +19,15 @@ const regras = [
   `O cupom vale por ${VALIDADE_DIAS} dias depois de gerado e não é cumulativo com outras promoções.`,
   'Para pegar o cupom é preciso ter 18 anos ou autorização do responsável. Jogar é livre para todo mundo.',
 ];
+import { schemaJogo } from '../../lib/seo';
 ---
 
 <Base
   title="Acarabet · O jogo do Acarajazz"
   description={`Conheça de um jeito lúdico o preparo do acarajé: faça um com a Bia em 10 minijogos e ganhe ${DESCONTO} na primeira compra na loja do Acarajazz. Jogo grátis, sem dinheiro e sem aposta.`}
+  imagem="/og/acarabet.jpg"
+  imagemAlt="Acarabet: a chef Bia em pixel art comemorando no salão do Acarajazz"
+  schema={schemaJogo(Astro.site!, Astro.url.origin)}
 >
   <Cabecalho home={false} />
   <main>

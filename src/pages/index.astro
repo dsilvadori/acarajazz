@@ -16,6 +16,7 @@ import Instagram from '../components/Instagram.astro';
 import Rodape from '../components/Rodape.astro';
 import { getCardapio, getHorarios, getAvisoAtivo } from '../lib/db';
 import { agoraSP, statusAgora } from '../lib/horario';
+import { schemaRestaurante } from '../lib/seo';
 
 const [categorias, horarios, aviso] = await Promise.all([
   getCardapio(),
@@ -28,7 +29,7 @@ const status = statusAgora(horarios);
 if (import.meta.env.PROD) Astro.response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300');
 ---
 
-<Base>
+<Base schema={schemaRestaurante(Astro.site!, Astro.url.origin, horarios)}>
   <Cabecalho />
   <Hero status={status} />
   <main>
