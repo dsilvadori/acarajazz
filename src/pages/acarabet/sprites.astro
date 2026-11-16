@@ -1,0 +1,140 @@
+---
+// Prévia interna dos sprites do jogo (não aparece no Google).
+// Sprites gerados por tools/sprites/bia.py (Bia) e tools/sprites/personagens.py (easter eggs)
+import Base from '../../layouts/Base.astro';
+
+const ESCALA = 6;
+const roupas = [
+  { id: 'baiana', nome: 'Baiana', desc: 'Turbante, bata de renda e saia rodada' },
+  { id: 'dolma', nome: 'Dólmã laranja', desc: 'Chef de cozinha, lencinho claro com nozinho na frente' },
+  { id: 'preta', nome: 'Despojada', desc: 'Camiseta preta com o acarajé do logo, lenço e tênis' },
+];
+const animacoes = [
+  { arquivo: 'parada_2q', nome: 'Parada (respirando)', quadros: 2, fps: 2 },
+  { arquivo: 'andando_4q', nome: 'Andando', quadros: 4, fps: 8 },
+  { arquivo: 'mexendo_4q', nome: 'Mexendo a panela', quadros: 4, fps: 8 },
+  { arquivo: 'batendo_4q', nome: 'Batendo a massa', quadros: 4, fps: 10 },
+  { arquivo: 'provando_3q', nome: 'Provando', quadros: 3, fps: 3 },
+  { arquivo: 'comemorando_4q', nome: 'Comemorando', quadros: 4, fps: 8 },
+  { arquivo: 'preocupada_2q', nome: 'Preocupada (algo queimou)', quadros: 2, fps: 4 },
+];
+const easterEggs = [
+  { arquivo: 'npc_eliana_parada_2q', nome: 'Eliana', desc: 'Chef e sócia', quadros: 2, fps: 2 },
+  { arquivo: 'npc_eliana_acenando_2q', nome: 'Eliana acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
+  { arquivo: 'npc_gemea_mae_parada_2q', nome: 'Gêmea (mãe)', desc: 'Blusa de renda e contas vermelhas', quadros: 2, fps: 2 },
+  { arquivo: 'npc_gemea_mae_acenando_2q', nome: 'Gêmea (mãe) acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
+  { arquivo: 'npc_gemea_tia_parada_2q', nome: 'Gêmea (tia)', desc: 'Camiseta branca e pingente de madeira', quadros: 2, fps: 2 },
+  { arquivo: 'npc_gemea_tia_acenando_2q', nome: 'Gêmea (tia) acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
+  { arquivo: 'npc_valentina_parada_2q', nome: 'Valentina', desc: 'Filha', quadros: 2, fps: 2 },
+  { arquivo: 'npc_valentina_acenando_2q', nome: 'Valentina acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
+  { arquivo: 'gato_sentado_4q', nome: 'Pôr do Sol', desc: 'Sentado, balançando o rabo', quadros: 4, fps: 4, w: 24, h: 16 },
+  { arquivo: 'gato_dormindo_2q', nome: 'Pôr do Sol dormindo', desc: 'Num cantinho do cenário', quadros: 2, fps: 1, w: 24, h: 16 },
+];
+---
+
+<Base title="Sprites do Acarabet" noindex>
+  <main class="pagina">
+    <h1>Sprites da Bia</h1>
+    <p class="sub">Prévia interna do jogo Acarabet · 32×48 px por quadro, ampliado {ESCALA}×.</p>
+
+    <div class="fundos" role="group" aria-label="Fundo">
+      <button type="button" data-fundo="#fef5e2" class="ativo">Creme</button>
+      <button type="button" data-fundo="#ff9a2e">Laranja</button>
+      <button type="button" data-fundo="#3b1408">Escuro</button>
+      <button type="button" data-fundo="#2f7a3a">Verde</button>
+    </div>
+
+    <div class="fundos roupas" role="group" aria-label="Roupa">
+      {roupas.map((r, i) => (
+        <button type="button" data-roupa={r.id} class={i === 0 ? 'ativo' : ''} title={r.desc}>{r.nome}</button>
+      ))}
+    </div>
+
+    {roupas.map((r, i) => (
+    <section class="roupa" data-roupa={r.id} hidden={i !== 0}>
+    <p class="desc">{r.desc}</p>
+    <ul class="grade">
+      {animacoes.map((a) => (
+        <li class="cartao">
+          <div
+            class="sprite"
+            style={`--q:${a.quadros};--dur:${a.quadros / a.fps}s;--img:url('/jogo/sprites/bia_${r.id}_${a.arquivo}.png');--e:${ESCALA}`}
+            role="img"
+            aria-label={`Animação: ${a.nome}`}
+          ></div>
+          <h2>{a.nome}</h2>
+          <p>{a.quadros} quadros · {a.fps} por segundo</p>
+          <img class="tira" src={`/jogo/sprites/bia_${r.id}_${a.arquivo}.png`} alt={`Tira de quadros: ${a.nome}`} width={32 * a.quadros * 3} height={48 * 3} />
+          <code>bia_{r.id}_{a.arquivo}.png</code>
+        </li>
+      ))}
+    </ul>
+    </section>
+    ))}
+
+    <h2 class="secao">Easter eggs</h2>
+    <p class="desc">Personagens escondidos no cenário.</p>
+    <ul class="grade">
+      {easterEggs.map((a) => (
+        <li class="cartao">
+          <div
+            class="sprite"
+            style={`--q:${a.quadros};--dur:${a.quadros / a.fps}s;--img:url('/jogo/sprites/${a.arquivo}.png');--e:${ESCALA};--w:${a.w ?? 32};--h:${a.h ?? 48}`}
+            role="img"
+            aria-label={`Animação: ${a.nome}`}
+          ></div>
+          <h2>{a.nome}</h2>
+          <p>{a.desc} · {a.quadros} quadros</p>
+          <code>{a.arquivo}.png</code>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>
+
+<style>
+  .pagina { max-width: 1160px; margin: 0 auto; padding: 32px var(--gutter) 64px; }
+  h1 { font-size: 2.4rem; color: var(--vinho); }
+  .sub { color: var(--texto-suave); margin-top: 4px; }
+  .fundos { display: flex; gap: 8px; margin: 18px 0; flex-wrap: wrap; }
+  .fundos button { font: 700 0.9rem var(--fonte-titulo); padding: 6px 14px; border-radius: 999px; border: 2px solid var(--vinho); background: #fff; color: var(--vinho); cursor: pointer; }
+  .fundos button.ativo { background: var(--vinho); color: var(--creme); }
+  .roupas button { font-size: 1rem; }
+  .desc { color: var(--texto-suave); margin: 0 0 12px; }
+  .grade { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .cartao { background: var(--fundo-sprite, #fef5e2); border-radius: 18px; padding: 18px; text-align: center; box-shadow: var(--sombra); }
+  .sprite {
+    width: calc(var(--w, 32) * 1px * var(--e)); height: calc(var(--h, 48) * 1px * var(--e)); margin: 0 auto;
+    background-image: var(--img); background-repeat: no-repeat;
+    background-size: calc(var(--w, 32) * 1px * var(--q) * var(--e)) calc(var(--h, 48) * 1px * var(--e));
+    image-rendering: pixelated;
+    animation: rodar var(--dur) steps(var(--q)) infinite;
+  }
+  @keyframes rodar { to { background-position: calc(var(--w, 32) * -1px * var(--q) * var(--e)) 0; } }
+  .secao { font-size: 1.8rem; color: var(--vinho); margin: 40px 0 4px; }
+  h2 { font-size: 1.15rem; color: var(--vinho); margin-top: 10px; }
+  .cartao p { font-size: 0.85rem; color: var(--texto-suave); }
+  .tira { image-rendering: pixelated; margin: 10px auto 4px; max-width: 100%; height: auto; background: rgb(0 0 0 / 0.05); }
+  code { font-size: 0.75rem; color: var(--texto-suave); }
+  .escuro h2, .escuro .cartao p, .escuro code { color: var(--creme); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.roupas button').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.roupas button').forEach((x) => x.classList.toggle('ativo', x === b));
+      document.querySelectorAll<HTMLElement>('section.roupa').forEach((s) => (s.hidden = s.dataset.roupa !== b.dataset.roupa));
+    }),
+  );
+  document.querySelectorAll<HTMLButtonElement>('.fundos:not(.roupas) button').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.fundos:not(.roupas) button').forEach((x) => x.classList.remove('ativo'));
+      b.classList.add('ativo');
+      const escuro = b.dataset.fundo === '#3b1408' || b.dataset.fundo === '#2f7a3a';
+      document.querySelectorAll<HTMLElement>('.cartao').forEach((c) => {
+        c.style.setProperty('--fundo-sprite', b.dataset.fundo!);
+        c.classList.toggle('escuro', escuro);
+      });
+    }),
+  );
+</script>
