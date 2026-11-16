@@ -4,10 +4,13 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Páginas internas (ex.: prévias do jogo) não aparecem no Google */
+  noindex?: boolean;
 }
 const {
   title = 'Acarajazz · Boteco de baianos na Vila Mariana',
   description = 'Boteco de baianos. Para todos. Acarajé, moquecas e comidas típicas, regionais e autorais na Vila Mariana, São Paulo.',
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -18,6 +21,7 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#ff9a2e" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta property="og:title" content={title} />
