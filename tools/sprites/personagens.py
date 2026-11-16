@@ -514,6 +514,17 @@ def mesa_tios(brinde=0, respira=0, olhos='abertos'):
         compor_em(q, t, ox)
         compor_em(q, cab, ox)
         compor_em(q, cabelo, ox)
+    # pernas e cadeiras (aparecem embaixo da mesa)
+    for ox, calca_cor in ((0, 'metal_sombra'), (32, 'jeans')):
+        cad = Parte()  # cadeira dobrável de madeira
+        cad.linha(ox + 9, 36, ox + 11, 47, 'madeira'); cad.linha(ox + 23, 36, ox + 21, 47, 'madeira')
+        cad.ret(ox + 9, 40, ox + 23, 40, 'madeira_luz')
+        compor_em(q, cad)
+        pernas = Parte()
+        for x0 in (ox + 11, ox + 17):
+            pernas.ret(x0, 36, x0 + 3, 45, calca_cor)
+            pernas.ret(x0 - 1, 46, x0 + 3, 47, 'preto')  # sapato
+        compor_em(q, pernas)
     # mesa de madeira
     mesa = Parte()
     mesa.ret(2, 34, 61, 36, 'madeira')

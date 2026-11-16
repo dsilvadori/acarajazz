@@ -334,10 +334,9 @@ POSICOES = {
     'gemea_mae': {'x': 98, 'y': 208, 'sprite': 'npc_gemea_mae'},
     'gemea_tia': {'x': 122, 'y': 208, 'sprite': 'npc_gemea_tia'},
     'valentina': {'x': 146, 'y': 150, 'sprite': 'npc_valentina'},
-    'por_do_sol': [  # sorteia um lugar por partida
-        {'x': 78, 'y': 300, 'sprite': 'gato_dormindo', 'onde': 'debaixo da mesa de chita'},
-        {'x': 142, 'y': 161, 'sprite': 'gato_dormindo', 'onde': 'no banquinho da salinha'},
-        {'x': 108, 'y': 160, 'sprite': 'gato_sentado', 'onde': 'em cima do balcão'},
+    'por_do_sol': [  # sempre perto da Valentina; sorteia um dos dois cantinhos por partida
+        {'x': 150, 'y': 184, 'sprite': 'gato_sentado', 'onde': 'aos pés da Valentina'},
+        {'x': 142, 'y': 161, 'sprite': 'gato_dormindo', 'onde': 'no banquinho da salinha, atrás da Valentina'},
     ],
     'lousa_texto': {'x': 12, 'y': 63, 'largura': 35, 'altura': 6, 'cor': '#eef0e6'},
 }
@@ -377,7 +376,7 @@ def main():
         cola(N['npc_gemea_mae_parada'][0], 98, 208)
         cola(N['npc_gemea_tia_parada'][0], 122, 208)
         cola(N['npc_valentina_parada'][0], 146, 150)
-        cola(N['gato_sentado'][0], 108, 160)
+        cola(N['gato_sentado'][0], 150, 184)
         salvar_png(destino, q, escala=3)
 
 

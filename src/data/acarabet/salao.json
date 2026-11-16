@@ -36,22 +36,16 @@
     },
     "por_do_sol": [
       {
-        "x": 78,
-        "y": 300,
-        "sprite": "gato_dormindo",
-        "onde": "debaixo da mesa de chita"
+        "x": 150,
+        "y": 184,
+        "sprite": "gato_sentado",
+        "onde": "aos pés da Valentina"
       },
       {
         "x": 142,
         "y": 161,
         "sprite": "gato_dormindo",
-        "onde": "no banquinho da salinha"
-      },
-      {
-        "x": 108,
-        "y": 160,
-        "sprite": "gato_sentado",
-        "onde": "em cima do balcão"
+        "onde": "no banquinho da salinha, atrás da Valentina"
       }
     ],
     "lousa_texto": {
