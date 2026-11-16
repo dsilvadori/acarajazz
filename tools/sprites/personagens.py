@@ -8,6 +8,8 @@ Easter eggs do Acarabet: personagens que aparecem no cenário.
   Valentina   → filha da Bia (da foto): cachos escuros com mecha loira, óculos rosados, camiseta vermelha, colete preto
   Mesa dos tios → tio Luizinho (cabelo preto bem curtinho, polo cinza, relógio) e Toninho, pai da Bia (cabelo branco bem curtinho, camisa verde de palmeirense),
                   sentados à mesa com acarajé e cerveja; ao tocar, brindam. Quadro 64×48.
+  Casal       → os clientes: ele negro de pele mais clara (barba, camisa vinho), ela retinta (black power,
+                argolonas, blusa de estampa africana), na mesa de chita: esperando, feliz e comendo. Quadro 64×48.
   Pôr do Sol  → gatinho laranja listrado e branco (peito, patas e focinho brancos, rabo em anéis), da foto (sentado balançando o rabo e dormindo)
 
 Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×17), contorno marrom-dendê.
@@ -39,12 +41,15 @@ C.update({
     'luiz_brilho': hx('8e5a39'), 'toninho_brilho': hx('f0c7a3'),
     'verde_palmeiras': hx('0f6b3c'), 'verde_palmeiras_sombra': hx('0a4c2a'),
     'cerveja': hx('f2b632'), 'espuma': hx('fff6dc'),
+    'pele_cliente': hx('9c6641'), 'pele_cliente_sombra': hx('77492b'), 'boca_cliente': hx('6e3526'),
+    'pele_retinta': hx('4b2a1b'), 'pele_retinta_sombra': hx('341b10'), 'pele_retinta_luz': hx('6a3d28'),
+    'boca_retinta': hx('7a1a24'), 'blush_retinta': hx('6e3428'),
     'vermelho': hx('d9473e'), 'vermelho_sombra': hx('a8322b'),
 })
 
 
 # ─── Peças comuns ─────────────────────────────────────────────────────────────
-def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha='castanho', oculos=False, feliz=False, cor_oculos='olho'):
+def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha='castanho', oculos=False, feliz=False, cor_oculos='olho', blush='blush', brilho_olho=False):
     p.ret(14, 22 + dy, 17, 24 + dy, pele)  # pescoço
     p.elipse(16, 17 + dy, 6.2, 6.2, pele, ymin=11 + dy)
     for y in range(13 + dy, 22 + dy):
@@ -55,6 +60,9 @@ def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha
     if olhos == 'abertos' and not feliz:
         for x in (13, 18):
             p.d(x, 16 + dy, 'olho'); p.d(x, 17 + dy, 'olho')
+            if brilho_olho:  # brilhinho no olho (pele bem escura)
+                p.d(x - 1 if x == 13 else x + 1, 17 + dy, 'branco_sombra')
+                p.d(x, 16 + dy, 'branco')
     elif feliz:
         for x0 in (12, 17):
             p.d(x0, 17 + dy, 'olho'); p.d(x0 + 1, 16 + dy, 'olho'); p.d(x0 + 2, 17 + dy, 'olho')
@@ -68,7 +76,8 @@ def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha
             for y in (16, 17):
                 p.d(x0, y + dy, cor_oculos); p.d(x0 + 3, y + dy, cor_oculos)
         p.d(15, 16 + dy, cor_oculos); p.d(16, 16 + dy, cor_oculos)
-    p.d(11, 19 + dy, 'blush'); p.d(20, 19 + dy, 'blush')
+    if blush:
+        p.d(11, 19 + dy, blush); p.d(20, 19 + dy, blush)
     # sorriso
     p.d(13, 19 + dy, boca); p.d(18, 19 + dy, boca)
     for x in range(14, 18):
@@ -566,6 +575,155 @@ def mesa_tios(brinde=0, respira=0, olhos='abertos'):
     return q
 
 
+# ─── Clientes: casal na mesa de chita (64×48) ────────────────────────────────
+def chita_px(x, y):
+    """Mesma chita do cenário (flores sobre vermelho)."""
+    k = ((x // 7) * 3 + (y // 7) * 5) % 4
+    cx, cy = x % 7, y % 7
+    if (cx - 3) ** 2 + (cy - 3) ** 2 <= 2:
+        return ('amarelo', 'cabelo_rosa', 'branco', 'cabelo_lilas')[k] if (cx, cy) != (3, 3) else 'barra'
+    if (cx, cy) in ((0, 5), (1, 6), (6, 0)):
+        return 'fita'
+    return 'batom'
+
+
+def casal_mesa(estado='esperando', k=0):
+    """estado: 'esperando' (sem comida), 'feliz' (o acarajé chegou) ou 'comendo'. k = quadro."""
+    q = [[None] * MW for _ in range(H)]
+    feliz = estado == 'feliz'
+    pisca = estado == 'esperando' and k == 1
+
+    # ── ela (direita, ox=32): retinta, black power, argolonas, blusa de estampa africana
+    afro = Parte()
+    afro.elipse(16, 12.5, 9.6, 8.6, 'olho')
+    for (x, y) in list(afro.px):
+        if (x * 3 + y * 5) % 7 == 0:
+            afro.d(x, y, 'castanho')
+        elif (x + y) % 9 == 0:
+            afro.d(x, y, 'castanho_luz')
+    compor_em(q, afro, 32)
+
+    # ── ele (esquerda): pele negra mais clara, cabelo crespo curtinho com volume, barba, camisa vinho
+    for ox, quem in ((0, 'ele'), (32, 'ela')):
+        # pernas e cadeira embaixo da mesa
+        cad = Parte()
+        cad.linha(ox + 9, 36, ox + 11, 47, 'madeira'); cad.linha(ox + 23, 36, ox + 21, 47, 'madeira')
+        cad.ret(ox + 9, 40, ox + 23, 40, 'madeira_luz')
+        compor_em(q, cad)
+        pernas = Parte()
+        for x0 in (ox + 11, ox + 17):
+            if quem == 'ele':
+                pernas.ret(x0, 36, x0 + 3, 45, 'jeans')
+                pernas.ret(x0 - 1, 46, x0 + 3, 47, 'branco')  # tênis
+            else:
+                pernas.ret(x0, 41, x0 + 2, 45, 'pele_retinta')
+                pernas.ret(x0, 36, x0 + 3, 40, 'amarelo')  # barra do vestido
+                pernas.ret(x0 - 1, 46, x0 + 3, 46, 'ouro_sombra')  # sandália
+        compor_em(q, pernas)
+
+    for ox, quem in ((0, 'ele'), (32, 'ela')):
+        t = Parte()
+        if quem == 'ele':
+            for y in range(24, 35):
+                x0, x1 = (8, 23) if y > 24 else (9, 22)
+                for x in range(x0, x1 + 1):
+                    t.p(x, y, 'batom_sombra' if x >= x1 - 1 else 'vinho')
+            t.p(15, 24, 'pele_cliente'); t.p(16, 24, 'pele_cliente'); t.p(15, 25, 'pele_cliente'); t.p(16, 25, 'pele_cliente')  # gola aberta
+            t.d(14, 24, 'batom_sombra'); t.d(17, 24, 'batom_sombra')
+            for y in (28, 31):
+                t.d(16, y, 'bege')
+        else:
+            estampa = ('barra', 'amarelo', 'preto', 'amarelo', 'fita', 'barra')
+            for y in range(24, 35):
+                x0, x1 = CURVAS[y] if y in CURVAS else (9, 22)
+                for x in range(x0, x1 + 1):
+                    t.p(x, y, estampa[((x - y) // 2 + (y // 3)) % len(estampa)])
+            for x in range(13, 19):  # decote
+                t.p(x, 24, 'pele_retinta')
+            t.p(14, 25, 'pele_retinta'); t.p(15, 25, 'pele_retinta'); t.p(16, 25, 'pele_retinta'); t.p(17, 25, 'pele_retinta')
+            for x in (14, 16, 18):
+                t.d(x - 1, 26, 'ouro')  # colar
+        compor_em(q, t, ox)
+
+        cab = Parte()
+        if quem == 'ele':
+            rosto(cab, 0, 'pele_cliente', 'pele_cliente_sombra', boca='boca_cliente', olhos='fechados' if pisca else 'abertos',
+                  sobrancelha='olho', feliz=feliz or estado == 'comendo' and k % 2 == 1, blush=None)
+            for x in range(11, 21):  # barba curtinha no queixo
+                for y in (21, 22):
+                    if (x, y) in cab.px and not (14 <= x <= 17 and y == 21):
+                        cab.d(x, y, 'olho')
+            for y in range(15, 20):  # costeleta
+                cab.d(10, y, 'olho'); cab.d(21, y, 'olho')
+            cabelo = Parte()  # crespo curtinho, com volume em cima
+            cabelo.elipse(16, 11.5, 6.8, 3.6, 'olho', ymax=13)
+            for (x, y) in list(cabelo.px):
+                if (x * 2 + y) % 5 == 0:
+                    cabelo.d(x, y, 'castanho')
+            compor_em(q, cab, ox)
+            compor_em(q, cabelo, ox)
+        else:
+            rosto(cab, 0, 'pele_retinta', 'pele_retinta_sombra', boca='boca_retinta', olhos='fechados' if pisca else 'abertos',
+                  sobrancelha='olho', feliz=feliz or estado == 'comendo' and k % 2 == 0, blush='blush_retinta', brilho_olho=True)
+            cab.d(12, 15, 'pele_retinta_luz'); cab.d(19, 15, 'pele_retinta_luz')  # luz nas maçãs
+            for x in (9, 22):  # argolonas douradas
+                cab.p(x, 19, 'ouro'); cab.p(x, 22, 'ouro'); cab.p(x - 1 if x == 9 else x + 1, 20, 'ouro'); cab.p(x - 1 if x == 9 else x + 1, 21, 'ouro_sombra')
+            franja = Parte()  # o black power por cima da testa
+            franja.elipse(16, 11.6, 6.9, 2.6, 'olho', ymax=12)
+            for (x, y) in list(franja.px):
+                if (x * 3 + y * 5) % 7 == 0:
+                    franja.d(x, y, 'castanho')
+            compor_em(q, cab, 32)
+            compor_em(q, franja, 32, contorno=False)
+
+    # mesa com toalha de chita
+    mesa = Parte()
+    mesa.ret(1, 34, 62, 39, 'batom')
+    for (x, y) in list(mesa.px):
+        mesa.p(x, y, chita_px(x, y))
+    for x in range(1, 63, 4):  # barra da toalha caindo
+        mesa.p(x, 40, chita_px(x, 40)); mesa.p(x + 1, 40, chita_px(x + 1, 40))
+    mesa.ret(28, 34, 35, 39, 'bege')  # caminho de juta
+    mesa.ret(4, 41, 5, 47, 'madeira'); mesa.ret(58, 41, 59, 47, 'madeira')
+    compor_em(q, mesa)
+
+    # pratos (com acarajé quando a comida chegou)
+    for cx in (17, 47):
+        pr = Parte()
+        pr.ret(cx - 4, 33, cx + 4, 33, 'branco'); pr.ret(cx - 5, 34, cx + 5, 34, 'branco_sombra')
+        if estado != 'esperando':
+            pr.elipse(cx, 31.6, 3.2, 1.8, 'barra')
+            pr.d(cx - 1, 31, 'amarelo'); pr.d(cx + 1, 31, 'amarelo')
+        compor_em(q, pr)
+    copo_p = copo(29, 30)
+    compor_em(q, copo_p)
+    compor_em(q, copo(33, 30))
+
+    # braços
+    for ox, quem, pele, manga in ((0, 'ele', 'pele_cliente', 'vinho'), (32, 'ela', 'pele_retinta', 'barra')):
+        e, d = Parte(), Parte()
+        braco(e, (8, 25), (5, 30), (8, 33), pele, manga, 0.4)
+        leva = estado == 'comendo' and ((quem == 'ele' and k in (1, 2)) or (quem == 'ela' and k in (3, 0)))
+        if feliz:
+            braco(d, (23, 25), (26, 21), (25 if k != 1 else 27, 16), pele, manga, 0.4)  # mão pra cima, comemorando
+        elif leva:
+            braco(d, (23, 25), (24, 29), (18, 22), pele, manga, 0.4)  # leva o acarajé à boca
+        else:
+            braco(d, (23, 25), (25, 30), (22, 33), pele, manga, 0.4)
+        compor_em(q, e, ox); compor_em(q, d, ox)
+        if leva:
+            bolinho = Parte()
+            bolinho.elipse(18.5 + ox, 21.5, 2.0, 1.4, 'barra')
+            bolinho.d(18 + ox, 21, 'amarelo')
+            compor_em(q, bolinho)
+
+    if feliz:  # coraçõezinhos subindo
+        for x, y in ((31, 10 - k), (30, 9 - k), (32, 9 - k), (31, 11 - k)):
+            if 0 <= y < H:
+                q[y][x] = C['coracao']
+    return q
+
+
 # ─── Saída ────────────────────────────────────────────────────────────────────
 def animacoes():
     A = {
@@ -577,6 +735,9 @@ def animacoes():
         'gato_dormindo': [recorte_gato(gato_dormindo(0)), recorte_gato(gato_dormindo(1))],
         'npc_tios_mesa_parada': [mesa_tios(), mesa_tios(respira=1, olhos='fechados')],
         'npc_tios_mesa_brindando': [mesa_tios(1), mesa_tios(2), mesa_tios(1)],
+        'cliente_casal_esperando': [casal_mesa('esperando', 0), casal_mesa('esperando', 1)],
+        'cliente_casal_feliz': [casal_mesa('feliz', k) for k in range(3)],
+        'cliente_casal_comendo': [casal_mesa('comendo', k) for k in range(4)],
     }
     for g in GEMEAS:
         A[f'npc_{g}_parada'] = [gemea(g), gemea(g, 1, 'fechados')]

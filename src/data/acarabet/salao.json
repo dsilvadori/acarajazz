@@ -20,13 +20,13 @@
       "largura": 64
     },
     "gemea_mae": {
-      "x": 98,
-      "y": 208,
+      "x": 126,
+      "y": 196,
       "sprite": "npc_gemea_mae"
     },
     "gemea_tia": {
-      "x": 122,
-      "y": 208,
+      "x": 148,
+      "y": 196,
       "sprite": "npc_gemea_tia"
     },
     "valentina": {
@@ -48,6 +48,65 @@
         "onde": "no banquinho da salinha, atrás da Valentina"
       }
     ],
+    "pontos": {
+      "bancada": {
+        "x": 70,
+        "y": 146,
+        "camada": "atras_do_balcao"
+      },
+      "portinha": {
+        "x": 108,
+        "y": 146,
+        "camada": "atras_do_balcao"
+      },
+      "saida": {
+        "x": 108,
+        "y": 170,
+        "camada": "salao"
+      },
+      "mesa_tios": {
+        "x": 66,
+        "y": 200,
+        "camada": "salao"
+      },
+      "mesa_frente": {
+        "x": 124,
+        "y": 240,
+        "camada": "salao"
+      }
+    },
+    "rotas": {
+      "servir_mesa_frente": [
+        "bancada",
+        "portinha",
+        "saida",
+        "mesa_frente"
+      ],
+      "servir_tios": [
+        "bancada",
+        "portinha",
+        "saida",
+        "mesa_tios"
+      ]
+    },
+    "regras_animacao": {
+      "mais_horizontal": "andando_lado (servindo_lado se estiver com a bandeja); espelhar quando for pra esquerda",
+      "descendo": "andando (de frente)",
+      "subindo": "andando_costas",
+      "velocidade_px_por_s": 40
+    },
+    "casal": {
+      "x": 56,
+      "y": 258,
+      "sprite": "cliente_casal",
+      "largura": 64,
+      "estados": [
+        "esperando",
+        "feliz",
+        "comendo"
+      ],
+      "obs": "feliz quando a Bia chega com a bandeja; depois comendo"
+    },
     "lousa_texto": {
       "x": 12,
       "y": 63,

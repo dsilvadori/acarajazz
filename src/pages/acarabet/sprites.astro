@@ -18,6 +18,9 @@ const animacoes = [
   { arquivo: 'provando_3q', nome: 'Provando', quadros: 3, fps: 3 },
   { arquivo: 'comemorando_4q', nome: 'Comemorando', quadros: 4, fps: 8 },
   { arquivo: 'preocupada_2q', nome: 'Preocupada (algo queimou)', quadros: 2, fps: 4 },
+  { arquivo: 'andando_lado_6q', nome: 'Andando de lado', quadros: 6, fps: 10 },
+  { arquivo: 'servindo_lado_6q', nome: 'Servindo (com a bandeja)', quadros: 6, fps: 10 },
+  { arquivo: 'andando_costas_4q', nome: 'Andando de costas', quadros: 4, fps: 8 },
 ];
 const pos = salao.posicoes;
 const gato = pos.por_do_sol[0];
@@ -40,6 +43,9 @@ const easterEggs = [
   { arquivo: 'npc_valentina_acenando_2q', nome: 'Valentina acenando', desc: 'Ao tocar nela', quadros: 2, fps: 4 },
   { arquivo: 'npc_tios_mesa_parada_2q', nome: 'Tio Luizinho e Toninho', desc: 'Na mesa, com acarajé e cerveja', quadros: 2, fps: 2, w: 64 },
   { arquivo: 'npc_tios_mesa_brindando_3q', nome: 'Brindando', desc: 'Ao tocar neles', quadros: 3, fps: 4, w: 64 },
+  { arquivo: 'cliente_casal_esperando_2q', nome: 'Casal (clientes)', desc: 'Esperando o pedido', quadros: 2, fps: 2, w: 64 },
+  { arquivo: 'cliente_casal_feliz_3q', nome: 'Casal: chegou!', desc: 'Quando a Bia serve', quadros: 3, fps: 5, w: 64 },
+  { arquivo: 'cliente_casal_comendo_4q', nome: 'Casal comendo', desc: 'Depois de servidos', quadros: 4, fps: 4, w: 64 },
   { arquivo: 'gato_sentado_4q', nome: 'Pôr do Sol', desc: 'Sentado, balançando o rabo', quadros: 4, fps: 4, w: 24, h: 17 },
   { arquivo: 'gato_dormindo_2q', nome: 'Pôr do Sol dormindo', desc: 'Num cantinho do cenário', quadros: 2, fps: 1, w: 24, h: 17 },
 ];
@@ -89,11 +95,13 @@ const easterEggs = [
     <p class="desc">Camadas de tools/sprites/cenario.py (180×320, ampliado 2×). Posições em src/data/acarabet/salao.json.</p>
     <div class="cena" role="img" aria-label="Salão do Acarajazz com a Bia no balcão e os personagens">
       <img src="/jogo/cenario/salao_fundo.png" alt="" width="180" height="320" />
-      <div class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/bia_baiana_parada_2q.png');--e:1;left:${pos.bia.x}px;top:${pos.bia.y}px`}></div>
-      <img src="/jogo/cenario/salao_balcao.png" alt="" width="180" height="320" />
-      <div class="sprite fitas" style="--q:4;--dur:1.6s;--img:url('/jogo/cenario/salao_fitas_4q.png');--e:1;--w:180;--h:40;left:0;top:0"></div>
+      <div id="bia-cena" class="sprite" data-pontos={JSON.stringify(pos.pontos)} data-rotas={JSON.stringify(pos.rotas)}
+        style={`--q:2;--dur:1s;--img:url('/jogo/sprites/bia_baiana_parada_2q.png');--e:1;left:${pos.pontos.bancada.x}px;top:${pos.pontos.bancada.y}px;z-index:1`}></div>
+      <img src="/jogo/cenario/salao_balcao.png" alt="" width="180" height="320" style="z-index:2" />
+      <div class="sprite fitas" style="--q:4;--dur:1.6s;--img:url('/jogo/cenario/salao_fitas_4q.png');--e:1;--w:180;--h:40;left:0;top:0;z-index:999"></div>
+      <div id="casal-cena" class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/cliente_casal_esperando_2q.png');--e:1;--w:64;--h:48;left:${pos.casal.x}px;top:${pos.casal.y}px;z-index:${10 + pos.casal.y + 48}`}></div>
       {cena.map((c) => (
-        <div class="sprite" style={`--q:${c.q};--dur:${c.q / c.fps}s;--img:url('/jogo/sprites/${c.s}.png');--e:1;--w:${c.w ?? 32};--h:${c.h ?? 48};left:${c.x}px;top:${c.y}px`}></div>
+        <div class="sprite" style={`--q:${c.q};--dur:${c.q / c.fps}s;--img:url('/jogo/sprites/${c.s}.png');--e:1;--w:${c.w ?? 32};--h:${c.h ?? 48};left:${c.x}px;top:${c.y}px;z-index:${10 + c.y + (c.h ?? 48)}`}></div>
       ))}
     </div>
 
@@ -150,6 +158,73 @@ const easterEggs = [
 </style>
 
 <script>
+  // Prévia da Bia andando pelo salão (mesma lógica que o jogo vai usar, com os pontos de salao.json)
+  type Ponto = { x: number; y: number; camada: string };
+  const bia = document.getElementById('bia-cena');
+  let roupa = 'baiana';
+  document.querySelectorAll<HTMLButtonElement>('.roupas button').forEach((b) =>
+    b.addEventListener('click', () => (roupa = b.dataset.roupa!)),
+  );
+  if (bia && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const pontos: Record<string, Ponto> = JSON.parse(bia.dataset.pontos!);
+    const rotas: Record<string, string[]> = JSON.parse(bia.dataset.rotas!);
+    const VEL = 40; // px por segundo
+    const anim = (nome: string, q: number, fps: number, espelha = false) => {
+      bia.style.setProperty('--img', `url('/jogo/sprites/bia_${roupa}_${nome}_${q}q.png')`);
+      bia.style.setProperty('--q', String(q));
+      bia.style.setProperty('--dur', `${q / fps}s`);
+      bia.style.transform = espelha ? 'scaleX(-1)' : '';
+    };
+    const coloca = (x: number, y: number, camada: string) => {
+      bia.style.left = `${x}px`;
+      bia.style.top = `${y}px`;
+      bia.style.zIndex = camada === 'atras_do_balcao' ? '1' : String(10 + Math.round(y) + 48);
+    };
+    const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const casal = document.getElementById('casal-cena');
+    const casalEstado = (nome: string, q: number, fps: number) => {
+      casal?.style.setProperty('--img', `url('/jogo/sprites/cliente_casal_${nome}_${q}q.png')`);
+      casal?.style.setProperty('--q', String(q));
+      casal?.style.setProperty('--dur', `${q / fps}s`);
+    };
+    const anda = (de: Ponto, para: Ponto, bandeja: boolean) =>
+      new Promise<void>((fim) => {
+        const dx = para.x - de.x, dy = para.y - de.y;
+        if (Math.abs(dx) >= Math.abs(dy)) anim(bandeja ? 'servindo_lado' : 'andando_lado', 6, 10, dx < 0);
+        else if (dy > 0) anim('andando', 4, 8);
+        else anim('andando_costas', 4, 8);
+        const dur = (Math.hypot(dx, dy) / VEL) * 1000;
+        const t0 = performance.now();
+        const passo = (t: number) => {
+          const k = Math.min(1, (t - t0) / dur);
+          const camada = k < 0.5 ? de.camada : para.camada;
+          coloca(de.x + dx * k, de.y + dy * k, camada);
+          if (k < 1) requestAnimationFrame(passo);
+          else fim();
+        };
+        requestAnimationFrame(passo);
+      });
+    const percorre = async (nomes: string[], bandeja: boolean) => {
+      for (let i = 1; i < nomes.length; i++) await anda(pontos[nomes[i - 1]], pontos[nomes[i]], bandeja);
+    };
+    (async () => {
+      for (;;) {
+        for (const rota of Object.values(rotas)) {
+          anim('mexendo', 4, 8);
+          await espera(2500);
+          const praCasal = rota[rota.length - 1] === 'mesa_frente';
+          if (praCasal) casalEstado('esperando', 2, 2);
+          await percorre(rota, true); // leva o acarajé
+          anim('comemorando', 4, 8);
+          if (praCasal) casalEstado('feliz', 3, 5);
+          await espera(1500);
+          if (praCasal) casalEstado('comendo', 4, 4);
+          await percorre([...rota].reverse(), false); // volta pro balcão
+        }
+      }
+    })();
+  }
+
   document.querySelectorAll<HTMLButtonElement>('.roupas button').forEach((b) =>
     b.addEventListener('click', () => {
       document.querySelectorAll('.roupas button').forEach((x) => x.classList.toggle('ativo', x === b));

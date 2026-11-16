@@ -228,7 +228,7 @@ def fundo():
             pinta(q, x, y, cor)
 
     # plantas
-    for x0, alto, base in ((0, 30, 300), (160, 28, 226)):
+    for x0, alto, base in ((0, 30, 300), (160, 28, 304)):
         pl = Parte()
         pl.ret(x0 + 4, base, x0 + 15, base + 12, 'vaso')
         pl.ret(x0 + 3, base, x0 + 16, base + 1, 'laranja_sombra')
@@ -236,34 +236,8 @@ def fundo():
             topo = base - alto + abs(k) * 3
             pl.linha(x0 + 10, base, x0 + 10 + k * 2, topo, 'folha' if k % 2 else 'folha_escura')
         peca(q, pl)
-    esp = Parte()  # espada-de-são-jorge ao lado do balcão
-    esp.ret(138, CHAO - 14, 147, CHAO + 2, 'vaso')
-    for k, h in ((-1, 30), (0, 38), (1, 26), (2, 33)):
-        esp.ret(141 + k * 2, CHAO - 14 - h, 142 + k * 2, CHAO - 15, 'folha')
-        for y in range(CHAO - 14 - h, CHAO - 15, 3):
-            esp.d(141 + k * 2, y, 'folha_escura')
-    peca(q, esp)
 
-    # mesa de chita na frente, com cumbucas verde-água
-    me = Parte()
-    me.ret(56, 276, 124, 288, 'batom')
-    for (x, y) in list(me.px):
-        me.p(x, y, chita(x, y))
-    me.ret(84, 276, 96, 288, 'bege')  # caminho de juta
-    for y in range(277, 289, 2):
-        me.d(84, y, 'madeira_luz'); me.d(96, y, 'madeira_luz')
-    me.ret(60, 289, 62, 312, 'madeira'); me.ret(118, 289, 120, 312, 'madeira')
-    peca(q, me)
-    for cx in (70, 108):
-        cum = Parte()
-        cum.elipse(cx, 274, 5, 3, 'agua_marinha', ymin=273)
-        cum.ret(cx - 4, 272, cx + 4, 272, 'barra')  # comida dentro
-        cum.d(cx - 1, 272, 'amarelo')
-        peca(q, cum)
-    gar = Parte()  # cerveja no porta-garrafa
-    gar.ret(88, 262, 92, 273, 'batom'); gar.ret(89, 258, 91, 261, 'folha_escura')
-    gar.ret(88, 266, 92, 267, 'branco')
-    peca(q, gar)
+    # (a mesa de chita da frente agora vem junto com o casal de clientes: cliente_casal_*.png)
     return q
 
 
@@ -272,10 +246,10 @@ def balcao():
     q = tela()
     T = 176  # tampo
     b = Parte()
-    b.ret(34, T, 136, T + 3, 'madeira_luz')
-    b.ret(34, T + 3, 136, T + 3, 'madeira')
-    b.ret(36, T + 4, 134, CHAO - 1, 'bege')  # tábuas
-    for x in range(36, 135):
+    b.ret(34, T, 122, T + 3, 'madeira_luz')  # termina antes da portinha (passagem da Bia em x 123–136)
+    b.ret(34, T + 3, 122, T + 3, 'madeira')
+    b.ret(36, T + 4, 120, CHAO - 1, 'bege')  # tábuas
+    for x in range(36, 121):
         if (x - 36) % 9 == 0:
             for y in range(T + 4, CHAO):
                 b.d(x, y, 'madeira')
@@ -293,12 +267,12 @@ def balcao():
                 b.d(x, y, 'amarelo')
     for x, y in ((cx + 9, cy - 4), (cx + 10, cy - 6), (cx + 9, cy - 8)):
         b.d(x, y, 'contorno')
-    for x in range(86, 124):  # "Acarajazz" em cursiva
+    for x in range(84, 116):  # "Acarajazz" em cursiva
         y = cy + round(2.0 * math.sin(x / 1.8))
         b.d(x, y, 'contorno')
         if x % 6 == 0:
             b.d(x, y - 3, 'contorno'); b.d(x, y - 2, 'contorno')
-    for x in range(100, 110):  # o "cachimbo/sax"
+    for x in range(96, 106):  # o "cachimbo/sax"
         b.d(x, cy + 5 + (1 if x > 105 else 0), 'contorno')
     peca(q, b)
     return q
@@ -331,13 +305,33 @@ POSICOES = {
     'bia': {'x': 70, 'y': 146, 'camada': 'atras_do_balcao', 'sprite': 'bia_<roupa>_<animacao>'},
     'eliana': {'x': 2, 'y': 152, 'sprite': 'npc_eliana'},
     'tios_mesa': {'x': 4, 'y': 214, 'sprite': 'npc_tios_mesa', 'largura': 64},
-    'gemea_mae': {'x': 98, 'y': 208, 'sprite': 'npc_gemea_mae'},
-    'gemea_tia': {'x': 122, 'y': 208, 'sprite': 'npc_gemea_tia'},
+    'gemea_mae': {'x': 126, 'y': 196, 'sprite': 'npc_gemea_mae'},
+    'gemea_tia': {'x': 148, 'y': 196, 'sprite': 'npc_gemea_tia'},
     'valentina': {'x': 146, 'y': 150, 'sprite': 'npc_valentina'},
     'por_do_sol': [  # sempre perto da Valentina; sorteia um dos dois cantinhos por partida
         {'x': 150, 'y': 184, 'sprite': 'gato_sentado', 'onde': 'aos pés da Valentina'},
         {'x': 142, 'y': 161, 'sprite': 'gato_dormindo', 'onde': 'no banquinho da salinha, atrás da Valentina'},
     ],
+    # Caminhos da Bia (posição do sprite 32×48). 'camada': atrás do balcão ou no salão (ordem pelo y).
+    'pontos': {
+        'bancada': {'x': 70, 'y': 146, 'camada': 'atras_do_balcao'},
+        'portinha': {'x': 108, 'y': 146, 'camada': 'atras_do_balcao'},
+        'saida': {'x': 108, 'y': 170, 'camada': 'salao'},
+        'mesa_tios': {'x': 66, 'y': 200, 'camada': 'salao'},
+        'mesa_frente': {'x': 124, 'y': 240, 'camada': 'salao'},
+    },
+    'rotas': {
+        'servir_mesa_frente': ['bancada', 'portinha', 'saida', 'mesa_frente'],
+        'servir_tios': ['bancada', 'portinha', 'saida', 'mesa_tios'],
+    },
+    'regras_animacao': {
+        'mais_horizontal': 'andando_lado (servindo_lado se estiver com a bandeja); espelhar quando for pra esquerda',
+        'descendo': 'andando (de frente)',
+        'subindo': 'andando_costas',
+        'velocidade_px_por_s': 40,
+    },
+    'casal': {'x': 56, 'y': 258, 'sprite': 'cliente_casal', 'largura': 64,
+              'estados': ['esperando', 'feliz', 'comendo'], 'obs': 'feliz quando a Bia chega com a bandeja; depois comendo'},
     'lousa_texto': {'x': 12, 'y': 63, 'largura': 35, 'altura': 6, 'cor': '#eef0e6'},
 }
 
@@ -373,10 +367,11 @@ def main():
         cola(quadros[0], 0, 0)
         cola(N['npc_eliana_parada'][0], 2, 152)
         cola(N['npc_tios_mesa_parada'][0], 4, 214)
-        cola(N['npc_gemea_mae_parada'][0], 98, 208)
-        cola(N['npc_gemea_tia_parada'][0], 122, 208)
+        cola(N['npc_gemea_mae_parada'][0], 126, 196)
+        cola(N['npc_gemea_tia_parada'][0], 148, 196)
         cola(N['npc_valentina_parada'][0], 146, 150)
         cola(N['gato_sentado'][0], 150, 184)
+        cola(N['cliente_casal_esperando'][0], 56, 258)
         salvar_png(destino, q, escala=3)
 
 

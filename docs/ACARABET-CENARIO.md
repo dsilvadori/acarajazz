@@ -75,3 +75,13 @@ Um **corte da casa**, como uma casinha de bonecas, em três faixas:
   4. `salao_fitas_4q.png`: a rede de fitinhas balançando (4 quadros)
   5. os personagens do salão
 - Posições de cada personagem e da área de texto da lousa: `src/data/acarabet/salao.json`.
+
+## 5. A Bia andando pelo salão
+- Animações extras (para cada roupa), geradas por `tools/sprites/bia_lado.py`:
+  `andando_lado_6q` (de perfil, virada pra direita; o jogo espelha pra esquerda), `servindo_lado_6q` (com a bandeja: acarajé e cumbuca) e `andando_costas_4q`.
+- O balcão tem uma **portinha na ponta direita** (x 123–136) por onde ela sai para o salão.
+- Pontos de parada e rotas ficam em `src/data/acarabet/salao.json` (`pontos`, `rotas`, `regras_animacao`):
+  - andando mais na horizontal → de lado (com a bandeja quando leva o prato);
+  - descendo → de frente; subindo → de costas;
+  - 40 px por segundo; atrás do balcão ela fica na camada de trás, no salão vale "quem está mais embaixo fica na frente".
+- A prévia em `/acarabet/sprites` já mostra a Bia fazendo as duas rotas (mesa da frente e mesa dos tios), na roupa escolhida na aba.
