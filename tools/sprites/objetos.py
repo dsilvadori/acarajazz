@@ -26,6 +26,8 @@ C.update({
     'ouro_luz': hx('ffe07a'),
     'agua_suja': hx('9a8866'), 'agua_suja_sombra': hx('7d6c4c'),
     'tomate_verde': hx('6fa83e'), 'tomate_verde_luz': hx('b5dc76'), 'tomate_verde_sombra': hx('47802a'),
+    'tomate_meio': hx('e8582a'), 'tomate_meio_luz': hx('ffc84a'), 'tomate_meio_sombra': hx('b8361c'),
+    'tomate_maduro': hx('d8322c'), 'tomate_maduro_luz': hx('ff7a62'), 'tomate_maduro_sombra': hx('9c1a18'),
     'gengibre': hx('d9b27a'), 'gengibre_sombra': hx('a8804a'),
     'fogo_amarelo': hx('ffd23f'), 'gelo': hx('bfe8ff'),
 })
@@ -230,15 +232,18 @@ def faca():
     return [faz(32, 32, [p])]
 
 
-def tomate(cubos=False):
-    """Tomate verde (a salada do acarajé é só tomate verde picado)."""
+def tomate(cubos=False, cor='tomate_verde'):
+    """Tomate da salada: verde, meio amarelado (quase vermelho) ou vermelho."""
     p = Parte()
     if cubos:
         for (x, y) in ((3, 4), (8, 3), (12, 7), (5, 9), (10, 11)):
-            p.ret(x, y, x + 2, y + 2, 'tomate_verde'); p.d(x, y, 'tomate_verde_luz')
+            p.ret(x, y, x + 2, y + 2, cor); p.d(x, y, cor + '_luz')
     else:
-        p.elipse(8, 9, 6, 5.5, 'tomate_verde'); p.d(5, 6, 'tomate_verde_luz'); p.d(6, 6, 'tomate_verde_luz')
-        p.d(10, 12, 'tomate_verde_sombra'); p.d(11, 11, 'tomate_verde_sombra')
+        p.elipse(8, 9, 6, 5.5, cor); p.d(5, 6, cor + '_luz'); p.d(6, 6, cor + '_luz')
+        p.d(10, 12, cor + '_sombra'); p.d(11, 11, cor + '_sombra')
+        if cor == 'tomate_meio':  # ainda amarelando perto do cabinho
+            for (x, y) in ((6, 5), (7, 5), (8, 5), (9, 5), (10, 6), (7, 6), (9, 6)):
+                p.d(x, y, 'tomate_meio_luz')
         p.ret(7, 2, 9, 3, 'fita')
     return [faz(16, 16, [p])]
 
@@ -289,11 +294,14 @@ def mao():
 
 
 def salada():
+    """Tigela com os três tomates picados misturados."""
     p = Parte()
     p.elipse(16, 18, 13, 10, 'agua_marinha')
     p.elipse(16, 15, 11, 6, 'tomate_verde')
-    for (x, y) in ((10, 14), (14, 12), (19, 15), (22, 13), (16, 17), (12, 16)):
-        p.d(x, y, 'tomate_verde_luz'); p.d(x + 1, y, 'tomate_verde_sombra')
+    cores = ('tomate_verde', 'tomate_meio', 'tomate_maduro')
+    for i, (x, y) in enumerate(((10, 14), (14, 12), (19, 15), (22, 13), (16, 17), (12, 16), (8, 15), (18, 11), (24, 15), (14, 18))):
+        c = cores[i % 3]
+        p.d(x, y, c); p.d(x + 1, y, c + '_sombra')
     return [faz(32, 32, [p])]
 
 
@@ -448,8 +456,9 @@ def camada(nome):
         for x in range(2, 23, 4):
             p.d(x, 2, 'quiabo_luz')
     elif nome == 'salada':
-        for x in range(0, 24, 3):
-            p.ret(x, 1, x + 1, 2, 'tomate_verde' if x % 2 else 'tomate_verde_luz')
+        cores = ('tomate_verde', 'tomate_meio', 'tomate_maduro')
+        for i, x in enumerate(range(0, 24, 3)):
+            p.ret(x, 1, x + 1, 2, cores[i % 3])
     elif nome == 'camarao':
         for x in (2, 9, 16):
             p.ret(x, 0, x + 4, 2, 'camarao'); p.d(x + 4, 1, 'olho')
@@ -480,7 +489,7 @@ def potinho(nome):
     elif nome == 'caruru':
         p.d(7, 8, 'quiabo_luz')
     elif nome == 'salada':
-        p.d(6, 7, 'tomate_verde_luz'); p.d(10, 8, 'tomate_verde_luz')
+        p.d(6, 7, 'tomate_maduro'); p.d(10, 8, 'tomate_meio'); p.d(8, 9, 'tomate_maduro_luz')
     return [faz(16, 16, [p])]
 
 
@@ -654,7 +663,8 @@ ITENS = {
     'panela_queimado': lambda: panela('queimado'), 'colher': colher,
     **{f'ing_{n}': (lambda n=n: ingrediente(n)) for n in ('castanha', 'amendoim', 'gengibre', 'temperos', 'farinha', 'dende')},
     'quiabo': lambda: quiabo(False), 'quiabo_rodelas': lambda: quiabo(True), 'tabua': tabua, 'faca': faca,
-    'tomate_verde': lambda: tomate(False), 'tomate_verde_cubos': lambda: tomate(True), 'mao': mao, 'salada': salada,
+    **{f'{c}': (lambda c=c: tomate(False, c)) for c in ('tomate_verde', 'tomate_meio', 'tomate_maduro')},
+    **{f'{c}_cubos': (lambda c=c: tomate(True, c)) for c in ('tomate_verde', 'tomate_meio', 'tomate_maduro')}, 'mao': mao, 'salada': salada,
     'fumaca': fumaca,
     **{f'bacia_massa_{n}': (lambda n=n: bacia_massa(n)) for n in range(N_MASSA)},
     'torneira': torneira, 'jato_agua': jato_agua,

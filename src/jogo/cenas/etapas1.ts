@@ -552,7 +552,8 @@ export class Caruru extends Etapa {
   }
 }
 
-// ─── 6. Salada: só tomate verde picado (tocar no tempo, sem acertar o dedo) ──
+// ─── 6. Salada: tomate verde, meio amarelado e vermelho picados (tocar no tempo, sem acertar o dedo) ──
+const TOMATES = ['tomate_verde', 'tomate_meio', 'tomate_maduro'];
 export class Salada extends Etapa {
   constructor() {
     super('Salada');
@@ -571,14 +572,14 @@ export class Salada extends Etapa {
   private dedo = 0;
   private errou = 0;
   private espera = 0;
-  private readonly TOMATES = 3;
+  private readonly TOMATES = TOMATES.length;
   private readonly Y = 196;
 
   protected montar() {
     this.vel = 60; this.dir = 1; this.cortes = this.tomates = this.dedo = this.errou = 0;
     this.add.image(CENTRO_X, this.Y, 'atlas', 'tabua_0').setScale(2);
     this.tigela = this.add.image(CENTRO_X, 282, 'atlas', 'tigela_0_0').setScale(2);
-    this.item = this.add.image(0, this.Y, 'atlas', 'tomate_verde_0').setScale(2);
+    this.item = this.add.image(0, this.Y, 'atlas', `${TOMATES[0]}_0`).setScale(2);
     this.mao = this.add.image(0, this.Y + 2, 'atlas', 'mao_0').setScale(2);
     this.faca = this.add.image(40, this.Y - 30, 'atlas', 'faca_0').setScale(2).setDepth(30);
     this.posiciona();
@@ -589,7 +590,7 @@ export class Salada extends Etapa {
     const xi = Phaser.Math.Between(46, 134);
     let xm = Phaser.Math.Between(40, 140);
     while (Math.abs(xm - xi) < 40) xm = Phaser.Math.Between(40, 140);
-    this.item.setPosition(xi, this.Y).setFrame('tomate_verde_0').setVisible(true);
+    this.item.setPosition(xi, this.Y).setFrame(`${TOMATES[this.tomates]}_0`).setVisible(true);
     this.mao.setX(xm);
   }
 
@@ -609,7 +610,7 @@ export class Salada extends Etapa {
       tocar('acerto');
       this.vel += 7;
       if (this.cortes % 3 === 0) {
-        const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', 'tomate_verde_cubos_0').setScale(2);
+        const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${TOMATES[this.tomates]}_cubos_0`).setScale(2);
         this.item.setVisible(false);
         this.tweens.add({ targets: pedaco, x: CENTRO_X, y: 282, scale: 1, duration: 320, onComplete: () => pedaco.destroy() });
         this.tomates++;

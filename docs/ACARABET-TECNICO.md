@@ -205,7 +205,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 3. **Temperos:** picar cebola e pimentão (toques na faca) e fazer a pimenta: jogar as pimentas no dendê e mexer em círculos.
 4. **Vatapá:** castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê, nessa ordem; depois mexer até dar o ponto. O nome de cada ingrediente aparece na tela ("PRÓXIMO: …" e ao tocar).
 5. **Caruru:** cortar o quiabo, juntar os ingredientes do vatapá (**menos a farinha**) e mexer.
-6. **Salada:** só tomate verde picado.
+6. **Salada:** tomate picado, misturando verde, meio amarelado (quase vermelho) e vermelho.
 7. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
 8. **Fritar** no dendê: um toque na massa joga os 4 bolinhos de uma vez no tacho (ou um por um, tocando no tacho); virar e tirar no ponto. A janela do ponto é larga (5 s) pra dar conta dos 4 sem queimar.
 9. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e camarão por cima (sem camarão no vegetariano). Pimenta errada, camarão no vegetariano ou fora de ordem contam como erro.
