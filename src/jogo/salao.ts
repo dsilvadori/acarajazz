@@ -14,6 +14,8 @@ export interface Salao {
   bia: Phaser.GameObjects.Sprite;
   casal: Phaser.GameObjects.Sprite;
   andar: (rota: string[], bandeja: boolean) => Promise<void>;
+  /** Todo mundo comemora junto: tchauzinho de Eliana, gêmeas e Valentina, brinde dos tios. */
+  festa: (ms?: number) => void;
 }
 
 export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Salao {
@@ -25,8 +27,10 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
   const bia = cena.add.sprite(b0.x, b0.y, 'atlas').setOrigin(0, 0).setDepth(1);
   animBia(bia, estado.roupa, 'parada');
 
+  const reacoes: { s: Phaser.GameObjects.Sprite; parada: string; reage: string }[] = [];
   const npc = (x: number, y: number, parada: string, reage: string | null, h = 48) => {
     const s = cena.add.sprite(x, y, 'atlas').setOrigin(0, 0).setDepth(profundidade(y, h)).play(parada);
+    if (reage && reage !== parada) reacoes.push({ s, parada, reage });
     if (easterEggs && reage) {
       s.setInteractive({ useHandCursor: true, pixelPerfect: false });
       s.on('pointerup', () => {
@@ -60,7 +64,7 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
         animBia(bia, estado.roupa, bandeja ? 'servindo_lado' : 'andando_lado');
         bia.setFlipX(dx < 0);
       } else {
-        animBia(bia, estado.roupa, dy > 0 ? 'andando' : 'andando_costas');
+        animBia(bia, estado.roupa, dy > 0 ? (bandeja ? 'servindo' : 'andando') : 'andando_costas');
         bia.setFlipX(false);
       }
       const dur = (Math.hypot(dx, dy) / 40) * 1000;
@@ -77,7 +81,12 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
     animBia(bia, estado.roupa, 'parada');
   };
 
-  return { bia, casal, andar };
+  const festa = (ms = 4000) => {
+    reacoes.forEach(({ s, reage }, i) => cena.time.delayedCall(i * 120, () => s.play(reage)));
+    cena.time.delayedCall(ms, () => reacoes.forEach(({ s, parada }) => s.play(parada)));
+  };
+
+  return { bia, casal, andar, festa };
 }
 
 export function coracao(cena: Phaser.Scene, x: number, y: number) {

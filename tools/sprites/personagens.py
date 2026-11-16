@@ -35,14 +35,14 @@ C.update({
     'verde': hx('2e9e4f'),
     'gato': C['laranja'], 'gato_listra': C['laranja_sombra'], 'gato_creme': hx('f7d9b0'),  # laranja forte, como antes
     'ruivo': hx('c8572a'), 'ruivo_luz': hx('e8803f'), 'ruivo_sombra': hx('8a3518'),
-    'pele_luiz': hx('6e432a'), 'pele_luiz_sombra': hx('4f2d1b'), 'boca_luiz': hx('5a2a20'),
+    'pele_luiz': hx('5a3420'), 'pele_luiz_sombra': hx('3f2213'), 'boca_luiz': hx('5a2a20'),
     'pele_toninho': hx('dcab84'), 'pele_toninho_sombra': hx('b9875f'), 'boca_toninho': hx('9a5644'),
     'polo': hx('d6d1c3'), 'polo_sombra': hx('aea793'),
     'luiz_brilho': hx('8e5a39'), 'toninho_brilho': hx('f0c7a3'),
     'verde_palmeiras': hx('0f6b3c'), 'verde_palmeiras_sombra': hx('0a4c2a'),
     'cerveja': hx('f2b632'), 'espuma': hx('fff6dc'),
     'pele_cliente': hx('9c6641'), 'pele_cliente_sombra': hx('77492b'), 'boca_cliente': hx('6e3526'),
-    'pele_retinta': hx('4b2a1b'), 'pele_retinta_sombra': hx('341b10'), 'pele_retinta_luz': hx('6a3d28'),
+    'pele_retinta': hx('5b3424'), 'pele_retinta_sombra': hx('402316'), 'pele_retinta_luz': hx('7a4a32'),
     'boca_retinta': hx('7a1a24'), 'blush_retinta': hx('6e3428'),
     'vermelho': hx('d9473e'), 'vermelho_sombra': hx('a8322b'),
 })

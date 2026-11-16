@@ -71,14 +71,16 @@ export class Servir extends Phaser.Scene {
     if (satisfeito()) {
       s.casal.play('cliente_casal_feliz');
       animBia(s.bia, estado.roupa, 'comemorando');
+      s.festa(6000); // o salão inteiro comemora: tchauzinho e brinde dos tios
       tocar('vitoria');
       this.time.delayedCall(1500, () => s.casal.play('cliente_casal_comendo'));
       for (let i = 0; i < 4; i++) this.add.sprite(20 + i * 46, 60 + (i % 2) * 30, 'atlas').setScale(2).setDepth(1250).play('confete');
       this.time.delayedCall(900, () => {
-        painel(this, 12, 96, L - 24, 78).setDepth(1301);
-        texto(this, L / 2, 102, 'O CASAL AMOU!', { fonte: 'escura', tamanho: 2 }).setDepth(1302);
-        texto(this, L / 2, 130, `${total} DE ${MAX_ESTRELAS} ESTRELAS`, { fonte: 'escura' }).setDepth(1302);
-        botao(this, L / 2, 158, 120, 16, 'VER MEU PRÊMIO', () => {
+        // no alto do salão, pra festa (tchauzinho e brinde) ficar à vista
+        painel(this, 12, 24, L - 24, 78).setDepth(1301);
+        texto(this, L / 2, 30, 'O CASAL AMOU!', { fonte: 'escura', tamanho: 2 }).setDepth(1302);
+        texto(this, L / 2, 58, `${total} DE ${MAX_ESTRELAS} ESTRELAS`, { fonte: 'escura' }).setDepth(1302);
+        botao(this, L / 2, 86, 120, 16, 'VER MEU PRÊMIO', () => {
           medir('jogo_concluido', { estrelas: total, rodadas: estado.rodada + 1, segundos: Math.round((Date.now() - estado.inicio) / 1000) });
           this.scene.start('Premio');
         }, 'verde').setDepth(1303);

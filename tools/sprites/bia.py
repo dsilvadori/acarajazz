@@ -480,6 +480,19 @@ OMBRO_E, OMBRO_D = (8, 25), (22, 25)
 BRACOS_PARADOS = [(OMBRO_E, (5, 30), (5, 34)), (OMBRO_D, (25, 30), (25, 34))]  # afastados: aparece a cintura
 
 
+def bandeja_frente(dy=0):
+    """Bandeja de frente, na altura da cintura: acarajé no papel e cumbuca de vatapá."""
+    C.setdefault('agua_marinha', hx('7cc8b8'))
+    p = Parte()
+    p.ret(6, 31 + dy, 25, 31 + dy, 'metal_luz')
+    p.ret(7, 32 + dy, 24, 32 + dy, 'metal')
+    p.elipse(12.5, 29.4 + dy, 3.6, 1.8, 'barra')  # acarajé
+    p.d(11, 28 + dy, 'amarelo'); p.d(13, 28 + dy, 'amarelo'); p.d(12, 29 + dy, 'batom')
+    p.ret(18, 28 + dy, 22, 30 + dy, 'agua_marinha')  # cumbuca
+    p.ret(18, 28 + dy, 22, 28 + dy, 'amarelo')  # vatapá
+    return p
+
+
 def bia(roupa, pose):
     q = quadro_vazio()
     dy = pose.get('dy', 0)
@@ -529,6 +542,14 @@ def animacoes(roupa):
         bia(roupa, {'passo': passo, 'balanco': bal, 'dy': dy,
                     'bracos': [(OMBRO_E, (5, 30), (5 + sw, 34)), (OMBRO_D, (25, 30), (25 + sw, 34))]})
         for passo, bal, dy, sw in ((-1, -1, 0, 1), (0, 0, -1, 0), (1, 1, 0, -1), (0, 0, -1, 0))
+    ]
+    # andando de frente com a bandeja: braços dobrados segurando nas pontas
+    A['servindo'] = [
+        bia(roupa, {'passo': passo, 'balanco': bal, 'dy': dy,
+                    'bracos': [(OMBRO_E, (6, 29), (7, 31)), (OMBRO_D, (24, 29), (23, 31))],
+                    'frente': [lambda d: bandeja_frente(d)],
+                    'pixels': [(6, 31, 'pele'), (25, 31, 'pele')]})  # dedinhos por cima da borda
+        for passo, bal, dy in ((-1, -1, 0), (0, 0, -1), (1, 1, 0), (0, 0, -1))
     ]
     A['mexendo'] = [
         bia(roupa, {
