@@ -349,7 +349,7 @@ POSICOES = {
     'valentina': {'x': 146, 'y': 150, 'sprite': 'npc_valentina'},
     'por_do_sol': [  # sempre perto da Valentina; sorteia um dos dois cantinhos por partida
         {'x': 150, 'y': 184, 'sprite': 'gato_sentado', 'onde': 'aos pés da Valentina'},
-        {'x': 142, 'y': 161, 'sprite': 'gato_dormindo', 'onde': 'no banquinho da salinha, atrás da Valentina'},
+        {'x': 152, 'y': 181, 'sprite': 'gato_dormindo', 'onde': 'dormindo aos pés da Valentina (na frente dela, pra aparecer)'},
     ],
     # Caminhos da Bia (posição do sprite 32×48). 'camada': atrás do balcão ou no salão (ordem pelo y).
     'pontos': {

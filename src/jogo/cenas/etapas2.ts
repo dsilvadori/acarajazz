@@ -27,7 +27,7 @@ export class Bater extends Etapa {
     this.fofura = 0;
     this.toques = [];
     this.bacia = this.add.image(CENTRO_X - 6, 252, 'atlas', 'bacia_massa_0_0').setScale(2).setOrigin(0.5, 0.75);
-    this.colher = this.add.image(CENTRO_X - 6, 212, 'atlas', 'colher_0').setScale(2).setOrigin(0.2, 0.8).setDepth(5);
+    this.colher = this.add.image(CENTRO_X - 42, 206, 'atlas', 'colher_0').setScale(2).setFlipY(true).setOrigin(0.2, 0.2).setDepth(5);
     this.barra = this.add.graphics();
     this.desenhaBarra();
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
@@ -37,7 +37,7 @@ export class Bater extends Etapa {
       tocar('pop');
       // a colher bate de um lado pro outro, e a massa dá uma sacudidinha
       this.lado = -this.lado;
-      this.tweens.add({ targets: this.colher, angle: this.lado * 28, y: 222, duration: 60, yoyo: true });
+      this.tweens.add({ targets: this.colher, angle: this.lado * 14, y: 216, duration: 60, yoyo: true });
       this.tweens.add({ targets: this.bacia, scaleY: 1.88, scaleX: 2.08, duration: 50, yoyo: true });
       const q = Math.min(QUADROS_MASSA - 1, Math.floor((this.fofura / 100) * QUADROS_MASSA));
       this.bacia.setFrame(`bacia_massa_${q}_0`);
@@ -77,7 +77,7 @@ export class Bater extends Etapa {
 type FaseBolinho = 'cru' | 'dourando' | 'ponto' | 'queimado';
 interface Bolinho { s: Phaser.GameObjects.Image; lado: 1 | 2; t: number; fase: FaseBolinho; brilho?: Phaser.GameObjects.Sprite; saindo?: boolean }
 
-const TEMPOS = { dourando: 2600, ponto: 4300, queimado: 6400 };
+const TEMPOS = { dourando: 2400, ponto: 3800, queimado: 8800 }; // janela larga: dá pra cuidar dos 4 de uma vez
 
 export class Fritar extends Etapa {
   constructor() {

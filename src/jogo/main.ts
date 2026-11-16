@@ -6,7 +6,7 @@ import Phaser from 'phaser';
 import { Carregando } from './cenas/Carregando';
 import { Titulo } from './cenas/Titulo';
 import { Pedido } from './cenas/Pedido';
-import { Lavar, Triturar, Vatapa, Caruru, Salada } from './cenas/etapas1';
+import { Lavar, Triturar, Temperos, Vatapa, Caruru, Salada } from './cenas/etapas1';
 import { Bater, Fritar, Montar } from './cenas/etapas2';
 import { Servir } from './cenas/Servir';
 import { Premio, Cupom } from './cenas/Premio';
@@ -47,7 +47,7 @@ export function iniciarJogo(raiz: HTMLElement, cfg: Partial<Config> = {}) {
     input: { activePointers: 1 },
     render: { preserveDrawingBuffer: computador },
     scale: { mode: Phaser.Scale.NONE, zoom: zoom() },
-    scene: [Carregando, Titulo, Pedido, Lavar, Triturar, Bater, Vatapa, Caruru, Salada, Fritar, Montar, Servir, Premio, Cupom],
+    scene: [Carregando, Titulo, Pedido, Lavar, Triturar, Bater, Temperos, Vatapa, Caruru, Salada, Fritar, Montar, Servir, Premio, Cupom],
   });
 
   let nitido: HTMLCanvasElement | null = null;

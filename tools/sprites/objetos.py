@@ -243,6 +243,41 @@ def tomate(cubos=False):
     return [faz(16, 16, [p])]
 
 
+def cebola(picada=False):
+    p = Parte()
+    if picada:
+        for (x, y) in ((4, 9), (8, 10), (11, 8), (6, 6), (10, 5), (3, 5)):
+            p.ret(x, y, x + 2, y + 1, 'massa_luz')
+            p.d(x, y, 'cabelo_lilas')
+    else:
+        p.elipse(8, 9, 5.5, 5, 'cabelo_lilas')
+        p.ret(7, 2, 8, 4, 'fita')
+        for y in range(6, 13, 3):
+            p.d(6, y, 'massa_luz')
+    return [faz(16, 16, [p])]
+
+
+def pimentao(picado=False):
+    p = Parte()
+    if picado:
+        for (x, y) in ((3, 4), (8, 3), (12, 7), (5, 9), (10, 11), (2, 12)):
+            p.ret(x, y, x + 2, y + 1, 'fita'); p.d(x, y, 'quiabo_luz')
+    else:
+        p.elipse(8, 9.5, 5.5, 5, 'fita')
+        p.linha(8, 5, 8, 14, 'quiabo', 1)  # gomos
+        p.d(5, 7, 'quiabo_luz'); p.d(5, 8, 'quiabo_luz')
+        p.ret(7, 1, 8, 4, 'quiabo')  # cabinho
+    return [faz(16, 16, [p])]
+
+
+def malagueta():
+    p = Parte()
+    p.linha(4, 12, 10, 5, 'batom', 2)
+    p.d(10, 4, 'batom'); p.d(5, 10, 'tomate_luz')
+    p.ret(11, 2, 12, 4, 'fita')
+    return [faz(16, 16, [p])]
+
+
 def mao():
     """Dedos da Bia segurando (na tábua), pra não cortar."""
     p = Parte()
@@ -623,6 +658,8 @@ ITENS = {
     'fumaca': fumaca,
     **{f'bacia_massa_{n}': (lambda n=n: bacia_massa(n)) for n in range(N_MASSA)},
     'torneira': torneira, 'jato_agua': jato_agua,
+    'cebola': lambda: cebola(False), 'cebola_picada': lambda: cebola(True),
+    'pimentao': lambda: pimentao(False), 'pimentao_picado': lambda: pimentao(True), 'malagueta': malagueta,
     'tacho': tacho, 'respingo': respingo,
     **{f'acaraje_{e}': (lambda e=e: acaraje_fritando(e)) for e in ('cru', 'dourando', 'ponto', 'queimado')},
     'acaraje_fechado': lambda: acaraje_lado('fechado'), 'acaraje_aberto': lambda: acaraje_lado('aberto'),

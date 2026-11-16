@@ -43,7 +43,9 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
   npc(pos.gemea_mae.x, pos.gemea_mae.y, 'npc_gemea_mae_parada', 'npc_gemea_mae_acenando');
   npc(pos.gemea_tia.x, pos.gemea_tia.y, 'npc_gemea_tia_parada', 'npc_gemea_tia_acenando');
   npc(pos.valentina.x, pos.valentina.y, 'npc_valentina_parada', 'npc_valentina_acenando');
-  const g = Phaser.Utils.Array.GetRandom(pos.por_do_sol);
+  // sorteia o cantinho do Pôr do Sol (em desenvolvimento dá pra forçar: ?gato=dormindo ou ?gato=sentado)
+  const forcar = import.meta.env.DEV ? new URLSearchParams(location.search).get('gato') : null;
+  const g = pos.por_do_sol.find((p) => forcar && p.sprite === `gato_${forcar}`) ?? Phaser.Utils.Array.GetRandom(pos.por_do_sol);
   npc(g.x, g.y, g.sprite, g.sprite === 'gato_sentado' ? 'gato_sentado' : null, 17);
   const casal = cena.add.sprite(pos.casal.x, pos.casal.y, 'atlas').setOrigin(0, 0)
     .setDepth(profundidade(pos.casal.y)).play('cliente_casal_esperando');

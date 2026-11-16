@@ -200,9 +200,118 @@ export class Triturar extends Etapa {
   }
 }
 
+// ─── 4. Temperos: picar cebola e pimentão, e fazer a pimenta ────────────────
+const PICAR = [
+  { nome: 'cebola', rotulo: 'CEBOLA' },
+  { nome: 'pimentao', rotulo: 'PIMENTÃO' },
+];
+
+export class Temperos extends Etapa {
+  constructor() {
+    super('Temperos');
+  }
+
+  protected readonly id = 'temperos';
+  protected tempoTotal = 30000;
+  private atual = 0;
+  private cortes = 0;
+  private pimentas = 0;
+  private fase: 'picar' | 'pimenta' = 'picar';
+  private item!: Phaser.GameObjects.Image;
+  private faca!: Phaser.GameObjects.Image;
+  private pote!: Phaser.GameObjects.Image;
+  private legenda!: Phaser.GameObjects.BitmapText;
+  private readonly T = { x: CENTRO_X, y: 186 };
+  private readonly CORTES = 4;
+
+  protected montar() {
+    this.atual = this.cortes = this.pimentas = 0;
+    this.fase = 'picar';
+    this.add.image(this.T.x, this.T.y, 'atlas', 'tabua_0').setScale(2);
+    this.add.image(36, 286, 'atlas', 'tigela_0_0').setScale(1.6);
+    this.add.image(150, 300, 'atlas', 'ing_dende_0').setScale(1.5);
+    this.pote = this.add.image(122, 286, 'atlas', 'pote_pimenta_pouca_0').setScale(2.5);
+    this.item = this.add.image(this.T.x, this.T.y, 'atlas', 'cebola_0').setScale(3);
+    // qualquer toque na tábua é uma facada (toquinhos rápidos no celular não se perdem)
+    this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
+      if (Math.abs(p.x - this.T.x) < 66 && Math.abs(p.y - this.T.y) < 40 && this.item.visible) this.pica();
+    });
+    this.faca = this.add.image(this.T.x + 16, this.T.y - 44, 'atlas', 'faca_0').setScale(2).setDepth(30).setVisible(false);
+    this.legenda = texto(this, CENTRO_X, 224, 'CEBOLA').setDepth(20);
+  }
+
+  private pica() {
+    if (!this.rodando || this.fase !== 'picar') return;
+    this.cortes++;
+    tocar('corte');
+    this.faca.setVisible(true).setPosition(this.item.x + 10, this.T.y - 44);
+    this.tweens.add({ targets: this.faca, y: this.T.y - 28, duration: 60, yoyo: true });
+    this.tweens.add({ targets: this.item, scale: 3 - this.cortes * 0.35, duration: 60 });
+    if (this.cortes < this.CORTES) return;
+    // picou: vai pra tigela
+    const { nome } = PICAR[this.atual];
+    const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${nome}_picada_0`.replace('pimentao_picada', 'pimentao_picado')).setScale(2.5);
+    this.item.setVisible(false);
+    tocar('acerto');
+    this.tweens.add({ targets: pedaco, x: 36, y: 284, scale: 1, duration: 320, onComplete: () => pedaco.destroy() });
+    this.atual++;
+    this.cortes = 0;
+    this.time.delayedCall(360, () => {
+      this.faca.setVisible(false);
+      if (this.atual < PICAR.length) {
+        this.item.setFrame(`${PICAR[this.atual].nome}_0`).setScale(3).setVisible(true);
+        this.legenda.setText(PICAR[this.atual].rotulo);
+      } else {
+        this.comecaPimenta();
+      }
+    });
+  }
+
+  private comecaPimenta() {
+    this.fase = 'pimenta';
+    this.legenda.setText('PIMENTA: JOGUE NO DENDÊ');
+    const lugares = [[46, 170], [78, 196], [104, 168], [132, 198], [92, 182]];
+    lugares.forEach(([x, y], i) => {
+      const p = this.add.image(x, y, 'atlas', 'malagueta_0').setScale(0).setAngle(Phaser.Math.Between(-30, 30)).setInteractive({ useHandCursor: true });
+      this.tweens.add({ targets: p, scale: 2, duration: 180, delay: i * 70 });
+      p.on('pointerdown', () => {
+        if (!this.rodando) return;
+        p.disableInteractive();
+        tocar('pop');
+        this.tweens.add({
+          targets: p, x: this.pote.x, y: this.pote.y - 4, scale: 0.8, duration: 260,
+          onComplete: () => {
+            p.destroy();
+            this.pimentas++;
+            if (this.pimentas === 3) this.pote.setFrame('pote_pimenta_0');
+            if (this.pimentas === lugares.length) {
+              flutua(this, this.pote.x - 20, this.pote.y - 30, 'PIMENTA PRONTA!');
+              this.terminar(this.segundos() <= 13 ? 3 : this.segundos() <= 20 ? 2 : 1);
+            }
+          },
+        });
+      });
+    });
+  }
+
+  protected tempoEsgotado() {
+    this.terminar(this.fase === 'pimenta' ? 2 : 1);
+  }
+
+  protected demonstrar(mao: Phaser.GameObjects.Image) {
+    this.maoEntre(mao, [[this.T.x, this.T.y + 6], [this.T.x, this.T.y]], 200, true);
+  }
+}
+
 // ─── 4. Vatapá (ordem dos ingredientes + mexer sem grudar) ────────────────────
 /** Castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê. */
 export const ORDEM_VATAPA = ['castanha', 'amendoim', 'gengibre', 'temperos', 'farinha', 'dende'];
+/** O caruru leva os mesmos ingredientes do vatapá, menos a farinha. */
+const INGREDIENTES_CARURU = ORDEM_VATAPA.filter((n) => n !== 'farinha');
+export const NOME_INGREDIENTE: Record<string, string> = {
+  castanha: 'CASTANHA DE CAJU', amendoim: 'AMENDOIM', gengibre: 'GENGIBRE',
+  temperos: 'TEMPEROS NATURAIS', farinha: 'FARINHA DE TRIGO', dende: 'DENDÊ',
+};
 
 export class Vatapa extends Etapa {
   constructor() {
@@ -222,6 +331,7 @@ export class Vatapa extends Etapa {
   private medidor!: Phaser.GameObjects.Graphics;
   private giro!: (p: Phaser.Input.Pointer) => number;
   private marcas: Phaser.GameObjects.Image[] = [];
+  private proximo!: Phaser.GameObjects.BitmapText;
   private readonly C = { x: CENTRO_X, y: 222 };
 
   protected montar() {
@@ -231,6 +341,7 @@ export class Vatapa extends Etapa {
     // receita (ordem) em cima da bancada
     texto(this, 6, 121, 'RECEITA:', { esquerda: true });
     this.marcas = ORDEM_VATAPA.map((n, i) => this.add.image(62 + i * 19, 126, 'atlas', `ing_${n}_0`));
+    this.proximo = texto(this, CENTRO_X, 136, `PRÓXIMO: ${NOME_INGREDIENTE[ORDEM_VATAPA[0]]}`).setDepth(20);
     const lugares = Phaser.Utils.Array.Shuffle([[16, 160], [164, 160], [16, 296], [164, 296], [56, 306], [124, 306]]);
     ORDEM_VATAPA.forEach((n, i) => {
       const [x, y] = lugares[i];
@@ -253,7 +364,10 @@ export class Vatapa extends Etapa {
     }
     s.disableInteractive();
     this.marcas[this.indice].setAlpha(0.35);
+    flutua(this, s.x < 40 ? 50 : s.x > 140 ? 130 : s.x, s.y - 20, NOME_INGREDIENTE[nome]);
     this.indice++;
+    const prox = ORDEM_VATAPA[this.indice];
+    this.proximo.setText(prox ? `PRÓXIMO: ${NOME_INGREDIENTE[prox]}` : 'AGORA MEXE!');
     tocar('pop');
     this.tweens.add({ targets: s, x: this.C.x, y: this.C.y, scale: 1, duration: 260, onComplete: () => s.destroy() });
     this.panela.setFrame('panela_ralo_0');
@@ -356,9 +470,9 @@ export class Caruru extends Etapa {
 
   /** Depois do quiabo: os mesmos ingredientes do vatapá, em qualquer ordem. */
   private ingredientes() {
-    flutua(this, CENTRO_X, 150, 'AGORA OS TEMPEROS!');
-    const lugares = [[22, 150], [158, 150], [22, 236], [62, 236], [22, 292], [66, 292]];
-    ORDEM_VATAPA.forEach((n, i) => {
+    flutua(this, CENTRO_X, 150, 'AGORA OS INGREDIENTES!');
+    const lugares = [[22, 150], [158, 150], [22, 236], [62, 236], [40, 292]];
+    INGREDIENTES_CARURU.forEach((n, i) => {
       const [x, y] = lugares[i];
       const s = this.add.image(x, y, 'atlas', `ing_${n}_0`).setScale(0).setInteractive({ useHandCursor: true }).setDepth(30);
       this.tweens.add({ targets: s, scale: 2, duration: 200, delay: i * 60 });
@@ -366,12 +480,13 @@ export class Caruru extends Etapa {
         if (!this.rodando) return;
         s.disableInteractive();
         tocar('pop');
+        flutua(this, Phaser.Math.Clamp(s.x, 50, 130), s.y - 18, NOME_INGREDIENTE[n]);
         this.tweens.add({
           targets: s, x: this.PANELA.x, y: this.PANELA.y, scale: 0.8, duration: 260,
           onComplete: () => {
             s.destroy();
             this.postos++;
-            if (this.postos === ORDEM_VATAPA.length) this.terminar(this.segundos() <= 16 ? 3 : this.segundos() <= 25 ? 2 : 1);
+            if (this.postos === INGREDIENTES_CARURU.length) this.terminar(this.segundos() <= 16 ? 3 : this.segundos() <= 25 ? 2 : 1);
           },
         });
       });

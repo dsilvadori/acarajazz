@@ -42,10 +42,10 @@
         "onde": "aos pés da Valentina"
       },
       {
-        "x": 142,
-        "y": 161,
+        "x": 152,
+        "y": 181,
         "sprite": "gato_dormindo",
-        "onde": "no banquinho da salinha, atrás da Valentina"
+        "onde": "dormindo aos pés da Valentina (na frente dela, pra aparecer)"
       }
     ],
     "pontos": {
