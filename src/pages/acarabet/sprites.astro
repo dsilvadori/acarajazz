@@ -100,6 +100,8 @@ import { CASAIS } from '../../jogo/estado';
       <img src="/jogo/cenario/salao_fundo.png" alt="" width="180" height="320" />
       <div id="bia-cena" class="sprite" data-pontos={JSON.stringify(pos.pontos)} data-rotas={JSON.stringify(pos.rotas)}
         style={`--q:2;--dur:1s;--img:url('/jogo/sprites/bia_baiana_parada_2q.png');--e:1;left:${pos.pontos.bancada.x}px;top:${pos.pontos.bancada.y}px;z-index:1`}></div>
+      <!-- Vic: atrás do balcão (por baixo da camada do balcão), lavando louça -->
+      <div class="sprite" style={`--q:4;--dur:1s;--img:url('/jogo/sprites/npc_vic_lavando_4q.png');--e:1;left:${pos.vic.x}px;top:${pos.vic.y}px;z-index:1`}></div>
       <img src="/jogo/cenario/salao_balcao.png" alt="" width="180" height="320" style="z-index:2" />
       <div class="sprite fitas" style="--q:4;--dur:1.6s;--img:url('/jogo/cenario/salao_fitas_4q.png');--e:1;--w:180;--h:40;left:0;top:0;z-index:999"></div>
       <div id="casal-cena" class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/cliente_casal_negro_negra_esperando_2q.png');--e:1;--w:64;--h:48;left:${pos.casal.x}px;top:${pos.casal.y}px;z-index:${10 + pos.casal.y + 48}`}></div>
