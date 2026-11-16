@@ -2,13 +2,13 @@
 """
 Easter eggs do Acarabet: personagens que aparecem no cenário.
 
-  Eliana      → chef e sócia: lenço mostarda, corpo curvilíneo, camisa estampada com gola vermelha, calça preta
+  Eliana      → chef e sócia: cabelo ruivo preso em rabo de cavalo, magrinha, camisa estampada com gola vermelha, calça preta
   Gêmeas      → mãe e tia da Bia (da foto): cabelo grisalho comprido e ondulado, blusas brancas;
                 uma com colar de contas vermelhas e pulseiras, a outra com cordão preto e pingente de madeira
   Valentina   → filha da Bia (da foto): cachos escuros com mecha loira, óculos rosados, camiseta vermelha, colete preto
-  Pôr do Sol  → gatinho laranja e branco (peito, meias, focinho, listra na testa e ponta do rabo brancos) (sentado balançando o rabo e dormindo)
+  Pôr do Sol  → gatinho laranja listrado e branco (peito, patas e focinho brancos, rabo em anéis), da foto (sentado balançando o rabo e dormindo)
 
-Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×16), contorno marrom-dendê.
+Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×17), contorno marrom-dendê.
 Uso:  python3 tools/sprites/personagens.py [--previa arquivo.png]
 Gera: public/jogo/sprites/npc_<nome>_<animacao>_<n>q.png e gato_<animacao>_<n>q.png
 """
@@ -29,6 +29,8 @@ C.update({
     'castanho': hx('4a2c1c'), 'castanho_luz': hx('7a4a2a'),
     'jeans': hx('3f6ea8'),
     'verde': hx('2e9e4f'),
+    'gato': C['laranja'], 'gato_listra': C['laranja_sombra'], 'gato_creme': hx('f7d9b0'),  # laranja forte, como antes
+    'ruivo': hx('c8572a'), 'ruivo_luz': hx('e8803f'), 'ruivo_sombra': hx('8a3518'),
     'vermelho': hx('d9473e'), 'vermelho_sombra': hx('a8322b'),
 })
 
@@ -78,25 +80,31 @@ def braco(p, ombro, cotovelo, mao, pele, manga=None, manga_ate=0.5):
         p.ret(ox - 1, oy, ox + 1, oy + 1, manga)
 
 
-def bracos(dy, pele, manga, acenando=0, manga_ate=0.5):
-    """Braços parados; acenando = 1 ou 2 (quadros do tchauzinho com a mão direita)."""
+def bracos(dy, pele, manga, acenando=0, manga_ate=0.5, a=0):
+    """Braços parados; acenando = 1 ou 2 (quadros do tchauzinho com a mão direita). a = aproxima do corpo (magra)."""
     e, d = Parte(), Parte()
-    braco(e, (8, 25 + dy), (5, 30 + dy), (5, 34 + dy), pele, manga, manga_ate)
+    braco(e, (8 + a, 25 + dy), (5 + a, 30 + dy), (5 + a, 34 + dy), pele, manga, manga_ate)
     if acenando:
         mx = 26 if acenando == 1 else 28
-        braco(d, (22, 25 + dy), (25, 22 + dy), (mx, 17 + dy), pele, manga, manga_ate)
+        braco(d, (22 - a, 25 + dy), (25 - a, 22 + dy), (mx - a, 17 + dy), pele, manga, manga_ate)
     else:
-        braco(d, (22, 25 + dy), (25, 30 + dy), (25, 34 + dy), pele, manga, manga_ate)
+        braco(d, (22 - a, 25 + dy), (25 - a, 30 + dy), (25 - a, 34 + dy), pele, manga, manga_ate)
     return [e, d]
 
 
-def tronco(dy, padrao, gola=None, curvas=False):
+MAGRA = {24: (10, 21), 25: (10, 21), 26: (10, 21), 27: (10, 21), 28: (11, 20), 29: (11, 20),
+         30: (11, 20), 31: (11, 20), 32: (11, 20), 33: (11, 20)}
+
+
+def tronco(dy, padrao, gola=None, curvas=False, magra=False):
     """Tronco com cintura; padrao(x, y) → cor. curvas=True usa a silhueta da Bia (busto, cintura fina, quadril)."""
     p = Parte()
     larg = {24: (9, 22), 25: (9, 22), 26: (8, 23), 27: (8, 23), 28: (9, 22), 29: (10, 21),
             30: (10, 21), 31: (10, 21), 32: (10, 21), 33: (9, 22)}
     if curvas:
         larg = {y: CURVAS[y] for y in range(24, 34)}
+    if magra:
+        larg = MAGRA
     for y, (x0, x1) in larg.items():
         for x in range(x0, x1 + 1):
             p.p(x, y + dy, padrao(x, y))
@@ -107,11 +115,23 @@ def tronco(dy, padrao, gola=None, curvas=False):
     return p
 
 
-def calca(dy, cor, sapato, passo=0, quadril=False):
+def calca(dy, cor, sapato, passo=0, quadril=False, magra=False):
     p = Parte()
     p.ret(8 if quadril else 9, 34 + dy, 23 if quadril else 22, 36 + dy, cor)
-    for x0 in (10, 16):
+    for x0 in ((9, 17) if quadril else (10, 16)):
         p.ret(x0, 34 + dy, x0 + 5, 44 + dy, cor)
+    if magra:  # calça reta e fininha
+        p = Parte()
+        p.ret(11, 34 + dy, 20, 36 + dy, cor)
+        for x0 in (11, 17):
+            p.ret(x0, 34 + dy, x0 + 3, 44 + dy, cor)
+        s = Parte()
+        for x0 in (10, 17):
+            s.ret(x0, 45 + dy, x0 + 4, 46 + dy, sapato)
+        return [p, s]
+    if quadril:  # vão entre as pernas
+        for y in range(38, 45):
+            p.px.pop((15, y + dy), None); p.px.pop((16, y + dy), None)
     s = Parte()
     for x0 in (10, 17):
         s.ret(x0, 45 + dy, x0 + 4, 46 + dy, sapato)
@@ -169,28 +189,38 @@ def eliana(respira=0, olhos='abertos', acenando=0):
     def camisa(x, y):  # estampa geométrica: vermelho, amarelo, verde e preto em diagonal
         return xadrez[((x + y) // 2 + (x - y) // 3) % len(xadrez)]
 
-    lenco = Parte()
-    lenco.elipse(16, 11.0 + dy, 7.0, 3.4, 'mostarda', ymax=12 + dy)
-    for (x, y) in list(lenco.px):
-        if x >= 21 or (x + y) % 5 == 0:
-            lenco.p(x, y, 'mostarda_sombra')
-    no = Parte()  # nozinho na frente
-    no.ret(15, 7 + dy, 17, 9 + dy, 'mostarda')
-    no.p(14, 7 + dy, 'mostarda'); no.p(18, 7 + dy, 'mostarda')
-    no.d(16, 8 + dy, 'mostarda_sombra')
+    rabo = Parte()  # rabo de cavalo ruivo, caindo atrás do ombro direito
+    for k, y in enumerate(range(13, 25)):
+        x = 22 + (1 if 15 <= y <= 21 else 0)
+        rabo.ret(x, y + dy, x + 1, y + dy, 'ruivo')
+        rabo.d(x + 1, y + dy, 'ruivo_sombra' if k % 3 == 0 else 'ruivo')
+        if k % 3 == 1:
+            rabo.d(x, y + dy, 'ruivo_luz')
+    rabo.p(23, 25 + dy, 'ruivo_luz')
+    cabelo = Parte()  # cabelo ruivo puxado pra trás, liso no alto da cabeça
+    cabelo.elipse(16, 12.6 + dy, 6.9, 4.0, 'ruivo', ymax=13 + dy)
+    for (x, y) in list(cabelo.px):
+        if x >= 21:
+            cabelo.p(x, y, 'ruivo_sombra')
+        elif (x - (y - dy) // 2) % 3 == 0 and y < 12 + dy:
+            cabelo.p(x, y, 'ruivo_luz')  # fios penteados pra trás
+    for x in range(12, 21):  # linha do cabelo arredondada: testa aparece
+        cabelo.px.pop((x, 13 + dy), None)
+        if 13 <= x <= 19:
+            cabelo.px.pop((x, 12 + dy), None)
+    cabelo.p(9, 13 + dy, 'ruivo'); cabelo.p(22, 13 + dy, 'ruivo_sombra')
+    cabelo.d(22, 12 + dy, 'batom'); cabelo.d(22, 13 + dy, 'batom')  # elástico
     cabeca = Parte()
     rosto(cabeca, dy, 'pele_clara', 'pele_clara_sombra', boca='batom_sombra', olhos=olhos,
-          sobrancelha='castanho_luz', feliz=acenando > 0)
-    cabelo = Parte()  # cabelo castanho preso, aparecendo atrás das orelhas
-    cabelo.ret(9, 12 + dy, 10, 16 + dy, 'castanho_luz'); cabelo.ret(21, 12 + dy, 22, 16 + dy, 'castanho_luz')
-    t = tronco(dy, camisa, gola='batom', curvas=True)
-    b = bracos(dy, 'pele_clara', 'batom', acenando, manga_ate=0.45)
+          sobrancelha='ruivo_sombra', feliz=acenando > 0)
+    t = tronco(dy, camisa, gola='batom', magra=True)
+    b = bracos(dy, 'pele_clara', 'batom', acenando, manga_ate=0.45, a=1)
     for parte in b:  # manga estampada
         for (x, y), cor in list(parte.px.items()):
             if cor == C['batom'] and (x + y) % 3:
                 parte.px[(x, y)] = C[camisa(x, y)]
-    pernas = calca(0, 'preto', 'contorno', quadril=True)
-    return montar(pernas + [t] + b + [cabelo, cabeca, lenco, no])
+    pernas = calca(0, 'preto', 'contorno', magra=True)
+    return montar([rabo] + pernas + [t] + b + [cabeca, cabelo])
 
 
 # ─── Cabelo comprido ondulado (gêmeas e Valentina) ────────────────────────────
@@ -323,33 +353,37 @@ def valentina(respira=0, olhos='abertos', acenando=0):
     return montar(pernas + [t] + b + [atras, cabeca, (frente, False)])
 
 
-# ─── Pôr do Sol (gato laranja e branco), quadro 24×16 ─────────────────────────
-GX, GY, GW, GH = 4, 32, 24, 16  # recorte do quadro 32×48
+# ─── Pôr do Sol (gato laranja e branco), quadro 24×17 ─────────────────────────
+GX, GY, GW, GH = 4, 31, 24, 17  # recorte do quadro 32×48
+
+
+def rabo_listrado(p, pontos):
+    """Rabo em anéis laranja e creme (como na foto)."""
+    for k, (x, y) in enumerate(pontos):
+        p.p(x, y, 'gato_listra' if k % 2 else 'gato')
+        p.p(x, y + 1, 'gato_listra' if k % 2 else 'gato')
 
 
 def gato_sentado(rabo=0, piscando=False):
     rabo_p = Parte()
-    pontas = [(4, 41), (3, 43), (4, 39), (3, 44)]
-    px, py = pontas[rabo]
-    rabo_p.linha(10, 46, 6, 46, 'laranja', 1)
-    rabo_p.linha(6, 46, px + 1, py + 1, 'laranja', 2)
-    rabo_p.d(px, py, 'branco'); rabo_p.d(px + 1, py + 1, 'branco'); rabo_p.d(px + 1, py, 'branco')  # ponta branca
+    pontas = [[(4, 41), (5, 42), (5, 43)], [(3, 43), (4, 44), (5, 44)], [(4, 39), (4, 40), (5, 42)], [(3, 44), (4, 45), (5, 45)]]
+    rabo_listrado(rabo_p, [(9, 45), (8, 45), (7, 45), (6, 44)] + pontas[rabo])
     corpo = Parte()
-    corpo.elipse(13, 42.5, 5.2, 4.2, 'laranja')
-    for x in (10, 12):
-        corpo.d(x, 39, 'laranja_sombra'); corpo.d(x, 40, 'laranja_sombra')
-    corpo.elipse(15.0, 43.8, 3.4, 3.0, 'branco')  # peito e barriga brancos
-    corpo.ret(9, 45, 11, 46, 'branco')  # pata de trás branca
-    corpo.ret(14, 45, 16, 46, 'branco'); corpo.ret(18, 45, 19, 46, 'branco')  # meias brancas
+    corpo.elipse(13, 42.5, 5.2, 4.2, 'gato')
+    for x in (9, 11, 13):  # listras nas costas
+        corpo.d(x, 39, 'gato_listra'); corpo.d(x, 40, 'gato_listra'); corpo.d(x - 1, 41, 'gato_listra')
+    corpo.elipse(15.0, 44.0, 3.8, 3.2, 'branco')  # peito, barriga e patas brancos
+    corpo.ret(9, 45, 12, 46, 'branco')
+    corpo.d(16, 44, 'branco_sombra'); corpo.d(17, 45, 'branco_sombra')
+    corpo.ret(14, 46, 16, 46, 'branco'); corpo.ret(18, 46, 19, 46, 'branco')
     cabeca = Parte()
-    cabeca.elipse(18.5, 36.5, 3.8, 3.2, 'laranja')
-    cabeca.p(15, 33, 'laranja'); cabeca.p(16, 32, 'laranja')  # orelhas
-    cabeca.p(20, 33, 'laranja'); cabeca.p(21, 32, 'laranja')
+    cabeca.elipse(18.5, 36.5, 3.8, 3.2, 'gato')
+    cabeca.p(15, 33, 'gato'); cabeca.p(16, 32, 'gato')  # orelhas
+    cabeca.p(20, 33, 'gato'); cabeca.p(21, 32, 'gato')
     cabeca.d(16, 33, 'cabelo_rosa'); cabeca.d(21, 33, 'cabelo_rosa')
-    cabeca.ret(16, 37, 21, 39, 'branco')  # focinho e queixo brancos
-    cabeca.d(18, 34, 'branco'); cabeca.d(19, 34, 'branco'); cabeca.d(18, 35, 'branco'); cabeca.d(19, 35, 'branco')
-    cabeca.d(18, 36, 'branco'); cabeca.d(19, 36, 'branco')  # listra branca entre os olhos
-    cabeca.d(16, 35, 'laranja_sombra'); cabeca.d(21, 35, 'laranja_sombra')
+    cabeca.d(17, 34, 'gato_listra'); cabeca.d(18, 34, 'gato_listra'); cabeca.d(20, 34, 'gato_listra')  # listrinhas na testa
+    cabeca.ret(17, 38, 20, 39, 'branco')  # focinho e queixo brancos
+    cabeca.d(16, 38, 'gato_creme'); cabeca.d(21, 38, 'gato_creme')
     if piscando:
         cabeca.d(17, 36, 'olho'); cabeca.d(20, 36, 'olho')
     else:
@@ -359,23 +393,24 @@ def gato_sentado(rabo=0, piscando=False):
 
 
 def gato_dormindo(respira=0):
+    """Enroladinho como na foto: costas laranja listradas, peito e patas brancos na frente, rabo listrado por baixo."""
     corpo = Parte()
-    corpo.elipse(13.5, 43.5 - respira * 0.5, 7.5, 3.2 + respira * 0.4, 'laranja', ymax=46)
-    for x in (9, 12, 15):
-        corpo.d(x, 41, 'laranja_sombra')
-    corpo.ret(10, 44, 18, 46, 'branco')  # barriga branca
-    corpo.linha(6, 46, 13, 46, 'laranja', 1)  # rabo enrolado na frente
-    corpo.ret(5, 46, 7, 46, 'branco')  # ponta branca do rabo
-    corpo.ret(15, 46, 18, 46, 'branco')  # patinhas
+    corpo.elipse(12.5, 43.5 - respira * 0.5, 7.5, 3.2 + respira * 0.4, 'gato', ymax=46)
+    for x in (7, 10, 13, 16):
+        corpo.d(x, 41, 'gato_listra'); corpo.d(x + 1, 42, 'gato_listra')
+    corpo.ret(14, 44, 19, 46, 'branco')  # peito e patinhas brancos
+    corpo.d(16, 45, 'branco_sombra')
+    rabo = Parte()
+    rabo_listrado(rabo, [(4, 45), (5, 45), (6, 45), (7, 45), (8, 45), (9, 45), (10, 45), (11, 45), (12, 45)])
     cabeca = Parte()
-    cabeca.elipse(20.5, 42.5, 3.4, 2.8, 'laranja')
-    cabeca.p(19, 39, 'laranja'); cabeca.p(22, 39, 'laranja')
-    cabeca.ret(19, 43, 23, 45, 'branco')
-    cabeca.d(21, 40, 'branco'); cabeca.d(21, 41, 'branco'); cabeca.d(21, 42, 'branco')  # listra branca
+    cabeca.elipse(20.5, 42.5, 3.4, 2.8, 'gato')
+    cabeca.p(19, 39, 'gato'); cabeca.p(22, 39, 'gato')
+    cabeca.d(20, 40, 'gato_listra'); cabeca.d(21, 40, 'gato_listra')
+    cabeca.ret(19, 44, 23, 45, 'branco')  # focinho e queixo brancos
     cabeca.d(19, 42, 'olho'); cabeca.d(20, 42, 'olho')  # olhinhos fechados
     cabeca.d(22, 42, 'olho'); cabeca.d(23, 42, 'olho')
     cabeca.d(21, 43, 'cabelo_rosa')
-    q = montar([corpo, cabeca])
+    q = montar([corpo, rabo, cabeca])
     zs = [(24, 36), (26, 34)] if respira else [(24, 37)]
     for x, y in zs:
         q[y][x] = C['branco']
@@ -415,8 +450,8 @@ def main():
         destino = sys.argv[sys.argv.index('--previa') + 1]
         fila = [A['npc_eliana_parada'][0], A['npc_eliana_acenando'][1], A['npc_gemea_mae_parada'][0],
                 A['npc_gemea_tia_parada'][0], A['npc_valentina_parada'][0], A['npc_valentina_acenando'][1]]
-        gato = [[None] * 4 + r + [None] * 4 for r in ([[None] * GW] * 32 + A['gato_sentado'][0])]
-        gato2 = [[None] * 4 + r + [None] * 4 for r in ([[None] * GW] * 32 + A['gato_dormindo'][1])]
+        gato = [[None] * 4 + r + [None] * 4 for r in ([[None] * GW] * 31 + A['gato_sentado'][0])]
+        gato2 = [[None] * 4 + r + [None] * 4 for r in ([[None] * GW] * 31 + A['gato_dormindo'][1])]
         salvar_png(destino, tira(fila + [gato, gato2]), escala=6, fundo=(254, 245, 226, 255))
 
 
