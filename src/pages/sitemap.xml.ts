@@ -6,6 +6,7 @@ const PAGINAS = [
   { caminho: '/acarabet', frequencia: 'monthly', prioridade: '0.8' },
   { caminho: '/acaraje-alem-da-receita', frequencia: 'monthly', prioridade: '0.8' },
   { caminho: '/politica-de-privacidade', frequencia: 'yearly', prioridade: '0.2' },
+  { caminho: '/politica-de-cookies', frequencia: 'yearly', prioridade: '0.2' },
 ];
 
 export const GET: APIRoute = ({ site, url }) => {

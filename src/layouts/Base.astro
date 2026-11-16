@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import AvisoCookies from '../components/AvisoCookies.astro';
 
 interface Props {
   title?: string;
@@ -73,5 +74,6 @@ const NOME_SITE = 'Acarajazz';
   </head>
   <body>
     <slot />
+    <AvisoCookies />
   </body>
 </html>
