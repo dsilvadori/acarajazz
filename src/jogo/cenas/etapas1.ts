@@ -372,7 +372,7 @@ export class Vatapa extends Etapa {
       const s = this.add.image(x, y, 'atlas', `ing_${n}_0`).setScale(2).setInteractive({ useHandCursor: true });
       s.on('pointerup', () => this.toca(n, s));
     });
-    this.colher = this.add.image(0, 0, 'atlas', 'colher_0').setScale(2).setVisible(false).setDepth(50);
+    this.colher = this.add.image(0, 0, 'atlas', 'colher_0').setScale(2).setFlipY(true).setOrigin(0.2, 0.2).setVisible(false).setDepth(50); // ponta pra baixo, dentro da panela
     this.medidor = this.add.graphics().setDepth(60);
     this.giro = this.rastreadorGiro(this.C.x, this.C.y, 10);
   }
@@ -405,7 +405,7 @@ export class Vatapa extends Etapa {
     if (this.fase !== 'mexer') return;
     const p = this.input.activePointer;
     const d = this.giro(p);
-    this.colher.setVisible(p.isDown).setPosition(p.x + 10, p.y - 10);
+    this.colher.setVisible(p.isDown).setPosition(p.x - 34, p.y - 36);
     this.mexido += d;
     this.grudando = Phaser.Math.Clamp(this.grudando + (d > 0.02 ? -dt * 0.05 : dt * 0.022), 0, 100);
     if (this.grudando >= 100) {
@@ -457,6 +457,7 @@ export class Caruru extends Etapa {
   protected montar() {
     this.feitos = this.postos = this.mexido = 0;
     this.cortando = this.mexendo = false;
+    this.rodelas = [];
     this.colher = this.add.image(0, 0, 'atlas', 'colher_0').setScale(2).setFlipY(true).setOrigin(0.2, 0.2).setVisible(false).setDepth(50);
     this.giro = this.rastreadorGiro(this.PANELA.x, this.PANELA.y, 6);
     this.add.image(this.TABUA.x, this.TABUA.y, 'atlas', 'tabua_0').setScale(2);
@@ -490,6 +491,7 @@ export class Caruru extends Etapa {
           targets: q, x: this.PANELA.x + Phaser.Math.Between(-10, 10), y: this.PANELA.y + Phaser.Math.Between(-8, 8), scale: 1, duration: 300,
           onComplete: () => {
             tocar('pop');
+            this.espalhaRodelas(5); // a panela vai enchendo de quiabo
             this.cortando = false;
             this.feitos++;
             if (this.feitos === this.QUIABOS) this.ingredientes();
@@ -497,6 +499,31 @@ export class Caruru extends Etapa {
         });
       },
     });
+  }
+
+  private rodelas: (Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle)[] = [];
+
+  /** Rodelinhas de quiabo espalhadas dentro da panela. */
+  private espalhaRodelas(n: number) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * 25;
+      const img = this.add.image(this.PANELA.x + Math.cos(a) * r, this.PANELA.y + Math.sin(a) * r * 0.85, 'atlas', 'quiabo_rodelas_0')
+        .setScale(0).setAngle(Phaser.Math.Between(0, 359)).setDepth(2);
+      this.tweens.add({ targets: img, scale: Phaser.Math.FloatBetween(0.7, 1), duration: 160, delay: i * 50 });
+      this.rodelas.push(img);
+    }
+  }
+
+  /** O dendê deixa o caruru verde com um toquezinho de laranja. */
+  private pingaDende() {
+    for (const r of this.rodelas) if (r instanceof Phaser.GameObjects.Image) r.setTint(0xffe2b0);
+    for (let i = 0; i < 12; i++) {
+      const a = Math.random() * Math.PI * 2, raio = Math.sqrt(Math.random()) * 24;
+      const pingo = this.add.rectangle(this.PANELA.x + Math.cos(a) * raio, this.PANELA.y + Math.sin(a) * raio * 0.85, 2, 2, i % 3 ? COR.dende : 0xec9344)
+        .setDepth(3).setAlpha(0);
+      this.tweens.add({ targets: pingo, alpha: 0.9, duration: 200, delay: i * 25 });
+      this.rodelas.push(pingo);
+    }
   }
 
   /** Depois do quiabo: os mesmos ingredientes do vatapá, em qualquer ordem. */
@@ -516,6 +543,7 @@ export class Caruru extends Etapa {
           targets: s, x: this.PANELA.x, y: this.PANELA.y, scale: 0.8, duration: 260,
           onComplete: () => {
             s.destroy();
+            if (n === 'dende') this.pingaDende();
             this.postos++;
             if (this.postos === INGREDIENTES_CARURU.length) {
               this.mexendo = true;
@@ -534,6 +562,13 @@ export class Caruru extends Etapa {
     const d = this.giro(p);
     this.colher.setVisible(p.isDown).setPosition(p.x - 34, p.y - 36);
     this.mexido += d;
+    if (d > 0) {  // o quiabo gira junto com a colher
+      for (const r of this.rodelas) {
+        const ax = r.x - this.PANELA.x, ay = (r.y - this.PANELA.y) / 0.85;
+        const ang = Math.atan2(ay, ax) + d * 0.6, raio = Math.hypot(ax, ay);
+        r.setPosition(this.PANELA.x + Math.cos(ang) * raio, this.PANELA.y + Math.sin(ang) * raio * 0.85).setAngle(r.angle + d * 40);
+      }
+    }
     if (d > 0.05 && this.time.now - this.somMexer > 300) { tocar('agua'); this.somMexer = this.time.now; }
     if (this.mexido >= Math.PI * 2 * 3) {
       this.mexendo = false;

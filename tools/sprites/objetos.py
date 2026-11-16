@@ -476,10 +476,12 @@ def camada(nome):
     p = Parte()
     if nome == 'vatapa':
         p.ret(0, 1, 23, 3, 'vatapa'); p.d(5, 1, 'dende'); p.d(15, 2, 'dende')
-    elif nome == 'caruru':
+    elif nome == 'caruru':  # verde do quiabo com um pouquinho de laranja do dendê
         p.ret(0, 1, 23, 3, 'quiabo')
         for x in range(2, 23, 4):
             p.d(x, 2, 'quiabo_luz')
+        for x in (4, 13, 20):
+            p.d(x, 1, 'dende_luz')
     elif nome == 'salada':
         cores = ('tomate_verde', 'tomate_meio', 'tomate_maduro')
         for i, x in enumerate(range(0, 24, 3)):
@@ -519,7 +521,7 @@ def potinho(nome):
         for x in (5, 8, 11):
             p.ret(x - 1, 6, x, 7, 'shimeji'); p.d(x - 1, 6, 'shimeji_luz')
     elif nome == 'caruru':
-        p.d(7, 8, 'quiabo_luz')
+        p.d(7, 8, 'quiabo_luz'); p.d(10, 7, 'dende_luz'); p.d(5, 8, 'dende')
     elif nome == 'salada':
         p.d(6, 7, 'tomate_maduro'); p.d(10, 8, 'tomate_meio'); p.d(8, 9, 'tomate_maduro_luz')
     return [faz(16, 16, [p])]
