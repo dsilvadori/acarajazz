@@ -54,7 +54,7 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
   const g = pos.por_do_sol.find((p) => forcar && p.sprite === `gato_${forcar}`) ?? Phaser.Utils.Array.GetRandom(pos.por_do_sol);
   npc(g.x, g.y, g.sprite, g.sprite === 'gato_sentado' ? 'gato_sentado' : null, 17);
   const casal = cena.add.sprite(pos.casal.x, pos.casal.y, 'atlas').setOrigin(0, 0)
-    .setDepth(profundidade(pos.casal.y)).play('cliente_casal_esperando');
+    .setDepth(profundidade(pos.casal.y)).play(`cliente_casal_${estado.casal}_esperando`);
 
   const andar = async (rota: string[], bandeja: boolean) => {
     for (let i = 1; i < rota.length; i++) {

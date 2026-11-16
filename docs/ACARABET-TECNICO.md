@@ -210,6 +210,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 8. **Fritar** no dendê: um toque na massa joga os 4 bolinhos de uma vez no tacho (ou um por um, tocando no tacho); quem frita é o lado de baixo, então por cima só a **borda** vai dourando (é o aviso de virar); virado, aparece o lado frito e o outro lado frita até o ponto final, quando tira. A janela do ponto é larga (5 s) pra dar conta dos 4 sem queimar.
 9. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e, por cima, camarão (tradicional) ou shimeji (vegetariano). Pimenta errada, camarão no vegetariano, shimeji no tradicional ou fora de ordem contam como erro.
 10. **Servir** na mesa do casal.
+- **Casal de clientes sorteado a cada partida** (o público do Acarajazz é diverso, e isso é parte da marca): 17 casais, de homem e mulher, de dois homens e de duas mulheres, de várias etnias (negra, branca, asiática, parda) e mesclados. Definidos em `tools/sprites/personagens.py` (`ELES`, `ELAS`, `CASAIS`) e em `estado.ts` (`CASAIS`); em desenvolvimento dá pra forçar com `?casal=pardo_negro`.
 - Tocar nos personagens do salão (Eliana, gêmeas, Valentina, tios, Pôr do Sol) faz eles acenarem/brindarem: são os easter eggs.
 
 **Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Triturar, Temperos, Vatapa, Caruru, Salada, Bater, Fritar, Montar, Servir, Premio, Cupom).

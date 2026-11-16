@@ -10,7 +10,7 @@ import { Lavar, Triturar, Temperos, Vatapa, Caruru, Salada } from './cenas/etapa
 import { Bater, Fritar, Montar } from './cenas/etapas2';
 import { Servir } from './cenas/Servir';
 import { Premio, Cupom } from './cenas/Premio';
-import { config, estado, type Config } from './estado';
+import { CASAIS, config, estado, type Config } from './estado';
 import { definirRaiz } from './cupom';
 import { fritando } from './som';
 
@@ -95,6 +95,8 @@ export function iniciarJogo(raiz: HTMLElement, cfg: Partial<Config> = {}) {
     const q = new URLSearchParams(location.search);
     if (q.get('veg') === '1') estado.vegetariano = true;
     if (q.get('pimenta') === 'pouca') estado.pimenta = 'pouca';
+    const casal = q.get('casal') as (typeof CASAIS)[number] | null;
+    if (casal && CASAIS.includes(casal)) estado.casal = casal;
     game.events.once('ready', () => {
       const carregar = game.scene.getScene('Carregando');
       carregar.events.once('shutdown', () => {

@@ -1,6 +1,15 @@
 /** Estado da partida do Acarabet, etapas e utilidades (armazenamento e medição). */
 
 export type Roupa = 'baiana' | 'dolma' | 'preta';
+/** Casais de clientes sorteados a cada partida (o público do Acarajazz é diverso): quem senta à esquerda_quem senta à direita.
+ * Homem e mulher, dois homens e duas mulheres; de várias etnias e mesclados. Ver tools/sprites/personagens.py (CASAIS). */
+export const CASAIS = [
+  'negro_negra', 'branco_branca', 'asiatico_asiatica', 'pardo_parda',
+  'branco_negra', 'negro_branca', 'asiatico_negra', 'negro_asiatica', 'pardo_negra', 'negro_parda', 'pardo_asiatica',
+  'negro_branco', 'pardo_negro', 'asiatico_pardo',
+  'negra_branca', 'parda_negra', 'asiatica_parda',
+] as const;
+
 export const ROUPAS: { id: Roupa; nome: string }[] = [
   { id: 'baiana', nome: 'BAIANA' },
   { id: 'dolma', nome: 'DÓLMÃ' },
@@ -57,6 +66,8 @@ export const estado = {
   pimenta: 'forte' as 'forte' | 'pouca',
   /** Tradicional leva camarão por cima; vegetariano leva shimeji. */
   vegetariano: false,
+  /** Qual casal está à mesa nesta partida. */
+  casal: 'negro_negra' as (typeof CASAIS)[number],
   estrelas: {} as Record<string, number>,
   fila: [] as string[], // etapas que faltam (na primeira vez, todas; depois, as que vai refazer)
   rodada: 0,
@@ -66,6 +77,7 @@ export const estado = {
 export function novaPartida() {
   estado.pimenta = Math.random() < 0.5 ? 'forte' : 'pouca';
   estado.vegetariano = Math.random() < 0.35;
+  estado.casal = CASAIS[Math.floor(Math.random() * CASAIS.length)];
   estado.estrelas = {};
   estado.fila = ETAPAS.map((e) => e.id);
   estado.rodada = 0;

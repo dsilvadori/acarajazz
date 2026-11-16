@@ -69,11 +69,11 @@ export class Servir extends Phaser.Scene {
   private reacao(s: ReturnType<typeof montaSalao>) {
     const total = totalEstrelas();
     if (satisfeito()) {
-      s.casal.play('cliente_casal_feliz');
+      s.casal.play(`cliente_casal_${estado.casal}_feliz`);
       animBia(s.bia, estado.roupa, 'comemorando');
       s.festa(6000); // o salão inteiro comemora: tchauzinho e brinde dos tios
       tocar('vitoria');
-      this.time.delayedCall(1500, () => s.casal.play('cliente_casal_comendo'));
+      this.time.delayedCall(1500, () => s.casal.play(`cliente_casal_${estado.casal}_comendo`));
       for (let i = 0; i < 4; i++) this.add.sprite(20 + i * 46, 60 + (i % 2) * 30, 'atlas').setScale(2).setDepth(1250).play('confete');
       this.time.delayedCall(900, () => {
         // no alto do salão, pra festa (tchauzinho e brinde) ficar à vista
@@ -86,13 +86,15 @@ export class Servir extends Phaser.Scene {
         }, 'verde').setDepth(1303);
       });
     } else {
-      s.casal.play('cliente_casal_comendo');
+      s.casal.play(`cliente_casal_${estado.casal}_comendo`);
       animBia(s.bia, estado.roupa, 'preocupada');
       this.time.delayedCall(900, () => {
-        painel(this, 12, 90, L - 24, 92).setDepth(1301);
-        texto(this, L / 2, 96, 'QUASE!', { fonte: 'escura', tamanho: 2 }).setDepth(1302);
-        texto(this, L / 2, 120, 'O CASAL QUERIA MAIS CAPRICHO. BORA REFAZER AS ETAPAS MAIS FRACAS? AQUI NINGUÉM SAI SEM PRÊMIO!', { fonte: 'escura', largura: 150 }).setDepth(1302);
-        botao(this, L / 2, 168, 100, 16, 'REFAZER', () => {
+        // no alto do salão e com a altura do texto (o botão não cobre a última linha)
+        texto(this, L / 2, 30, 'QUASE!', { fonte: 'escura', tamanho: 2 }).setDepth(1302);
+        const t = texto(this, L / 2, 54, 'O CASAL QUERIA MAIS CAPRICHO. BORA REFAZER AS ETAPAS MAIS FRACAS? AQUI NINGUÉM SAI SEM PRÊMIO!', { fonte: 'escura', largura: 150 }).setDepth(1302);
+        const yBotao = 54 + Math.ceil(t.height) + 14;
+        painel(this, 12, 24, L - 24, yBotao - 24 + 14).setDepth(1301);
+        botao(this, L / 2, yBotao, 100, 16, 'REFAZER', () => {
           prepararRefazer();
           this.scene.start(proximaEtapa()!);
         }).setDepth(1303);

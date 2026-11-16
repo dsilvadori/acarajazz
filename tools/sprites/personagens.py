@@ -47,6 +47,20 @@ C.update({
     'pele_cliente': hx('9c6641'), 'pele_cliente_sombra': hx('77492b'), 'boca_cliente': hx('6e3526'),
     'pele_retinta': hx('5b3424'), 'pele_retinta_sombra': hx('402316'), 'pele_retinta_luz': hx('7a4a32'),
     'boca_retinta': hx('7a1a24'), 'blush_retinta': hx('6e3428'),
+    # variações do casal de clientes (o público do Acarajazz é bem diverso)
+    'pele_branca': hx('f3d2b8'), 'pele_branca_sombra': hx('dba98a'), 'boca_branca': hx('b8645a'),
+    'pele_asia': hx('efcfa4'), 'pele_asia_sombra': hx('d2a97c'), 'boca_asia': hx('b5615a'),
+    'pele_parda': hx('c8936a'), 'pele_parda_sombra': hx('a3714b'), 'boca_parda': hx('84463a'),
+    'cabelo_preto': hx('1c1614'), 'cabelo_preto_luz': hx('3d3532'),
+    'cabelo_castanho_claro': hx('8a5a34'), 'cabelo_castanho_claro_luz': hx('b07a48'), 'cabelo_castanho_claro_sombra': hx('5e3a20'),
+    'loiro': hx('e0b860'), 'loiro_luz': hx('f4d88c'), 'loiro_sombra': hx('b48a3a'),
+    'camisa_azul': hx('3f7fc4'), 'camisa_azul_sombra': hx('2c5c93'),
+    'camisa_verde': hx('3a8f55'), 'camisa_verde_sombra': hx('286a3d'),
+    'camisa_mostarda': hx('e2b43c'), 'camisa_mostarda_sombra': hx('b48a26'),
+    'blusa_coral': hx('ef7a5e'), 'blusa_coral_sombra': hx('c95a42'),
+    'blusa_lilas': hx('b28ad8'), 'blusa_lilas_sombra': hx('8a64b4'),
+    'blusa_vermelha': hx('d23a3a'), 'blusa_vermelha_sombra': hx('a12828'),
+    'saia_azul': hx('2f5d9a'),
     'vermelho': hx('d9473e'), 'vermelho_sombra': hx('a8322b'),
 })
 
@@ -645,94 +659,233 @@ def chita_px(x, y):
     return 'batom'
 
 
-def casal_mesa(estado='esperando', k=0):
-    """estado: 'esperando' (sem comida), 'feliz' (o acarajé chegou) ou 'comendo'. k = quadro."""
+# Quem pode sentar à mesa: pele, cabelo, olhos e roupa de cada um.
+ELES = {
+    'negro': dict(pele='pele_cliente', sombra='pele_cliente_sombra', boca='boca_cliente', blush=None, cabelo='crespo',
+                  cab='olho', cab_luz='castanho', barba=True, camisa='vinho', camisa_sombra='batom_sombra', calca='jeans'),
+    'branco': dict(pele='pele_branca', sombra='pele_branca_sombra', boca='boca_branca', blush='blush', cabelo='liso',
+                   cab='cabelo_castanho_claro', cab_luz='cabelo_castanho_claro_luz', barba=False,
+                   camisa='camisa_azul', camisa_sombra='camisa_azul_sombra', calca='bege'),
+    'asiatico': dict(pele='pele_asia', sombra='pele_asia_sombra', boca='boca_asia', blush=None, cabelo='franja',
+                     cab='cabelo_preto', cab_luz='cabelo_preto_luz', barba=False,
+                     camisa='camisa_mostarda', camisa_sombra='camisa_mostarda_sombra', calca='jeans'),
+    'pardo': dict(pele='pele_parda', sombra='pele_parda_sombra', boca='boca_parda', blush=None, cabelo='cacheado',
+                  cab='castanho', cab_luz='castanho_luz', barba=True,
+                  camisa='camisa_verde', camisa_sombra='camisa_verde_sombra', calca='jeans'),
+}
+ELAS = {
+    'negra': dict(pele='pele_retinta', sombra='pele_retinta_sombra', luz='pele_retinta_luz', boca='boca_retinta',
+                  blush='blush_retinta', brilho=True, cabelo='black', cab='olho', cab_luz='castanho', blusa='estampa',
+                  brinco='argola', pernas='pele_retinta', saia='amarelo'),
+    'branca': dict(pele='pele_branca', sombra='pele_branca_sombra', boca='batom_sombra', blush='blush', cabelo='ondulado',
+                   cab='loiro', cab_luz='loiro_luz', cab_sombra='loiro_sombra', blusa='blusa_lilas', brinco='ponto',
+                   pernas='pele_branca', saia='saia_azul'),
+    'asiatica': dict(pele='pele_asia', sombra='pele_asia_sombra', boca='batom_sombra', blush='blush', cabelo='liso_franja',
+                     cab='cabelo_preto', cab_luz='cabelo_preto_luz', cab_sombra='contorno',
+                     blusa='blusa_vermelha', brinco='ponto', pernas='pele_asia', saia='preto'),
+    'parda': dict(pele='pele_parda', sombra='pele_parda_sombra', boca='batom_sombra', blush=None, cabelo='cachos',
+                  cab='castanho', cab_luz='cabelo_castanho_claro_luz', cab_sombra='olho', blusa='blusa_coral',
+                  brinco='argola', pernas='pele_parda', saia='jeans'),
+}
+# Casais sorteados a cada partida: os da mesma etnia e os mesclados (diversidade é parte da marca).
+CASAIS = {f'{a}_{b}': (a, b) for a, b in (
+    # homem e mulher
+    ('negro', 'negra'), ('branco', 'branca'), ('asiatico', 'asiatica'), ('pardo', 'parda'),
+    ('branco', 'negra'), ('negro', 'branca'), ('asiatico', 'negra'), ('negro', 'asiatica'),
+    ('pardo', 'negra'), ('negro', 'parda'), ('pardo', 'asiatica'),
+    # dois homens
+    ('negro', 'branco'), ('pardo', 'negro'), ('asiatico', 'pardo'),
+    # duas mulheres
+    ('negra', 'branca'), ('parda', 'negra'), ('asiatica', 'parda'),
+)}
+
+
+def cabelo_homem(estilo, cab, luz):
+    """Cabelo curto masculino que acompanha a curva da cabeça (centro 16,17; raio ~6):
+    entradas nas têmporas, costeletas até a orelha e textura própria de cada estilo."""
+    p = Parte()
+    vol = {'crespo': 1.6, 'cacheado': 1.4, 'liso': 0.9, 'franja': 1.0}[estilo]
+
+    def linha_frente(x):  # até onde o cabelo desce na testa (y), por coluna
+        dx = abs(x + 0.5 - 16)
+        if estilo == 'franja':
+            return 14 if dx < 5 else 16  # franja reta na testa e lateral cobrindo o alto da orelha
+        if estilo == 'liso':
+            return (13 if x >= 13 else 12) if dx < 4 else (14 if dx < 5.5 else 16)  # franja varrida pra direita
+        return 12 if dx < 3.5 else (13 if dx < 5 else 15)  # crespo/cacheado: entradinha nas têmporas
+
+    for y in range(4, 18):
+        for x in range(8, 25):
+            dentro = ((x + 0.5 - 16) / (6.6 + vol * 0.5)) ** 2 + ((y + 0.5 - 16.6) / (6.4 + vol)) ** 2 <= 1
+            if dentro and y <= linha_frente(x):
+                p.p(x, y, cab)
+    # textura
+    for (x, y) in list(p.px):
+        h = ((x * 73856093) ^ (y * 19349663)) % 13
+        if estilo == 'crespo':
+            if (x + y) % 2 == 0 and h < 6:
+                p.d(x, y, luz)  # crespinho miúdo
+        elif estilo == 'cacheado':
+            if h < 3 or (x * 2 + y * 3) % 7 == 0:
+                p.d(x, y, luz)  # voltinhas dos cachos
+        elif estilo == 'liso':
+            if x > 13 and (x - y) % 3 == 0 and y < 13:
+                p.d(x, y, luz)  # fios penteados pra direita, a partir da risca
+        elif estilo == 'franja':
+            if (y == 10 and 12 <= x <= 15) or (y == 11 and 13 <= x <= 14):
+                p.d(x, y, luz)  # brilhinho do cabelo liso
+    if estilo == 'crespo' or estilo == 'cacheado':  # borda de cima ondulada (não é capacete)
+        topo = min(y for (_, y) in p.px)
+        for x in range(8, 25):
+            if (x, topo) in p.px and x % 2 == 0:
+                p.px.pop((x, topo))
+        if estilo == 'cacheado':
+            for x in (10, 22):
+                p.p(x, 12, cab); p.p(x - 1 if x == 10 else x + 1, 11, cab)  # cachinho escapando do lado
+    if estilo == 'liso':
+        for y in range(8, 12):
+            p.d(13, y, 'castanho' if cab != 'castanho' else 'olho')  # risca do lado
+        for (x, y) in ((11, 10), (12, 11), (11, 12)):
+            p.d(x, y, luz)  # o ladinho penteado pra baixo
+    if estilo == 'franja':
+        for x in (12, 15, 18):
+            p.px.pop((x, 14), None)  # pontinhas desfiadas da franja
+    return p
+
+
+def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
+    """Mesa de dois lugares. par = (quem senta à esquerda, quem senta à direita), cada um de ELES ou ELAS:
+    casal de homem e mulher, de dois homens ou de duas mulheres.
+    estado: 'esperando' (sem comida), 'feliz' (o acarajé chegou) ou 'comendo'. k = quadro."""
     q = [[None] * MW for _ in range(H)]
     feliz = estado == 'feliz'
     pisca = estado == 'esperando' and k == 1
+    lugares = [(0, par[0], 1, (1, 2)), (32, par[1], 0, (3, 0))]  # (ox, quem, quadro do sorriso, quadros levando à boca)
 
-    # ── ela (direita, ox=32): retinta, black power, argolonas, blusa de estampa africana
-    afro = Parte()
-    afro.elipse(16, 12.5, 9.6, 8.6, 'olho')
-    for (x, y) in list(afro.px):
-        if (x * 3 + y * 5) % 7 == 0:
-            afro.d(x, y, 'castanho')
-        elif (x + y) % 9 == 0:
-            afro.d(x, y, 'castanho_luz')
-    compor_em(q, afro, 32)
+    def dados(quem):
+        return ('ele', ELES[quem]) if quem in ELES else ('ela', ELAS[quem])
 
-    # ── ele (esquerda): pele negra mais clara, cabelo crespo curtinho com volume, barba, camisa vinho
-    for ox, quem in ((0, 'ele'), (32, 'ela')):
-        # pernas e cadeira embaixo da mesa
+    # ── cabelo de trás das mulheres (antes do corpo)
+    franjas = {}
+    for ox, quem, _, _ in lugares:
+        tipo, P_ = dados(quem)
+        if tipo != 'ela':
+            continue
+        if P_['cabelo'] == 'black':
+            afro = Parte()
+            afro.elipse(16, 12.5, 9.6, 8.6, P_['cab'])
+            for (x, y) in list(afro.px):
+                if (x * 3 + y * 5) % 7 == 0:
+                    afro.d(x, y, 'castanho')
+                elif (x + y) % 9 == 0:
+                    afro.d(x, y, 'castanho_luz')
+            compor_em(q, afro, ox)
+            fr = Parte()  # o black power por cima da testa
+            fr.elipse(16, 11.6, 6.9, 2.6, P_['cab'], ymax=12)
+            for (x, y) in list(fr.px):
+                if (x * 3 + y * 5) % 7 == 0:
+                    fr.d(x, y, 'castanho')
+            franjas[ox] = fr
+        elif P_['cabelo'] == 'cachos':
+            volume = Parte()
+            centros = [(16 + 8 * math.cos(math.pi * (0.9 + i * 1.2 / 11)), 15 + 7 * math.sin(math.pi * (0.9 + i * 1.2 / 11))) for i in range(12)]
+            centros += [(8.5, 20), (23.5, 20), (8.5, 24), (23.5, 24), (9.5, 27), (22.5, 27)]
+            bolinhas_cabelo(volume, centros, 0, P_['cab'], P_['cab_luz'], P_['cab_sombra'], r=2.4)
+            compor_em(q, volume, ox)
+            fr = Parte()
+            bolinhas_cabelo(fr, [(12, 11.5), (15, 10.8), (18, 10.8), (21, 11.5)], 0, P_['cab'], P_['cab_luz'], P_['cab_sombra'], r=1.8)
+            franjas[ox] = fr
+        else:  # ondulado ou liso com franja reta
+            atras, fr = cabelo_comprido(0, P_['cab'], P_['cab_luz'], P_['cab_sombra'], ate=28,
+                                        volume=1 if P_['cabelo'] == 'ondulado' else 0, suave=P_['cabelo'] == 'liso_franja')
+            if P_['cabelo'] == 'liso_franja':
+                fr.ret(11, 11, 21, 13, P_['cab'])  # franja reta na testa
+                for x in range(11, 22, 2):
+                    fr.d(x, 12, P_['cab_luz'])
+            compor_em(q, atras, ox)
+            franjas[ox] = fr
+
+    # ── pernas e cadeiras embaixo da mesa
+    for ox, quem, _, _ in lugares:
+        tipo, P_ = dados(quem)
         cad = Parte()
         cad.linha(ox + 9, 36, ox + 11, 47, 'madeira'); cad.linha(ox + 23, 36, ox + 21, 47, 'madeira')
         cad.ret(ox + 9, 40, ox + 23, 40, 'madeira_luz')
         compor_em(q, cad)
         pernas = Parte()
         for x0 in (ox + 11, ox + 17):
-            if quem == 'ele':
-                pernas.ret(x0, 36, x0 + 3, 45, 'jeans')
+            if tipo == 'ele':
+                pernas.ret(x0, 36, x0 + 3, 45, P_['calca'])
                 pernas.ret(x0 - 1, 46, x0 + 3, 47, 'branco')  # tênis
             else:
-                pernas.ret(x0, 41, x0 + 2, 45, 'pele_retinta')
-                pernas.ret(x0, 36, x0 + 3, 40, 'amarelo')  # barra do vestido
+                pernas.ret(x0, 41, x0 + 2, 45, P_['pernas'])
+                pernas.ret(x0, 36, x0 + 3, 40, P_['saia'])  # barra do vestido/saia
                 pernas.ret(x0 - 1, 46, x0 + 3, 46, 'ouro_sombra')  # sandália
         compor_em(q, pernas)
 
-    for ox, quem in ((0, 'ele'), (32, 'ela')):
+    # ── tronco, rosto e cabelo
+    for ox, quem, sorri, _ in lugares:
+        tipo, P_ = dados(quem)
+        alegre = feliz or (estado == 'comendo' and k % 2 == sorri)
         t = Parte()
-        if quem == 'ele':
+        if tipo == 'ele':
             for y in range(24, 35):
                 x0, x1 = (8, 23) if y > 24 else (9, 22)
                 for x in range(x0, x1 + 1):
-                    t.p(x, y, 'batom_sombra' if x >= x1 - 1 else 'vinho')
-            t.p(15, 24, 'pele_cliente'); t.p(16, 24, 'pele_cliente'); t.p(15, 25, 'pele_cliente'); t.p(16, 25, 'pele_cliente')  # gola aberta
-            t.d(14, 24, 'batom_sombra'); t.d(17, 24, 'batom_sombra')
+                    t.p(x, y, P_['camisa_sombra'] if x >= x1 - 1 else P_['camisa'])
+            for (x, y) in ((15, 24), (16, 24), (15, 25), (16, 25)):
+                t.p(x, y, P_['pele'])  # gola aberta
+            t.d(14, 24, P_['camisa_sombra']); t.d(17, 24, P_['camisa_sombra'])
             for y in (28, 31):
-                t.d(16, y, 'bege')
+                t.d(16, y, 'bege' if P_['camisa'] != 'bege' else 'madeira')
         else:
-            estampa = ('barra', 'amarelo', 'preto', 'amarelo', 'fita', 'barra')
+            if P_['blusa'] == 'estampa':
+                estampa = ('barra', 'amarelo', 'preto', 'amarelo', 'fita', 'barra')
+                cor_px = lambda x, y: estampa[((x - y) // 2 + (y // 3)) % len(estampa)]
+            else:
+                cor_px = lambda x, y, c=P_['blusa']: c + '_sombra' if x >= 21 else c
             for y in range(24, 35):
                 x0, x1 = CURVAS[y] if y in CURVAS else (9, 22)
                 for x in range(x0, x1 + 1):
-                    t.p(x, y, estampa[((x - y) // 2 + (y // 3)) % len(estampa)])
+                    t.p(x, y, cor_px(x, y))
             for x in range(13, 19):  # decote
-                t.p(x, 24, 'pele_retinta')
-            t.p(14, 25, 'pele_retinta'); t.p(15, 25, 'pele_retinta'); t.p(16, 25, 'pele_retinta'); t.p(17, 25, 'pele_retinta')
-            for x in (14, 16, 18):
-                t.d(x - 1, 26, 'ouro')  # colar
+                t.p(x, 24, P_['pele'])
+            for x in range(14, 18):
+                t.p(x, 25, P_['pele'])
+            if P_['blusa'] == 'estampa':
+                for x in (14, 16, 18):
+                    t.d(x - 1, 26, 'ouro')  # colar
+            else:
+                t.d(15, 26, 'ouro'); t.d(16, 26, 'ouro')  # pingentinho
         compor_em(q, t, ox)
 
         cab = Parte()
-        if quem == 'ele':
-            rosto(cab, 0, 'pele_cliente', 'pele_cliente_sombra', boca='boca_cliente', olhos='fechados' if pisca else 'abertos',
-                  sobrancelha='olho', feliz=feliz or estado == 'comendo' and k % 2 == 1, blush=None)
-            for x in range(11, 21):  # barba curtinha no queixo
-                for y in (21, 22):
-                    if (x, y) in cab.px and not (14 <= x <= 17 and y == 21):
-                        cab.d(x, y, 'olho')
-            for y in range(15, 20):  # costeleta
-                cab.d(10, y, 'olho'); cab.d(21, y, 'olho')
-            cabelo = Parte()  # crespo curtinho, com volume em cima
-            cabelo.elipse(16, 11.5, 6.8, 3.6, 'olho', ymax=13)
-            for (x, y) in list(cabelo.px):
-                if (x * 2 + y) % 5 == 0:
-                    cabelo.d(x, y, 'castanho')
+        if tipo == 'ele':
+            rosto(cab, 0, P_['pele'], P_['sombra'], boca=P_['boca'], olhos='fechados' if pisca else 'abertos',
+                  sobrancelha=P_['cab'] if P_['cab'] != 'cabelo_castanho_claro' else 'castanho', feliz=alegre, blush=P_['blush'])
+            if P_['barba']:
+                for x in range(11, 21):  # barba curtinha no queixo
+                    for y in (21, 22):
+                        if (x, y) in cab.px and not (14 <= x <= 17 and y == 21):
+                            cab.d(x, y, P_['cab'])
+                for y in range(15, 20):  # costeleta
+                    cab.d(10, y, P_['cab']); cab.d(21, y, P_['cab'])
             compor_em(q, cab, ox)
-            compor_em(q, cabelo, ox)
+            compor_em(q, cabelo_homem(P_['cabelo'], P_['cab'], P_['cab_luz']), ox)
         else:
-            rosto(cab, 0, 'pele_retinta', 'pele_retinta_sombra', boca='boca_retinta', olhos='fechados' if pisca else 'abertos',
-                  sobrancelha='olho', feliz=feliz or estado == 'comendo' and k % 2 == 0, blush='blush_retinta', brilho_olho=True)
-            cab.d(12, 15, 'pele_retinta_luz'); cab.d(19, 15, 'pele_retinta_luz')  # luz nas maçãs
-            for x in (9, 22):  # argolonas douradas
-                cab.p(x, 19, 'ouro'); cab.p(x, 22, 'ouro'); cab.p(x - 1 if x == 9 else x + 1, 20, 'ouro'); cab.p(x - 1 if x == 9 else x + 1, 21, 'ouro_sombra')
-            franja = Parte()  # o black power por cima da testa
-            franja.elipse(16, 11.6, 6.9, 2.6, 'olho', ymax=12)
-            for (x, y) in list(franja.px):
-                if (x * 3 + y * 5) % 7 == 0:
-                    franja.d(x, y, 'castanho')
-            compor_em(q, cab, 32)
-            compor_em(q, franja, 32, contorno=False)
+            rosto(cab, 0, P_['pele'], P_['sombra'], boca=P_['boca'], olhos='fechados' if pisca else 'abertos',
+                  sobrancelha='olho', feliz=alegre, blush=P_['blush'], brilho_olho=P_.get('brilho', False))
+            if P_.get('luz'):
+                cab.d(12, 15, P_['luz']); cab.d(19, 15, P_['luz'])  # luz nas maçãs
+            if P_['brinco'] == 'argola':  # argolonas douradas
+                for x in (9, 22):
+                    cab.p(x, 19, 'ouro'); cab.p(x, 22, 'ouro')
+                    cab.p(x - 1 if x == 9 else x + 1, 20, 'ouro'); cab.p(x - 1 if x == 9 else x + 1, 21, 'ouro_sombra')
+            else:  # brinquinho de ponto
+                cab.p(9, 19, 'ouro'); cab.p(22, 19, 'ouro')
+            compor_em(q, cab, ox)
+            if ox in franjas:
+                compor_em(q, franjas[ox], ox, contorno=False)
 
     # mesa com toalha de chita
     mesa = Parte()
@@ -753,15 +906,17 @@ def casal_mesa(estado='esperando', k=0):
             pr.elipse(cx, 31.6, 3.2, 1.8, 'barra')
             pr.d(cx - 1, 31, 'amarelo'); pr.d(cx + 1, 31, 'amarelo')
         compor_em(q, pr)
-    copo_p = copo(29, 30)
-    compor_em(q, copo_p)
+    compor_em(q, copo(29, 30))
     compor_em(q, copo(33, 30))
 
     # braços
-    for ox, quem, pele, manga in ((0, 'ele', 'pele_cliente', 'vinho'), (32, 'ela', 'pele_retinta', 'barra')):
+    for ox, quem, _, leva_k in lugares:
+        tipo, P_ = dados(quem)
+        pele = P_['pele']
+        manga = P_['camisa'] if tipo == 'ele' else ('barra' if P_['blusa'] == 'estampa' else P_['blusa'])
         e, d = Parte(), Parte()
         braco(e, (8, 25), (5, 30), (8, 33), pele, manga, 0.4)
-        leva = estado == 'comendo' and ((quem == 'ele' and k in (1, 2)) or (quem == 'ela' and k in (3, 0)))
+        leva = estado == 'comendo' and k in leva_k
         if feliz:
             braco(d, (23, 25), (26, 21), (25 if k != 1 else 27, 16), pele, manga, 0.4)  # mão pra cima, comemorando
         elif leva:
@@ -794,10 +949,11 @@ def animacoes():
         'gato_dormindo': [recorte_gato(gato_dormindo(0)), recorte_gato(gato_dormindo(1))],
         'npc_tios_mesa_parada': [mesa_tios(), mesa_tios(respira=1, olhos='fechados')],
         'npc_tios_mesa_brindando': [mesa_tios(1), mesa_tios(2), mesa_tios(1)],
-        'cliente_casal_esperando': [casal_mesa('esperando', 0), casal_mesa('esperando', 1)],
-        'cliente_casal_feliz': [casal_mesa('feliz', k) for k in range(3)],
-        'cliente_casal_comendo': [casal_mesa('comendo', k) for k in range(4)],
     }
+    for v, par in CASAIS.items():  # cada partida sorteia um casal
+        A[f'cliente_casal_{v}_esperando'] = [casal_mesa('esperando', 0, par), casal_mesa('esperando', 1, par)]
+        A[f'cliente_casal_{v}_feliz'] = [casal_mesa('feliz', k, par) for k in range(3)]
+        A[f'cliente_casal_{v}_comendo'] = [casal_mesa('comendo', k, par) for k in range(4)]
     for g in GEMEAS:
         A[f'npc_{g}_parada'] = [gemea(g), gemea(g, 1, 'fechados')]
         A[f'npc_{g}_acenando'] = [gemea(g, acenando=1), gemea(g, acenando=2)]

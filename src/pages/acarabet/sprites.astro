@@ -45,12 +45,13 @@ const easterEggs = [
   { arquivo: 'npc_vic_lavando_4q', nome: 'Vic', desc: 'Irmão da Bia, lavando louça atrás do balcão (não reage)', quadros: 4, fps: 4 },
   { arquivo: 'npc_tios_mesa_parada_2q', nome: 'Tio Luizinho e Toninho', desc: 'Na mesa, com acarajé e cerveja', quadros: 2, fps: 2, w: 64 },
   { arquivo: 'npc_tios_mesa_brindando_3q', nome: 'Brindando', desc: 'Ao tocar neles', quadros: 3, fps: 4, w: 64 },
-  { arquivo: 'cliente_casal_esperando_2q', nome: 'Casal (clientes)', desc: 'Esperando o pedido', quadros: 2, fps: 2, w: 64 },
-  { arquivo: 'cliente_casal_feliz_3q', nome: 'Casal: chegou!', desc: 'Quando a Bia serve', quadros: 3, fps: 5, w: 64 },
-  { arquivo: 'cliente_casal_comendo_4q', nome: 'Casal comendo', desc: 'Depois de servidos', quadros: 4, fps: 4, w: 64 },
+  { arquivo: 'cliente_casal_negro_negra_feliz_3q', nome: 'Casal: chegou!', desc: 'Quando a Bia serve', quadros: 3, fps: 5, w: 64 },
+  { arquivo: 'cliente_casal_negro_negra_comendo_4q', nome: 'Casal comendo', desc: 'Depois de servidos', quadros: 4, fps: 4, w: 64 },
+  ...CASAIS.map((c) => ({ arquivo: `cliente_casal_${c}_esperando_2q`, nome: `Casal ${c.replace('_', ' + ')}`, desc: 'Sorteado a cada partida', quadros: 2, fps: 2, w: 64 })),
   { arquivo: 'gato_sentado_4q', nome: 'Pôr do Sol', desc: 'Sentado, balançando o rabo', quadros: 4, fps: 4, w: 24, h: 17 },
   { arquivo: 'gato_dormindo_2q', nome: 'Pôr do Sol dormindo', desc: 'Num cantinho do cenário', quadros: 2, fps: 1, w: 24, h: 17 },
 ];
+import { CASAIS } from '../../jogo/estado';
 ---
 
 <Base title="Sprites do Acarabet" noindex>
@@ -101,7 +102,7 @@ const easterEggs = [
         style={`--q:2;--dur:1s;--img:url('/jogo/sprites/bia_baiana_parada_2q.png');--e:1;left:${pos.pontos.bancada.x}px;top:${pos.pontos.bancada.y}px;z-index:1`}></div>
       <img src="/jogo/cenario/salao_balcao.png" alt="" width="180" height="320" style="z-index:2" />
       <div class="sprite fitas" style="--q:4;--dur:1.6s;--img:url('/jogo/cenario/salao_fitas_4q.png');--e:1;--w:180;--h:40;left:0;top:0;z-index:999"></div>
-      <div id="casal-cena" class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/cliente_casal_esperando_2q.png');--e:1;--w:64;--h:48;left:${pos.casal.x}px;top:${pos.casal.y}px;z-index:${10 + pos.casal.y + 48}`}></div>
+      <div id="casal-cena" class="sprite" style={`--q:2;--dur:1s;--img:url('/jogo/sprites/cliente_casal_negro_negra_esperando_2q.png');--e:1;--w:64;--h:48;left:${pos.casal.x}px;top:${pos.casal.y}px;z-index:${10 + pos.casal.y + 48}`}></div>
       {cena.map((c) => (
         <div class="sprite" style={`--q:${c.q};--dur:${c.q / c.fps}s;--img:url('/jogo/sprites/${c.s}.png');--e:1;--w:${c.w ?? 32};--h:${c.h ?? 48};left:${c.x}px;top:${c.y}px;z-index:${10 + c.y + (c.h ?? 48)}`}></div>
       ))}
@@ -185,7 +186,7 @@ const easterEggs = [
     const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
     const casal = document.getElementById('casal-cena');
     const casalEstado = (nome: string, q: number, fps: number) => {
-      casal?.style.setProperty('--img', `url('/jogo/sprites/cliente_casal_${nome}_${q}q.png')`);
+      casal?.style.setProperty('--img', `url('/jogo/sprites/cliente_casal_negro_negra_${nome}_${q}q.png')`);
       casal?.style.setProperty('--q', String(q));
       casal?.style.setProperty('--dur', `${q / fps}s`);
     };
