@@ -348,7 +348,7 @@ def gemea(qual, respira=0, olhos='abertos', acenando=0):
 # ─── Valentina (filha), da foto ──────────────────────────────────────────────
 def valentina(respira=0, olhos='abertos', acenando=0):
     dy = respira
-    atras, frente = cabelo_comprido(dy, 'olho', 'castanho_luz', 'contorno', mecha='mostarda', ate=26, volume=1)
+    atras, frente = cabelo_comprido(dy, 'olho', 'castanho_luz', 'contorno', mecha='mostarda', ate=23, volume=1)
     cabeca = Parte()
     rosto(cabeca, dy, 'pele_val', 'pele_val_sombra', boca='batom_sombra', olhos=olhos,
           sobrancelha='castanho', oculos=True, cor_oculos='cabelo_rosa', feliz=acenando > 0)
