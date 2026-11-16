@@ -22,7 +22,7 @@ export class Carregando extends Phaser.Scene {
     this.load.on('progress', (p: number) => {
       barra.clear().fillStyle(COR.dende).fillRect(30, 159, Math.round(w * p), 6);
     });
-    const v = '?v=7';
+    const v = '?v=8';
     this.load.atlas('atlas', '/jogo/atlas.png' + v, '/jogo/atlas.json' + v);
     this.load.bitmapFont('clara', '/jogo/fonte_clara.png' + v, '/jogo/fonte_clara.xml' + v);
     this.load.bitmapFont('escura', '/jogo/fonte_escura.png' + v, '/jogo/fonte_escura.xml' + v);

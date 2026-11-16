@@ -197,7 +197,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 **Regras de jogo implementadas**
 - Cada etapa dá 1 a 3 estrelas; refazer guarda sempre a melhor nota.
 - O casal fica satisfeito com **2/3 das estrelas** (20 de 30). Se não ficar, a Bia refaz as etapas mais fracas e serve de novo; na terceira rodada o casal aceita de qualquer jeito (ninguém sai sem cupom).
-- O pedido é sorteado a cada partida e aparece no balão do casal e na faixa da montagem: **com pimenta** (ícone de foguinho) ou **pouca pimenta** (ícone de friozinho), e **tradicional** (com camarão, ícone de camarão) ou **vegetariano** (sem camarão, ícone de folhinha).
+- O pedido é sorteado a cada partida e aparece no balão do casal e na faixa da montagem: **com pimenta** (ícone de foguinho) ou **pouca pimenta** (ícone de friozinho), e **tradicional** (camarão por cima, ícone de camarão) ou **vegetariano** (shimeji por cima, ícone de shimeji).
 
 **Processos de cada etapa (definidos com a equipe)**
 1. **Lavar o feijão:** feijão-fradinho (branco com o olhinho preto), que já vem quebrado da loja; o processo é só lavar, com a torneira aberta caindo água na bacia.
@@ -208,7 +208,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 6. **Salada:** tomate picado, misturando verde, meio amarelado (quase vermelho) e vermelho.
 7. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
 8. **Fritar** no dendê: um toque na massa joga os 4 bolinhos de uma vez no tacho (ou um por um, tocando no tacho); virar e tirar no ponto. A janela do ponto é larga (5 s) pra dar conta dos 4 sem queimar.
-9. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e camarão por cima (sem camarão no vegetariano). Pimenta errada, camarão no vegetariano ou fora de ordem contam como erro.
+9. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e, por cima, camarão (tradicional) ou shimeji (vegetariano). Pimenta errada, camarão no vegetariano, shimeji no tradicional ou fora de ordem contam como erro.
 10. **Servir** na mesa do casal.
 - Tocar nos personagens do salão (Eliana, gêmeas, Valentina, tios, Pôr do Sol) faz eles acenarem/brindarem: são os easter eggs.
 

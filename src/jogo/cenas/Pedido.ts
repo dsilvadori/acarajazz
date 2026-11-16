@@ -15,7 +15,7 @@ export class Pedido extends Phaser.Scene {
     botaoSom(this);
     const c = salao.posicoes.casal;
 
-    // Balão de pedido centralizado em cima do casal: acarajé + pimenta (foguinho/friozinho) + camarão ou folhinha
+    // Balão de pedido centralizado em cima do casal: acarajé + pimenta (foguinho/friozinho) + camarão ou shimeji
     const larguras = [32, 16, 16], espaco = 6, margem = 6, bh = 30;
     const bw = larguras.reduce((a, b) => a + b, 0) + espaco * (larguras.length - 1) + margem * 2;
     const meio = c.x + 32; // o sprite do casal tem 64 px
@@ -30,7 +30,7 @@ export class Pedido extends Phaser.Scene {
     const frames = [
       'acaraje_fechado_0',
       estado.pimenta === 'forte' ? 'icone_fogo_0' : 'icone_frio_0',
-      estado.vegetariano ? 'icone_veg_0' : 'icone_camarao_0',
+      estado.vegetariano ? 'icone_shimeji_0' : 'icone_camarao_0',
     ];
     let x = bx + margem;
     const icones = frames.map((f, i) => {

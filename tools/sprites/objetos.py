@@ -30,6 +30,7 @@ C.update({
     'tomate_maduro': hx('d8322c'), 'tomate_maduro_luz': hx('ff7a62'), 'tomate_maduro_sombra': hx('9c1a18'),
     'gengibre': hx('d9b27a'), 'gengibre_sombra': hx('a8804a'),
     'fogo_amarelo': hx('ffd23f'), 'gelo': hx('bfe8ff'),
+    'shimeji': hx('b08a66'), 'shimeji_luz': hx('dcc2a0'), 'shimeji_talo': hx('f4ecdc'),
 })
 C.setdefault('teto_sombra', hx('ddd0b6'))
 
@@ -443,7 +444,7 @@ def acaraje_lado(estado):
     return [faz(32, 32, partes)]
 
 
-RECHEIOS = ('pimenta', 'pimenta_pouca', 'vatapa', 'caruru', 'salada', 'camarao')
+RECHEIOS = ('pimenta', 'pimenta_pouca', 'vatapa', 'caruru', 'salada', 'camarao', 'shimeji')
 
 
 def camada(nome):
@@ -462,6 +463,10 @@ def camada(nome):
     elif nome == 'camarao':
         for x in (2, 9, 16):
             p.ret(x, 0, x + 4, 2, 'camarao'); p.d(x + 4, 1, 'olho')
+    elif nome == 'shimeji':  # cogumelinhos por cima (versão vegetariana)
+        for x in (2, 7, 12, 17):
+            p.d(x + 1, 2, 'shimeji_talo'); p.d(x + 1, 3, 'shimeji_talo')
+            p.ret(x, 0, x + 2, 1, 'shimeji'); p.d(x, 0, 'shimeji_luz')
     elif nome == 'pimenta':
         p.ret(1, 2, 22, 3, 'batom')
         for x in range(2, 22, 3):
@@ -473,7 +478,7 @@ def camada(nome):
 
 
 def potinho(nome):
-    cor = {'vatapa': 'vatapa', 'caruru': 'quiabo', 'salada': 'tomate_verde', 'camarao': 'camarao',
+    cor = {'vatapa': 'vatapa', 'caruru': 'quiabo', 'salada': 'tomate_verde', 'camarao': 'camarao', 'shimeji': 'shimeji_talo',
            'pimenta': 'batom', 'pimenta_pouca': 'batom'}[nome]
     p = Parte()
     branco = nome.startswith('pimenta')
@@ -486,6 +491,9 @@ def potinho(nome):
         p.d(6, 7, 'tomate_luz'); p.d(10, 8, 'fita')
     elif nome == 'camarao':
         p.d(6, 8, 'olho'); p.d(10, 7, 'olho')
+    elif nome == 'shimeji':
+        for x in (5, 8, 11):
+            p.ret(x - 1, 6, x, 7, 'shimeji'); p.d(x - 1, 6, 'shimeji_luz')
     elif nome == 'caruru':
         p.d(7, 8, 'quiabo_luz')
     elif nome == 'salada':
@@ -590,6 +598,15 @@ def icone(nome):
             a = math.pi * (0.1 + k * 0.25)
             p.elipse(8 + 4.2 * math.cos(a), 8 - 4.2 * math.sin(a) + 1, 2.2, 2.2, 'camarao')
         p.d(12, 6, 'olho'); p.d(5, 5, 'tomate_luz')
+    elif nome == 'shimeji':  # buquê de shimeji: três chapeuzinhos marrons em talos branquinhos
+        partes = []
+        for (x, y, xb) in ((8, 4, 8), (4, 7, 7), (12, 7, 9)):  # o do meio fica atrás
+            m = Parte()
+            m.linha(x, y + 1, xb, 14, 'shimeji_talo', 1)
+            m.elipse(x, y, 2.8, 1.9, 'shimeji', ymax=y + 1)
+            m.d(x - 1, y, 'shimeji_luz'); m.d(x, y, 'shimeji_luz')
+            partes.append(m)
+        return [faz(16, 16, partes)]
     elif nome == 'veg':
         p.elipse(8, 7, 5, 4, 'fita')
         p.linha(4, 13, 11, 4, 'quiabo', 1); p.d(6, 5, 'quiabo_luz'); p.d(7, 5, 'quiabo_luz')
@@ -679,6 +696,6 @@ ITENS = {
     'estrela_cheia': lambda: estrela(True), 'estrela_vazia': lambda: estrela(False),
     **{f'carinha_{n}': (lambda n=n: carinha(n)) for n in range(5)},
     'maozinha': maozinha, 'som_on': lambda: som(True), 'som_off': lambda: som(False),
-    **{f'icone_{n}': (lambda n=n: icone(n)) for n in ('fogo', 'frio', 'camarao', 'veg')},
+    **{f'icone_{n}': (lambda n=n: icone(n)) for n in ('fogo', 'frio', 'camarao', 'veg', 'shimeji')},
     'cupom': cupom, 'carimbo': carimbo, 'confete': confete, 'brilho': brilho,
 }

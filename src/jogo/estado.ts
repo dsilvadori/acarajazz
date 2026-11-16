@@ -24,11 +24,11 @@ export const ETAPAS: InfoEtapa[] = [
   { id: 'salada', cena: 'Salada', nome: 'SALADA', instrucao: 'TOQUE PRA PICAR QUANDO A FACA ESTIVER EM CIMA DO TOMATE: VERDE, MEIO AMARELADO E VERMELHO. CUIDADO COM O DEDO!' },
   { id: 'bater', cena: 'Bater', nome: 'BATER A MASSA', instrucao: 'TOQUE RAPIDINHO NA TELA PRA BATER. A MASSA VAI CRESCENDO ATÉ FICAR BRANQUINHA E LEVINHA!' },
   { id: 'fritar', cena: 'Fritar', nome: 'FRITAR', instrucao: 'TOQUE NA MASSA PRA JOGAR OS 4 BOLINHOS NO DENDÊ (OU NO TACHO, UM POR UM). DOUROU E BRILHOU? TOQUE PRA VIRAR. DOUROU DE NOVO? TOQUE PRA TIRAR.' },
-  { id: 'montar', cena: 'Montar', nome: 'MONTAR', instrucao: 'ARRASTE NA ORDEM: PIMENTA NO BOLINHO, VATAPÁ, CARURU, SALADA E CAMARÃO POR CIMA. OLHE O PEDIDO!' },
+  { id: 'montar', cena: 'Montar', nome: 'MONTAR', instrucao: 'ARRASTE NA ORDEM: PIMENTA NO BOLINHO, VATAPÁ, CARURU, SALADA E, POR CIMA, CAMARÃO (OU SHIMEJI NO VEGETARIANO). OLHE O PEDIDO!' },
   { id: 'servir', cena: 'Servir', nome: 'SERVIR', instrucao: 'TOQUE NA MESA DO CASAL PRA BIA LEVAR O ACARAJÉ QUENTINHO.' },
 ];
 
-/** Ordem da montagem (a pimenta varia: com pimenta ou pouca pimenta; o camarão só no tradicional). */
+/** Ordem da montagem (a pimenta varia: com pimenta ou pouca pimenta; por cima, camarão no tradicional e shimeji no vegetariano). */
 export const ORDEM_MONTAGEM = ['pimenta', 'vatapa', 'caruru', 'salada', 'camarao'] as const;
 
 const MAX_ESTRELAS = ETAPAS.length * 3;
@@ -55,7 +55,7 @@ export const estado = {
   roupa: 'baiana' as Roupa,
   /** Pedido do casal: 'forte' (foguinho) = com pimenta · 'pouca' (friozinho) = pouca pimenta. */
   pimenta: 'forte' as 'forte' | 'pouca',
-  /** Tradicional leva camarão por cima; vegetariano, não. */
+  /** Tradicional leva camarão por cima; vegetariano leva shimeji. */
   vegetariano: false,
   estrelas: {} as Record<string, number>,
   fila: [] as string[], // etapas que faltam (na primeira vez, todas; depois, as que vai refazer)
@@ -82,9 +82,9 @@ export function nivelSatisfacao(): number {
   return proporcao < 0.4 ? 0 : proporcao < 0.55 ? 1 : proporcao < 0.67 ? 2 : proporcao < 0.85 ? 3 : 4;
 }
 
-/** Texto do pedido, ex.: "TRADICIONAL COM PIMENTA" / "VEGETARIANO COM POUCA PIMENTA". */
+/** Texto do pedido, ex.: "TRADICIONAL, COM CAMARÃO E PIMENTA" / "VEGETARIANO, COM SHIMEJI E POUCA PIMENTA". */
 export const textoPedido = () =>
-  `${estado.vegetariano ? 'VEGETARIANO' : 'TRADICIONAL'} COM ${estado.pimenta === 'pouca' ? 'POUCA ' : ''}PIMENTA`;
+  `${estado.vegetariano ? 'VEGETARIANO, COM SHIMEJI' : 'TRADICIONAL, COM CAMARÃO'} E ${estado.pimenta === 'pouca' ? 'POUCA ' : ''}PIMENTA`;
 
 export const satisfeito = () => totalEstrelas() >= META_SATISFACAO || estado.rodada >= 2; // ninguém sai sem cupom
 export const infoEtapa = (id: string) => ETAPAS.find((e) => e.id === id)!;

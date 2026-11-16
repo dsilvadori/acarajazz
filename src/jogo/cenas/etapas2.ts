@@ -198,8 +198,9 @@ export class Fritar extends Etapa {
 }
 
 // ─── 8. Montar (na ordem certa e do jeito que o casal pediu) ──────────────────
-/** Potinhos na bancada: as duas pimentas (com pimenta 🔥 / pouca pimenta ❄), vatapá, caruru, salada e camarão. */
-const POTES = ['pimenta', 'pimenta_pouca', 'vatapa', 'caruru', 'salada', 'camarao'] as const;
+/** Potinhos na bancada: as duas pimentas (com pimenta 🔥 / pouca pimenta ❄), vatapá, caruru, salada, camarão e shimeji. */
+const POTES = ['pimenta', 'pimenta_pouca', 'vatapa', 'caruru', 'salada', 'camarao', 'shimeji'] as const;
+const X_POTE = (i: number) => 13 + i * 25.7;
 type Pote = (typeof POTES)[number];
 
 export class Montar extends Etapa {
@@ -219,7 +220,7 @@ export class Montar extends Etapa {
   protected montar() {
     this.feitos = this.erros = 0;
     const pimenta: Pote = estado.pimenta === 'forte' ? 'pimenta' : 'pimenta_pouca';
-    this.sequencia = [pimenta, 'vatapa', 'caruru', 'salada', ...(estado.vegetariano ? [] : (['camarao'] as Pote[]))];
+    this.sequencia = [pimenta, 'vatapa', 'caruru', 'salada', estado.vegetariano ? 'shimeji' : 'camarao'];
     // o acarajé aberto: as metades separadas pra caber o recheio no meio
     this.add.image(this.A.x, this.A.y, 'atlas', 'acaraje_aberto_0').setScale(3).setCrop(0, 17, 32, 15);
     this.cima = this.add.image(this.A.x, this.A.y, 'atlas', 'acaraje_aberto_0').setScale(3).setCrop(0, 0, 32, 17).setDepth(10);
@@ -228,15 +229,15 @@ export class Montar extends Etapa {
     this.marcas = this.sequencia.map((n, i) => this.add.image(12 + i * 18, 128, 'atlas', `pote_${n}_0`));
     this.add.rectangle(108, 120, 1, 16, COR.creme, 0.6).setOrigin(0);
     this.add.image(124, 128, 'atlas', estado.pimenta === 'forte' ? 'icone_fogo_0' : 'icone_frio_0');
-    this.add.image(144, 128, 'atlas', estado.vegetariano ? 'icone_veg_0' : 'icone_camarao_0');
+    this.add.image(144, 128, 'atlas', estado.vegetariano ? 'icone_shimeji_0' : 'icone_camarao_0');
     this.add.image(164, 128, 'atlas', 'acaraje_fechado_0').setScale(0.5);
     this.destacaProximo();
 
     POTES.forEach((n, i) => {
-      const x0 = 15 + i * 30, y0 = 294;
+      const x0 = X_POTE(i), y0 = 294;
       if (n === 'pimenta') this.add.image(x0, y0 - 22, 'atlas', 'icone_fogo_0');
       if (n === 'pimenta_pouca') this.add.image(x0, y0 - 22, 'atlas', 'icone_frio_0');
-      const p = this.add.image(x0, y0, 'atlas', `pote_${n}_0`).setScale(2).setDepth(30)
+      const p = this.add.image(x0, y0, 'atlas', `pote_${n}_0`).setScale(1.75).setDepth(30)
         .setInteractive({ draggable: true, useHandCursor: true });
       p.on('drag', (_p: Phaser.Input.Pointer, x: number, y: number) => this.rodando && p.setPosition(x, y));
       p.on('dragend', () => this.solta(n, p, x0, y0));
@@ -260,7 +261,8 @@ export class Montar extends Etapa {
     if (!dentro || !this.rodando) return volta();
     const esperado = this.sequencia[this.feitos];
     if (nome !== esperado) {
-      if (nome === 'camarao' && estado.vegetariano) this.erro('É VEGETARIANO!');
+      if (nome === 'camarao' && estado.vegetariano) this.erro('É VEGETARIANO: SHIMEJI!');
+      else if (nome === 'shimeji' && !estado.vegetariano) this.erro('É TRADICIONAL: CAMARÃO!');
       else if (nome === 'pimenta' && estado.pimenta === 'pouca') this.erro('É POUCA PIMENTA!');
       else if (nome === 'pimenta_pouca' && estado.pimenta === 'forte') this.erro('É COM PIMENTA!');
       else if (!this.sequencia.slice(0, this.feitos).includes(nome)) this.erro('NA ORDEM!');
@@ -286,6 +288,6 @@ export class Montar extends Etapa {
 
   protected demonstrar(mao: Phaser.GameObjects.Image) {
     const i = POTES.indexOf(this.sequencia[0]);
-    this.maoEntre(mao, [[15 + i * 30, 296], [this.A.x, this.A.y]], 800);
+    this.maoEntre(mao, [[X_POTE(i), 296], [this.A.x, this.A.y]], 800);
   }
 }

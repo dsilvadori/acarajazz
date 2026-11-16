@@ -10,7 +10,7 @@ import { Lavar, Triturar, Temperos, Vatapa, Caruru, Salada } from './cenas/etapa
 import { Bater, Fritar, Montar } from './cenas/etapas2';
 import { Servir } from './cenas/Servir';
 import { Premio, Cupom } from './cenas/Premio';
-import { config, type Config } from './estado';
+import { config, estado, type Config } from './estado';
 import { definirRaiz } from './cupom';
 import { fritando } from './som';
 
@@ -92,6 +92,9 @@ export function iniciarJogo(raiz: HTMLElement, cfg: Partial<Config> = {}) {
   // Atalho de teste (só em desenvolvimento): /acarabet?cena=Fritar
   const cena = new URLSearchParams(location.search).get('cena');
   if (import.meta.env.DEV && cena) {
+    const q = new URLSearchParams(location.search);
+    if (q.get('veg') === '1') estado.vegetariano = true;
+    if (q.get('pimenta') === 'pouca') estado.pimenta = 'pouca';
     game.events.once('ready', () => {
       const carregar = game.scene.getScene('Carregando');
       carregar.events.once('shutdown', () => {
