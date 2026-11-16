@@ -73,6 +73,18 @@ import { FEED, PERFIL_INSTAGRAM } from '../data/reels';
   }
   .reels::-webkit-scrollbar { display: none; }
   .reels li { scroll-snap-align: start; }
+  /* Computador: as 6 publicações lado a lado, sem setas */
+  @media (min-width: 1000px) {
+    .reels {
+      width: min(100% - 2 * var(--gutter), var(--largura));
+      margin-inline: auto;
+      padding: 0;
+      grid-auto-flow: row;
+      grid-template-columns: repeat(6, 1fr);
+      overflow: visible;
+    }
+    .seta { display: none; }
+  }
 
   .reel {
     position: relative;

@@ -20,13 +20,12 @@ export const MATERIAS: Materia[] = [
     imagem: '/img/midia/band.webp',
   },
   {
-    veiculo: 'Achadinhos do Paladar',
-    tipo: 'Portal',
-    titulo: 'AcaraJazz: o bar baiano escondido na Vila Mariana',
-    // Republicação no Portal Tela. Trocar pelo link original do Paladar (Estadão) quando tivermos.
-    link: 'https://www.portaltela.com/cotidiano/curiosidades/2026/06/14/achadinho-acarajazz-bar-baiano-oculto-na-vila-mariana/',
+    veiculo: 'Estadão · Paladar',
+    tipo: 'YouTube',
+    titulo: 'AcaraJazz: o boteco de baianos com acarajé | Achadinhos ep.13',
+    link: 'https://www.youtube.com/watch?v=AUyr4Tn6-Jw',
     data: 'jun/2026',
-    imagem: '/img/midia/paladar.webp',
+    imagem: 'https://i.ytimg.com/vi/AUyr4Tn6-Jw/maxresdefault.jpg',
   },
   {
     veiculo: 'Agência Mural',
@@ -52,7 +51,6 @@ export const MATERIAS: Materia[] = [
  * - Globo: matéria prevista (nov/2026) — entra como primeiro cartão quando sair
  * - g1: matéria(s) sobre o Acarajazz
  * - UOL: matéria gravada no Acarajazz com a chef Debinha (dez/2025)
- * - Paladar (Estadão): link original da série "Achadinhos do Paladar"
  * - Canais de gastronomia no Instagram: @ e links dos posts/reels
  * - Metrópoles (nov/2021): doação de acarajés ao MTST — decidir se entra
  */

@@ -13,11 +13,6 @@ export const FEED: ItemFeed[] = [
   { tipo: 'foto', arquivo: 'vatapa', titulo: 'Vatapá com camarão.' },
   { tipo: 'reel', arquivo: 'raizes-africanas', titulo: 'O acarajé tem raízes africanas, mas foi na Bahia que virou celebridade.' },
   { tipo: 'foto', arquivo: 'caldo', titulo: 'Caldinho pra esquentar.' },
-  { tipo: 'reel', arquivo: 'kit-lazaro-ramos', titulo: 'Ó pra isso… Kit Lázaro Ramos.' },
-  { tipo: 'foto', arquivo: 'bar', titulo: 'A casa, do jeito que ela é.' },
-  { tipo: 'reel', arquivo: 'direto-pra-bahia', titulo: 'Comidas que te transportam… direto pra Bahia.' },
-  { tipo: 'reel', arquivo: 'simplesmente-acaraje', titulo: 'Simplesmente acarajé.' },
-  { tipo: 'reel', arquivo: 'boteco-na-vila-mariana', titulo: 'O boteco baiano na Vila Mariana que te leva pra Bahia na primeira mordida.' },
 ];
 
 export const PERFIL_INSTAGRAM = 'https://www.instagram.com/o_acarajazz/';
