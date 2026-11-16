@@ -49,6 +49,10 @@
 6. **Testar:** abrir o endereço, enviar os formulários de eventos e do curso, entrar no `/admin`.
 
 ### Nova versão
+O push na `main` já publica: a Cloudflare (Workers Builds) faz o build e o deploy sozinha em poucos minutos.
+Para conferir, veja Workers & Pages → acarajazz → Deployments, ou o check "Workers Builds: acarajazz" no commit, no GitHub.
+
+Se o push não disparar o build (já aconteceu uma vez), publique por aqui:
 ```bash
 npm run deploy
 ```
@@ -66,7 +70,7 @@ Se houver migração nova no banco, rodar `npm run db:migrate:remoto` antes.
 Banco de dados SQLite D1 → acarajazz → **Console** → colar o conteúdo de `db/seed-console.sql` (versão sem comentários) → Executar. **Só uma vez.**
 
 ### Formulários
-`"FORMULARIOS": "abertos"` ou `"fechados"` no `wrangler.jsonc` (depois, push). Antes do domínio, os contatos são salvos e aparecem no `/admin`, mas o e-mail de aviso não sai.
+`"FORMULARIOS": "abertos"` ou `"fechados"` no `wrangler.jsonc` (depois, push na `main`). Antes do domínio, os contatos são salvos e aparecem no `/admin`, mas o e-mail de aviso não sai.
 
 ## Parte 2 — Lançamento: ligar o oacarajazz.com
 
