@@ -1,0 +1,78 @@
+---
+// "O Acarajazz": a história da casa (do documento-base do curso, só a parte pública), quem faz acontecer e o público.
+import { FOTOS_CASA } from '../data/equipe';
+---
+
+<section class="casa" id="acarajazz" aria-labelledby="casa-titulo">
+  <div class="container grade">
+    <div class="texto">
+      <p class="chamada">Feito por muitas mãos</p>
+      <h2 class="titulo" id="casa-titulo">O Acarajazz</h2>
+      <p class="lead">
+        Começou pequeno: a Bia vendendo acarajé na porta de casa. Depois vieram os eventos, as feiras e os
+        buffets e, em 2022, o Botecasa, o primeiro passo para ter uma casa própria.
+      </p>
+      <p>
+        Com muito trabalho, a casa cresceu, o cardápio aumentou e ganhamos o espaço vizinho. Em dezembro de
+        2024, a expansão virou festa, com família, amigos, freelas e até drag interpretando divas baianas.
+      </p>
+      <p>
+        A Vila Mariana também tem história: em frente ao Shopping Santa Cruz ficava o tabuleiro da Ione, a
+        baiana do acarajé preferido da Bia, que virou símbolo de prosperidade conquistada com o próprio
+        trabalho. Hoje o Acarajazz é uma cozinha de herança, feita por gente que é família de sangue e de
+        escolha.
+      </p>
+    </div>
+
+    <ul class="slide" data-slide aria-label="Quem faz o Acarajazz e quem vem com a gente">
+      {FOTOS_CASA.map((f, i) => (
+        <li class:list={['quadro', { ativo: i === 0 }]}>
+          <img
+            src={f.src}
+            alt={f.alt}
+            width={f.largura}
+            height={f.altura}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            style={f.posicao ? `object-position: ${f.posicao}` : undefined}
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .casa { background: var(--creme); padding-block: var(--secao); }
+  .grade { display: grid; gap: 48px; align-items: center; }
+  @media (min-width: 900px) { .grade { grid-template-columns: minmax(0, 1fr) 340px; gap: 72px; } }
+  .texto { max-width: 62ch; }
+  .lead { margin-top: 1rem; font-size: 1.2rem; font-weight: 700; color: var(--vinho); }
+  .texto p + p { margin-top: 0.9rem; }
+  .slide {
+    position: relative; list-style: none; margin: 0; padding: 0; width: 100%; max-width: 340px; justify-self: center;
+    aspect-ratio: 4 / 5; border-radius: var(--raio); overflow: hidden; box-shadow: var(--sombra); background: var(--laranja);
+  }
+  .quadro { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+  .quadro.ativo { opacity: 1; }
+  .quadro img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  @media (prefers-reduced-motion: reduce) { .quadro { transition-duration: 0.01s; } }
+</style>
+
+<script>
+  // Slide da seção "O Acarajazz": troca de foto com fade a cada 5 s, só enquanto a seção está na tela.
+  for (const slide of document.querySelectorAll<HTMLElement>('[data-slide]')) {
+    const quadros = [...slide.querySelectorAll<HTMLElement>('.quadro')];
+    let atual = 0;
+    let visivel = false;
+    new IntersectionObserver(([e]) => (visivel = e.isIntersecting), { threshold: 0.3 }).observe(slide);
+    // Carrega as próximas fotos antes da vez delas, para o fade não mostrar foto pela metade.
+    quadros.forEach((q) => q.querySelector('img')?.setAttribute('loading', 'eager'));
+    setInterval(() => {
+      if (!visivel || document.hidden) return;
+      quadros[atual].classList.remove('ativo');
+      atual = (atual + 1) % quadros.length;
+      quadros[atual].classList.add('ativo');
+    }, 5000);
+  }
+</script>

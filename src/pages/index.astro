@@ -7,6 +7,7 @@ import Cardapio from '../components/Cardapio.astro';
 import Horarios from '../components/Horarios.astro';
 import Delivery from '../components/Delivery.astro';
 import SobreBia from '../components/SobreBia.astro';
+import SobreAcarajazz from '../components/SobreAcarajazz.astro';
 import ChamadaCurso from '../components/ChamadaCurso.astro';
 import ChamadaAcarabet from '../components/ChamadaAcarabet.astro';
 import NaMidia from '../components/NaMidia.astro';
@@ -38,6 +39,7 @@ if (import.meta.env.PROD) Astro.response.headers.set('Cache-Control', 'public, m
     <Delivery />
     <Horarios horarios={horarios} status={status} aviso={aviso} />
     <SobreBia />
+    <SobreAcarajazz />
     <ChamadaCurso />
     <NaMidia />
     <Avaliacoes />
