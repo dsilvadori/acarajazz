@@ -4,7 +4,7 @@
  */
 import { gravar, ler } from './estado';
 
-type Tipo = 'clique' | 'acerto' | 'erro' | 'estrela' | 'vitoria' | 'agua' | 'pop' | 'corte';
+type Tipo = 'clique' | 'acerto' | 'erro' | 'estrela' | 'vitoria' | 'agua' | 'pop' | 'corte' | 'motor';
 
 let ctx: AudioContext | null = null;
 let ligado = ler('som', true);
@@ -67,6 +67,7 @@ export function tocar(tipo: Tipo) {
     case 'clique': nota(660, 0, 0.05, 'square', 0.04); break;
     case 'pop': nota(520, 0, 0.07, 'triangle', 0.08, 900); break;
     case 'corte': nota(180, 0, 0.06, 'square', 0.05, 90); break;
+    case 'motor': nota(78, 0, 0.14, 'sawtooth', 0.03, 92); break;
     case 'acerto': nota(880, 0, 0.08, 'triangle', 0.08); nota(1320, 0.07, 0.12, 'triangle', 0.08); break;
     case 'erro': nota(220, 0, 0.18, 'sawtooth', 0.05, 140); break;
     case 'estrela': [784, 988, 1175].forEach((f, i) => nota(f, i * 0.09, 0.14, 'triangle', 0.07)); break;

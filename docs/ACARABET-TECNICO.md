@@ -9,7 +9,7 @@
 ## 1. Resumo do jogo (do briefing de arte)
 
 - Jogo em **pixel art**, tela **em pé** (formato story), jogado com toque ou clique.
-- A Bia faz um acarajé do começo ao fim em **10 minijogos** curtos (20–40 s cada): lavar, moer, vatapá, caruru, vinagrete, camarão, bater a massa, **fritar**, **montar** e **servir**.
+- A Bia faz um acarajé do começo ao fim em **9 minijogos** curtos (20–40 s cada): lavar o feijão, triturar, bater a massa, vatapá, caruru, salada, **fritar**, **montar** e **servir** (processos definidos com a equipe em nov/2026, ver seção 10).
 - Cada etapa dá de 1 a 3 estrelas → enche o **medidor de satisfação** do cliente.
 - Não tem sorte: quem completa e satisfaz o cliente **sempre ganha** o cupom.
 - Final: bilhete de aposta de brincadeira ("chance de ganhar: 100%") + cupom + **imagem 1080 × 1920 para os Stories**.
@@ -36,7 +36,7 @@ Isso exige identificar o cliente → ver seção 5.
 | Renderização | **HTML5 Canvas 2D** | Funciona em todos os navegadores modernos; perfeito para pixel art. WebGL não é necessário. |
 | Motor | **Phaser 3** (recomendado) | Já resolve escala, toque/mouse, cenas, animação de sprites, áudio no iOS e carregamento. Carregado **só na página `/acarabet`**, sem pesar o resto do site. |
 | Alternativa | JavaScript puro + Canvas | Mais leve, mas exige refazer o que o Phaser já entrega (áudio no iOS, escala, input). Só vale se o jogo ficar bem menor que o previsto. |
-| Linguagem | TypeScript | Evita erros nos 10 minijogos e no fluxo do cupom. |
+| Linguagem | TypeScript | Evita erros nos 9 minijogos e no fluxo do cupom. |
 
 ### 3.2 Tela e pixel art
 - Mundo do jogo com **180 × 320 px**, ampliado sempre por **número inteiro** (×2, ×3, ×4, ×6…) para não borrar.
@@ -52,10 +52,11 @@ Usar **Pointer Events**, que unificam toque, mouse e caneta. Cada minijogo usa u
 | Gesto | Etapas | Como detectar |
 |---|---|---|
 | Esfregar | Lavar o feijão | Distância percorrida pelo dedo sobre a área |
-| Girar em círculo | Moer (manivela), vatapá (mexer) | Variação do ângulo do dedo em volta do centro |
-| Tocar no tempo certo | Vinagrete, camarão, fritar | Toque dentro de uma janela de tempo |
+| Girar em círculo | Vatapá (mexer) | Variação do ângulo do dedo em volta do centro |
+| Ligar e parar no ponto | Triturar (multiprocessador) | Um toque no botão liga, outro para; parar com o ponteiro na faixa verde |
+| Tocar no tempo certo | Salada, fritar | Toque dentro de uma janela de tempo |
 | Tocar rápido | Bater a massa | Toques por segundo |
-| Arrastar e soltar | Montar, caruru | Arraste até a zona de destino |
+| Arrastar e soltar | Montar (na ordem), caruru | Arraste até a zona de destino |
 
 - `touch-action: none` na área do jogo → sem rolagem, zoom ou "puxar para atualizar" durante o jogo.
 - Alvos de toque grandes (mínimo de ~44 px na tela real).
@@ -183,10 +184,10 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 | Página do jogo | `src/pages/acarabet/index.astro` | Apresentação, "como funciona" e **regulamento visível**. O jogo abre em tela cheia por cima da página (`/acarabet#jogar`); botão ✕ ou "voltar" do celular fecham. |
 | Chamada na Home | `src/components/ChamadaAcarabet.astro` | Faixa vinho com a Bia comemorando, antes de Eventos. Link "Acarabet" também no menu. |
 | Motor | Phaser **3.90.0** | Carregado só quando a pessoa toca em **Jogar** (import dinâmico): a página em si continua leve. |
-| Código do jogo | `src/jogo/` | `main.ts` (liga o Phaser), `estado.ts` (etapas, estrelas, satisfação, medição), `cenas/` (título, pedido, 9 minijogos de preparo, servir, prêmio e cupom), `cupom.ts` (formulário, compartilhar, plano C do Instagram), `som.ts`. |
+| Código do jogo | `src/jogo/` | `main.ts` (liga o Phaser), `estado.ts` (etapas, estrelas, satisfação, medição), `cenas/` (título, pedido, 8 minijogos de preparo, servir, prêmio e cupom), `cupom.ts` (formulário, compartilhar, plano C do Instagram), `som.ts`. |
 | Close dos preparos | `cenas/Etapa.ts` | Nas etapas de preparo a câmera chega perto: parede de chita de girassol, a **Bia ampliada 2× da cintura pra cima** reagindo (mexendo, batendo, comemorando, preocupada) e a bancada de madeira com os objetos. |
 | Arte | `tools/sprites/*.py` → `public/jogo/` | Tudo gerado por script: `atlas.png` + `atlas.json` (todas as animações e objetos numa imagem só, ~40 KB), fontes em pixel (`fonte_clara`, `fonte_escura`), cenário do salão e do close. Para refazer: `python3 tools/sprites/atlas.py` (e `cenario.py`, `fonte.py`). |
-| Escala sem borrar | `main.ts` | O fator de ampliação é **inteiro em pixels do aparelho** (ex.: ×1,5 em CSS num celular 2× = 3 pixels reais por pixel do jogo). Sobra de tela vira moldura listrada. Celular deitado mostra "vire o celular". |
+| Escala sem borrar | `main.ts` | O fator de ampliação é **inteiro em pixels do aparelho** (ex.: ×1,5 em CSS num celular 2× = 3 pixels reais por pixel do jogo). Sobra de tela vira moldura listrada. Celular deitado mostra "vire o celular". **No computador** (sem tela de toque) o jogo ocupa a altura toda: o Phaser fica invisível no tamanho exato (pros cliques) e uma cópia nítida em N× é reduzida suavemente por cima, então os pixels não ficam de tamanhos diferentes. |
 | Sons | `som.ts` | Sintetizados na hora com Web Audio (**nenhum arquivo de som pra baixar**), mudos até o primeiro toque, botão de som em todas as telas. |
 | API do cupom | `src/pages/api/acarabet/cupom.ts` | 1 cupom por WhatsApp (quem repete recebe o mesmo), código `ACJ-XXXXXX`, Turnstile, limite de 10 pedidos por IP por hora. |
 | Medição | `src/pages/api/acarabet/evento.ts` | Eventos da seção 8 gravados na tabela `jogo_eventos` (migração `0003_acarabet.sql`). |
@@ -195,8 +196,19 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 
 **Regras de jogo implementadas**
 - Cada etapa dá 1 a 3 estrelas; refazer guarda sempre a melhor nota.
-- O casal fica satisfeito com **20 das 30 estrelas**. Se não ficar, a Bia refaz as etapas mais fracas e serve de novo; na terceira rodada o casal aceita de qualquer jeito (ninguém sai sem cupom).
-- O pedido (com ou sem pimenta) é sorteado a cada partida e conta na etapa de montar.
+- O casal fica satisfeito com **2/3 das estrelas** (18 de 27). Se não ficar, a Bia refaz as etapas mais fracas e serve de novo; na terceira rodada o casal aceita de qualquer jeito (ninguém sai sem cupom).
+- O pedido é sorteado a cada partida e aparece no balão do casal e na faixa da montagem: **com pimenta** (ícone de foguinho) ou **pouca pimenta** (ícone de friozinho), e **tradicional** (com camarão, ícone de camarão) ou **vegetariano** (sem camarão, ícone de folhinha).
+
+**Processos de cada etapa (definidos com a equipe)**
+1. **Lavar o feijão:** feijão-fradinho (branco com o olhinho preto), que já vem quebrado da loja; o processo é só lavar, com a torneira aberta caindo água na bacia.
+2. **Triturar:** no multiprocessador industrial, com um botão só. Três levas: um toque liga, e a pessoa tem que parar na hora certa (ponteiro na faixa verde).
+3. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
+4. **Vatapá:** castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê, nessa ordem; depois mexer até dar o ponto.
+5. **Caruru:** cortar o quiabo e juntar os mesmos ingredientes do vatapá.
+6. **Salada:** só tomate verde picado.
+7. **Fritar** no dendê: um toque na massa joga os 4 bolinhos de uma vez no tacho (ou um por um, tocando no tacho); virar e tirar no ponto.
+8. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e camarão por cima (sem camarão no vegetariano). Pimenta errada, camarão no vegetariano ou fora de ordem contam como erro.
+9. **Servir** na mesa do casal.
 - Tocar nos personagens do salão (Eliana, gêmeas, Valentina, tios, Pôr do Sol) faz eles acenarem/brindarem: são os easter eggs.
 
-**Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Moer, Vatapa, Caruru, Vinagrete, Camarao, Bater, Fritar, Montar, Servir, Premio, Cupom).
+**Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Triturar, Bater, Vatapa, Caruru, Salada, Fritar, Montar, Servir, Premio, Cupom).

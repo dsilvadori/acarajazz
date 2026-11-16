@@ -8,3 +8,4 @@ dist/
 !.env.example
 worker-configuration.d.ts
 .DS_Store
+__pycache__/

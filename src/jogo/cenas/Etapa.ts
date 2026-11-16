@@ -4,7 +4,7 @@
  * Cada minijogo monta seus objetos na bancada (y ≥ 116) e chama terminar(estrelas).
  */
 import Phaser from 'phaser';
-import { estado, infoEtapa, nivelSatisfacao, numeroEtapa, proximaEtapa, reduzirMovimento, registrarEstrelas } from '../estado';
+import { ETAPAS, estado, infoEtapa, nivelSatisfacao, numeroEtapa, proximaEtapa, reduzirMovimento, registrarEstrelas } from '../estado';
 import { fritando, tocar } from '../som';
 import { COR, L, animBia, botao, botaoSom, faixa, painel, texto } from '../ui';
 
@@ -46,7 +46,7 @@ export abstract class Etapa extends Phaser.Scene {
     // Faixa de cima: etapa, nome e satisfação do casal
     faixa(this, 0, 0, 18).setDepth(900);
     const info = infoEtapa(this.id);
-    texto(this, 4, 4, `${numeroEtapa(this.id)}/10 ${info.nome}`, { esquerda: true }).setDepth(901);
+    texto(this, 4, 4, `${numeroEtapa(this.id)}/${ETAPAS.length} ${info.nome}`, { esquerda: true }).setDepth(901);
     this.carinha = this.add.image(L - 26, 9, 'atlas', `carinha_${nivelSatisfacao()}_0`).setDepth(901);
     botaoSom(this);
     this.barraTempo = this.add.graphics().setDepth(901);

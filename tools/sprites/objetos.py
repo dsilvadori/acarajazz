@@ -24,6 +24,10 @@ C.update({
     'aluminio': hx('c3cbd3'), 'aluminio_sombra': hx('8e99a5'),
     'agua_marinha': hx('7cc8b8'), 'agua_marinha_sombra': hx('4f9c8c'),
     'ouro_luz': hx('ffe07a'),
+    'agua_suja': hx('9a8866'), 'agua_suja_sombra': hx('7d6c4c'),
+    'tomate_verde': hx('6fa83e'), 'tomate_verde_luz': hx('b5dc76'), 'tomate_verde_sombra': hx('47802a'),
+    'gengibre': hx('d9b27a'), 'gengibre_sombra': hx('a8804a'),
+    'fogo_amarelo': hx('ffd23f'), 'gelo': hx('bfe8ff'),
 })
 C.setdefault('teto_sombra', hx('ddd0b6'))
 
@@ -46,78 +50,86 @@ def disco(cx, cy, r, cor, ry=None):
 
 
 # ─── Lavar ────────────────────────────────────────────────────────────────────
-def bacia_agua():
+def bacia_agua(suja=False):
+    agua, sombra = ('agua_suja', 'agua_suja_sombra') if suja else ('agua', 'agua_sombra')
     b = disco(32, 32, 30, 'aluminio')
     for (x, y) in list(b.px):
         if (x - 32) ** 2 + (y - 32) ** 2 < 25 ** 2:
-            b.p(x, y, 'agua')
+            b.p(x, y, agua)
+            if suja and (x * 5 + y * 11) % 19 == 0:
+                b.d(x, y, sombra)
         elif x + y > 70:
             b.d(x, y, 'aluminio_sombra')
     for (x, y) in list(b.px):
-        if b.px[(x, y)] == C['agua'] and (x * 3 + y * 7) % 23 == 0:
+        if b.px[(x, y)] == C[agua] and (x * 3 + y * 7) % 23 == 0:
             b.d(x, y, 'agua_luz')
     return [faz(64, 64, [b])]
 
 
-def feijao(com_casca):
+def feijao(sujo):
+    """Feijão-fradinho já quebrado (vem assim da loja): branquinho com o olhinho preto. Sujo: encardido."""
     p = Parte()
-    p.elipse(4, 4, 3.3, 2.6, 'casca' if com_casca else 'massa_luz')
-    p.d(4, 4, 'olho')  # olhinho do feijão-fradinho
-    if not com_casca:
-        p.d(2, 3, 'massa')
+    p.elipse(4, 4, 3.3, 2.6, 'massa' if sujo else 'massa_luz')
+    p.d(4, 4, 'olho')
+    p.d(5, 4, 'olho')
+    if sujo:
+        p.d(2, 3, 'casca'); p.d(6, 5, 'casca')
+    else:
+        p.d(2, 3, 'branco')
     return [faz(8, 8, [p])]
 
 
-def casca():
+def bolha():
     p = Parte()
-    p.linha(1, 3, 3, 1, 'casca'); p.linha(3, 1, 5, 2, 'casca')
-    return [faz(7, 5, [p])]
+    p.elipse(4, 4, 2.6, 2.6, 'agua_luz'); p.d(3, 3, 'branco')
+    return [faz(8, 8, [(p, False)])]
 
 
-# ─── Moer ─────────────────────────────────────────────────────────────────────
-def moedor():
+# ─── Triturar (multiprocessador industrial) ───────────────────────────────────
+def processador(conteudo, k=0):
+    """Multiprocessador industrial de inox, de frente: copo com visor mostrando o feijão virando massa."""
+    dx = (1 if k == 1 else -1 if k == 2 else 0)
+    base = Parte()
+    base.ret(8, 44, 55, 62, 'aluminio')
+    base.ret(50, 44, 55, 62, 'aluminio_sombra')
+    base.ret(8, 44, 55, 45, 'metal_luz')
+    base.ret(14, 49, 30, 57, 'metal_sombra')  # painel
+    base.d(17, 52, 'fita'); base.d(20, 52, 'batom'); base.ret(23, 52, 27, 53, 'metal_luz')
+    base.ret(10, 61, 14, 63, 'metal_sombra'); base.ret(49, 61, 53, 63, 'metal_sombra')  # pés
+    copo = Parte()
+    copo.ret(14 + dx, 10, 49 + dx, 43, 'aluminio')
+    copo.ret(45 + dx, 10, 49 + dx, 43, 'aluminio_sombra')
+    copo.ret(11 + dx, 6, 52 + dx, 9, 'metal')  # tampa
+    copo.ret(11 + dx, 6, 52 + dx, 6, 'metal_luz')
+    copo.ret(28 + dx, 2, 35 + dx, 5, 'metal_sombra')  # pegador da tampa
+    copo.ret(19 + dx, 14, 41 + dx, 39, 'agua_luz')  # visor
+    if conteudo != 'vazio':
+        cor, pinta = {'feijao': ('massa_luz', 'olho'), 'grosso': ('massa', 'massa_sombra'), 'massa': ('massa_luz', 'massa')}[conteudo]
+        topo = {'feijao': 26, 'grosso': 24, 'massa': 21}[conteudo]
+        for y in range(topo, 40):
+            for x in range(19, 42):
+                if k and y == topo and (x + k) % 3 == 0:
+                    continue  # mexendo lá dentro
+                copo.p(x + dx, y, cor)
+                h = ((x * 73856093) ^ (y * 19349663) ^ (k * 83492791)) % 97
+                if conteudo == 'feijao' and h < 9:
+                    copo.p(x + dx, y, pinta)
+                elif conteudo == 'feijao' and h < 22:
+                    copo.p(x + dx, y, 'massa_sombra')
+                elif conteudo == 'grosso' and h < 20:
+                    copo.p(x + dx, y, pinta)
+                elif conteudo == 'massa' and h < 5:
+                    copo.p(x + dx, y, pinta)
+    copo.ret(20 + dx, 15, 21 + dx, 22, 'branco')  # reflexo do visor
+    return [faz(64, 64, [base, copo])]
+
+
+def botao_liga(apertado):
     p = Parte()
-    p.ret(18, 4, 46, 14, 'aluminio')  # funil
-    p.ret(22, 15, 42, 18, 'aluminio_sombra')
-    p.ret(16, 19, 48, 42, 'aluminio')  # corpo
-    p.ret(44, 19, 48, 42, 'aluminio_sombra')
-    p.ret(26, 43, 38, 52, 'aluminio')  # bico
-    p.ret(10, 52, 54, 60, 'madeira')  # base presa na bancada
-    p.ret(10, 52, 54, 53, 'madeira_luz')
-    for y in (24, 30, 36):
-        p.d(20, y, 'metal_luz')
-    p.elipse(32, 30, 4, 4, 'metal_sombra')  # eixo da manivela
-    return [faz(64, 64, [p])]
-
-
-def manivela():
-    """4 quadros girando (32×32), eixo no centro."""
-    quadros = []
-    for k in range(4):
-        a = k * math.pi / 2
-        ex, ey = 16 + round(11 * math.cos(a)), 16 + round(11 * math.sin(a))
-        p = Parte()
-        p.linha(16, 16, ex, ey, 'metal', 2)
-        p.elipse(16.5, 16.5, 2.5, 2.5, 'metal_sombra')
-        cabo = Parte()
-        cabo.elipse(ex + 0.5, ey + 0.5, 3, 3, 'madeira')
-        cabo.d(ex, ey, 'madeira_luz')
-        quadros.append(faz(32, 32, [p, cabo]))
-    return quadros
-
-
-def cebola(picada=False):
-    p = Parte()
-    if picada:
-        for (x, y) in ((4, 9), (8, 10), (11, 8), (6, 6), (10, 5), (3, 5)):
-            p.ret(x, y, x + 2, y + 1, 'massa_luz')
-            p.d(x, y, 'cabelo_lilas')
-    else:
-        p.elipse(8, 9, 5.5, 5, 'cabelo_lilas')
-        p.ret(7, 2, 8, 4, 'fita')
-        for y in range(6, 13, 3):
-            p.d(6, y, 'massa_luz')
-    return [faz(16, 16, [p])]
+    p.ret(1, 9, 22, 15, 'metal_sombra')
+    p.elipse(11.5, 9 if apertado else 7, 8, 5, 'fita')
+    p.elipse(9, 7 if apertado else 5, 3, 1.5, 'quiabo_luz')
+    return [faz(24, 16, [p])]
 
 
 def tigela(estado):
@@ -130,16 +142,6 @@ def tigela(estado):
         m.d(12, 13 - estado, 'massa_luz'); m.d(14, 12 - estado, 'massa_luz')
         return [faz(32, 32, [p, (m, False)])]
     return [faz(32, 32, [p])]
-
-
-def massa_saindo():
-    quadros = []
-    for k in range(3):
-        p = Parte()
-        p.ret(2, 0, 5, 3 + k * 3, 'massa')
-        p.d(3, 1 + k, 'massa_luz')
-        quadros.append(faz(8, 12, [p]))
-    return quadros
 
 
 # ─── Panela (vatapá), colher, ingredientes ────────────────────────────────────
@@ -171,26 +173,32 @@ def colher():
 
 def ingrediente(nome):
     p = Parte()
-    if nome == 'pao':
-        p.elipse(8, 9, 6.5, 4.5, 'dourado'); p.d(5, 7, 'massa_luz'); p.d(9, 7, 'massa_luz')
-        p.linha(4, 11, 12, 11, 'vatapa_sombra')
-    elif nome == 'leite_coco':
-        p.elipse(8, 9, 6, 5.5, 'madeira'); p.elipse(8, 8, 4, 3.5, 'massa_luz')
-        p.d(7, 6, 'branco')
+    if nome == 'castanha':
+        for x, y in ((5, 6), (10, 9)):
+            p.elipse(x, y, 3.5, 2.6, 'madeira_luz'); p.d(x - 2, y - 1, 'massa_luz')
+            p.ret(x + 1, y + 1, x + 3, y + 2, 'madeira')
     elif nome == 'amendoim':
         for x, y in ((4, 6), (9, 5), (6, 10), (11, 10)):
             p.elipse(x + 1, y + 1, 2.3, 1.8, 'madeira_luz')
-    elif nome == 'castanha':
-        p.elipse(8, 8, 5, 4, 'madeira_luz'); p.d(5, 6, 'massa_luz')
-        p.ret(9, 10, 12, 12, 'madeira')
-    elif nome == 'camarao_seco':
-        p.linha(3, 11, 7, 5, 'camarao', 2); p.linha(7, 5, 12, 6, 'camarao', 2); p.d(12, 7, 'olho')
+    elif nome == 'gengibre':
+        p.elipse(7, 9, 5, 3, 'gengibre'); p.elipse(12, 7, 2.5, 2.2, 'gengibre'); p.elipse(4, 6, 2, 2, 'gengibre')
+        p.d(6, 10, 'gengibre_sombra'); p.d(9, 9, 'gengibre_sombra'); p.d(5, 8, 'massa_luz')
+    elif nome == 'temperos':
+        p.elipse(8, 10, 7, 4.5, 'agua_marinha')
+        p.elipse(8, 8.5, 5.5, 2.4, 'quiabo')
+        for x, y in ((5, 8), (8, 7), (10, 9), (7, 9)):
+            p.d(x, y, 'quiabo_luz')
+        p.d(11, 8, 'massa_luz'); p.d(4, 9, 'cabelo_lilas')
+    elif nome == 'farinha':
+        p.ret(3, 4, 12, 14, 'papel'); p.ret(11, 4, 12, 14, 'papel_sombra')
+        p.ret(4, 2, 11, 4, 'branco'); p.d(6, 1, 'branco'); p.d(9, 1, 'branco')
+        p.ret(5, 8, 10, 10, 'dende')  # rótulo
     elif nome == 'dende':
         p.ret(6, 2, 9, 4, 'vinho'); p.ret(4, 5, 11, 14, 'dende'); p.ret(5, 6, 6, 12, 'dende_luz')
     return [faz(16, 16, [p])]
 
 
-# ─── Caruru e vinagrete ───────────────────────────────────────────────────────
+# ─── Caruru e salada ───────────────────────────────────────────────────────
 def quiabo(rodelas=False):
     p = Parte()
     if rodelas:
@@ -223,21 +231,15 @@ def faca():
 
 
 def tomate(cubos=False):
+    """Tomate verde (a salada do acarajé é só tomate verde picado)."""
     p = Parte()
     if cubos:
         for (x, y) in ((3, 4), (8, 3), (12, 7), (5, 9), (10, 11)):
-            p.ret(x, y, x + 2, y + 2, 'tomate'); p.d(x, y, 'tomate_luz')
+            p.ret(x, y, x + 2, y + 2, 'tomate_verde'); p.d(x, y, 'tomate_verde_luz')
     else:
-        p.elipse(8, 9, 6, 5.5, 'tomate'); p.d(5, 6, 'tomate_luz'); p.d(6, 6, 'tomate_luz')
+        p.elipse(8, 9, 6, 5.5, 'tomate_verde'); p.d(5, 6, 'tomate_verde_luz'); p.d(6, 6, 'tomate_verde_luz')
+        p.d(10, 12, 'tomate_verde_sombra'); p.d(11, 11, 'tomate_verde_sombra')
         p.ret(7, 2, 9, 3, 'fita')
-    return [faz(16, 16, [p])]
-
-
-def coentro():
-    p = Parte()
-    p.linha(8, 14, 8, 6, 'quiabo')
-    for (x, y) in ((5, 5), (11, 5), (8, 3), (6, 9), (10, 9)):
-        p.elipse(x, y, 2, 2, 'quiabo_luz')
     return [faz(16, 16, [p])]
 
 
@@ -251,36 +253,13 @@ def mao():
     return [faz(16, 16, [p])]
 
 
-def vinagrete():
+def salada():
     p = Parte()
     p.elipse(16, 18, 13, 10, 'agua_marinha')
-    p.elipse(16, 15, 11, 6, 'tomate')
-    for (x, y) in ((10, 14), (14, 12), (19, 15), (22, 13), (16, 17)):
-        p.d(x, y, 'quiabo_luz'); p.d(x + 1, y, 'massa_luz')
+    p.elipse(16, 15, 11, 6, 'tomate_verde')
+    for (x, y) in ((10, 14), (14, 12), (19, 15), (22, 13), (16, 17), (12, 16)):
+        p.d(x, y, 'tomate_verde_luz'); p.d(x + 1, y, 'tomate_verde_sombra')
     return [faz(32, 32, [p])]
-
-
-# ─── Camarão ──────────────────────────────────────────────────────────────────
-def camarao(estado):
-    cor = {'cru': 'camarao_cru', 'pronto': 'camarao', 'queimado': 'frito'}[estado]
-    p = Parte()
-    for k in range(5):
-        a = math.pi * (0.2 + k * 0.28)
-        p.elipse(8 + 4 * math.cos(a), 8 - 4 * math.sin(a) + 1, 2.2, 2.2, cor)
-    p.d(11, 5, 'olho')
-    if estado == 'pronto':
-        p.d(6, 4, 'ouro_luz')  # brilhinho: no ponto
-    return [faz(16, 16, [p])]
-
-
-def frigideira():
-    p = disco(28, 32, 26, 'metal_sombra')
-    for (x, y) in list(p.px):
-        if (x - 28) ** 2 + (y - 32) ** 2 < 22 ** 2:
-            p.p(x, y, 'metal')
-    cabo = Parte()
-    cabo.ret(52, 29, 63, 34, 'madeira')
-    return [faz(64, 64, [cabo, p])]
 
 
 def fumaca():
@@ -294,17 +273,62 @@ def fumaca():
 
 
 # ─── Bater a massa ────────────────────────────────────────────────────────────
+N_MASSA = 6  # quadros da massa crescendo
+
+
 def bacia_massa(estado):
-    b = disco(32, 32, 30, 'madeira')
-    cor, luz = (('massa_sombra', 'massa'), ('massa', 'massa_luz'), ('massa_luz', 'branco'))[estado]
+    """Bacia de madeira vista de lado; a massa cresce e fica mais branquinha e aerada a cada batida (0 a 5)."""
+    t = estado / (N_MASSA - 1)
+    cores = ['massa_sombra', 'massa_sombra', 'massa', 'massa', 'massa_luz', 'branco']
+    luzes = ['massa', 'massa', 'massa_luz', 'massa_luz', 'branco', 'branco']
+    cor, luz = cores[estado], luzes[estado]
+    m = Parte()
+    topo = 34 - round(t * 22)  # a massa sobe acima da borda
+    m.elipse(32, 38, 24 + t * 3, 38 - topo, cor, ymax=38)
+    m.ret(8, 36, 56, 40, cor)
+    for (x, y) in list(m.px):
+        h = ((x * 73856093) ^ (y * 19349663)) % 97
+        if h < 6 + estado * 4:
+            m.d(x, y, luz)  # bolhinhas de ar
+        elif estado <= 1 and h < 14:
+            m.d(x, y, 'casca')  # ainda pesada
+    if estado >= 3:
+        m.d(24, topo + 3, 'branco'); m.d(25, topo + 3, 'branco'); m.d(26, topo + 4, 'branco')
+    b = Parte()
+    b.elipse(32, 40, 30, 20, 'madeira', ymin=40)  # bacia
+    b.ret(2, 38, 61, 41, 'madeira_luz')  # borda
     for (x, y) in list(b.px):
-        if (x - 32) ** 2 + (y - 32) ** 2 < 25 ** 2:
-            b.p(x, y, cor)
-            if (x * 7 + y * 5) % (13 - estado * 3) == 0:
-                b.d(x, y, luz)  # bolhinhas de ar
-        elif x + y > 70:
-            b.d(x, y, 'madeira_luz' if False else 'tatuagem')
-    return [faz(64, 64, [b])]
+        if y > 41 and x > 32 and ((x - 32) / 30) ** 2 + ((y - 40) / 20) ** 2 > 0.55:
+            b.d(x, y, 'tatuagem')
+    return [faz(64, 64, [(m, True), b])]
+
+
+# ─── Lavar: torneira ──────────────────────────────────────────────────────────
+def torneira():
+    p = Parte()
+    p.ret(0, 4, 4, 13, 'metal_sombra')  # vem da parede
+    p.ret(4, 6, 20, 10, 'metal')  # cano
+    p.ret(4, 6, 20, 6, 'metal_luz')
+    p.ret(17, 10, 22, 16, 'metal')  # bico pra baixo
+    p.ret(17, 10, 17, 16, 'metal_luz')
+    p.ret(9, 1, 13, 5, 'metal_sombra')  # registro
+    p.ret(6, 0, 16, 1, 'batom')
+    return [faz(24, 18, [p])]
+
+
+def jato_agua():
+    quadros = []
+    for k in range(3):
+        p = Parte()
+        p.ret(1, 0, 4, 47, 'agua')
+        for y in range(0, 48):
+            if (y + k * 3) % 7 == 0:
+                p.d(2, y, 'agua_luz'); p.d(3, y, 'agua_luz')
+            if (y + k * 3) % 9 == 4:
+                p.d(1, y, 'agua_sombra')
+        p.elipse(2.5, 47, 4 + (k % 2), 1.5, 'agua_luz')  # respingo
+        quadros.append(faz(8, 50, [(p, False)]))
+    return quadros
 
 
 # ─── Fritar ───────────────────────────────────────────────────────────────────
@@ -376,7 +400,7 @@ def acaraje_lado(estado):
     return [faz(32, 32, partes)]
 
 
-RECHEIOS = ('vatapa', 'caruru', 'vinagrete', 'camarao', 'pimenta')
+RECHEIOS = ('pimenta', 'pimenta_pouca', 'vatapa', 'caruru', 'salada', 'camarao')
 
 
 def camada(nome):
@@ -388,29 +412,40 @@ def camada(nome):
         p.ret(0, 1, 23, 3, 'quiabo')
         for x in range(2, 23, 4):
             p.d(x, 2, 'quiabo_luz')
-    elif nome == 'vinagrete':
+    elif nome == 'salada':
         for x in range(0, 24, 3):
-            p.ret(x, 1, x + 1, 2, 'tomate' if x % 2 else 'quiabo_luz')
+            p.ret(x, 1, x + 1, 2, 'tomate_verde' if x % 2 else 'tomate_verde_luz')
     elif nome == 'camarao':
         for x in (2, 9, 16):
             p.ret(x, 0, x + 4, 2, 'camarao'); p.d(x + 4, 1, 'olho')
     elif nome == 'pimenta':
-        for x in range(1, 23, 4):
-            p.ret(x, 1, x + 1, 2, 'batom')
+        p.ret(1, 2, 22, 3, 'batom')
+        for x in range(2, 22, 3):
+            p.d(x, 1, 'batom_sombra')
+    elif nome == 'pimenta_pouca':
+        for x in (4, 11, 18):
+            p.ret(x, 2, x + 1, 3, 'batom')
     return [faz(24, 4, [(p, False)])]
 
 
 def potinho(nome):
-    cor = {'vatapa': 'vatapa', 'caruru': 'quiabo', 'vinagrete': 'tomate', 'camarao': 'camarao', 'pimenta': 'batom'}[nome]
+    cor = {'vatapa': 'vatapa', 'caruru': 'quiabo', 'salada': 'tomate_verde', 'camarao': 'camarao',
+           'pimenta': 'batom', 'pimenta_pouca': 'batom'}[nome]
     p = Parte()
-    p.elipse(8, 10, 7, 5, 'agua_marinha' if nome != 'pimenta' else 'branco')
-    p.elipse(8, 8, 5.5, 2.6, cor)
+    branco = nome.startswith('pimenta')
+    p.elipse(8, 10, 7, 5, 'branco' if branco else 'agua_marinha')
+    if nome == 'pimenta_pouca':
+        p.elipse(8, 8.5, 3, 1.4, cor)  # só um pouquinho
+    else:
+        p.elipse(8, 8, 5.5, 2.6, cor)
     if nome == 'pimenta':
         p.d(6, 7, 'tomate_luz'); p.d(10, 8, 'fita')
     elif nome == 'camarao':
-        p.d(6, 8, 'olho')
+        p.d(6, 8, 'olho'); p.d(10, 7, 'olho')
     elif nome == 'caruru':
         p.d(7, 8, 'quiabo_luz')
+    elif nome == 'salada':
+        p.d(6, 7, 'tomate_verde_luz'); p.d(10, 8, 'tomate_verde_luz')
     return [faz(16, 16, [p])]
 
 
@@ -496,16 +531,25 @@ def som(ligado):
     return [faz(16, 16, [p])]
 
 
-def icone_pimenta(com):
+def icone(nome):
     p = Parte()
-    p.linha(4, 12, 11, 5, 'batom', 3)
-    p.ret(11, 2, 12, 5, 'fita')
-    partes = [p]
-    if not com:
-        x = Parte()
-        x.linha(2, 2, 14, 14, 'contorno', 2); x.linha(14, 2, 2, 14, 'contorno', 2)
-        partes.append((x, False))
-    return [faz(16, 16, partes)]
+    if nome == 'fogo':
+        p.elipse(8, 10, 5, 4.5, 'batom')
+        p.linha(8, 2, 6, 7, 'batom', 3); p.linha(11, 4, 11, 8, 'batom', 2); p.d(4, 5, 'batom')
+        p.elipse(8, 11, 3, 2.6, 'dende_luz'); p.elipse(8, 12, 1.5, 1.4, 'fogo_amarelo')
+    elif nome == 'frio':
+        for (x0, y0, x1, y1) in ((8, 2, 8, 14), (3, 5, 13, 11), (3, 11, 13, 5)):
+            p.linha(x0, y0, x1, y1, 'gelo', 2)
+        p.d(8, 8, 'branco'); p.d(8, 2, 'branco'); p.d(8, 14, 'branco')
+    elif nome == 'camarao':
+        for k in range(6):
+            a = math.pi * (0.1 + k * 0.25)
+            p.elipse(8 + 4.2 * math.cos(a), 8 - 4.2 * math.sin(a) + 1, 2.2, 2.2, 'camarao')
+        p.d(12, 6, 'olho'); p.d(5, 5, 'tomate_luz')
+    elif nome == 'veg':
+        p.elipse(8, 7, 5, 4, 'fita')
+        p.linha(4, 13, 11, 4, 'quiabo', 1); p.d(6, 5, 'quiabo_luz'); p.d(7, 5, 'quiabo_luz')
+    return [faz(16, 16, [p])]
 
 
 def cupom():
@@ -565,17 +609,20 @@ def bandeja_vazia():
 
 
 ITENS = {
-    'bacia_agua': bacia_agua, 'feijao_casca': lambda: feijao(True), 'feijao': lambda: feijao(False), 'casca': casca,
-    'moedor': moedor, 'manivela': manivela, 'cebola': lambda: cebola(False), 'cebola_picada': lambda: cebola(True),
-    'tigela_0': lambda: tigela(0), 'tigela_1': lambda: tigela(1), 'tigela_2': lambda: tigela(2), 'massa_saindo': massa_saindo,
+    'bacia_agua': lambda: bacia_agua(False), 'bacia_agua_suja': lambda: bacia_agua(True),
+    'feijao_sujo': lambda: feijao(True), 'feijao': lambda: feijao(False), 'bolha': bolha,
+    **{f'processador_{c}': (lambda c=c: processador(c, 0)) for c in ('vazio', 'feijao', 'grosso', 'massa')},
+    **{f'processador_{c}_ligado': (lambda c=c: [processador(c, 1)[0], processador(c, 2)[0]]) for c in ('feijao', 'grosso', 'massa')},
+    'botao_liga': lambda: botao_liga(False), 'botao_apertado': lambda: botao_liga(True),
+    'tigela_0': lambda: tigela(0), 'tigela_1': lambda: tigela(1), 'tigela_2': lambda: tigela(2),
     'panela_vazia': lambda: panela('vazia'), 'panela_ralo': lambda: panela('ralo'), 'panela_ponto': lambda: panela('ponto'),
     'panela_queimado': lambda: panela('queimado'), 'colher': colher,
-    **{f'ing_{n}': (lambda n=n: ingrediente(n)) for n in ('pao', 'leite_coco', 'amendoim', 'castanha', 'camarao_seco', 'dende')},
+    **{f'ing_{n}': (lambda n=n: ingrediente(n)) for n in ('castanha', 'amendoim', 'gengibre', 'temperos', 'farinha', 'dende')},
     'quiabo': lambda: quiabo(False), 'quiabo_rodelas': lambda: quiabo(True), 'tabua': tabua, 'faca': faca,
-    'tomate': lambda: tomate(False), 'tomate_cubos': lambda: tomate(True), 'coentro': coentro, 'mao': mao, 'vinagrete': vinagrete,
-    'camarao_cru': lambda: camarao('cru'), 'camarao_pronto': lambda: camarao('pronto'), 'camarao_queimado': lambda: camarao('queimado'),
-    'frigideira': frigideira, 'fumaca': fumaca,
-    'bacia_massa_0': lambda: bacia_massa(0), 'bacia_massa_1': lambda: bacia_massa(1), 'bacia_massa_2': lambda: bacia_massa(2),
+    'tomate_verde': lambda: tomate(False), 'tomate_verde_cubos': lambda: tomate(True), 'mao': mao, 'salada': salada,
+    'fumaca': fumaca,
+    **{f'bacia_massa_{n}': (lambda n=n: bacia_massa(n)) for n in range(N_MASSA)},
+    'torneira': torneira, 'jato_agua': jato_agua,
     'tacho': tacho, 'respingo': respingo,
     **{f'acaraje_{e}': (lambda e=e: acaraje_fritando(e)) for e in ('cru', 'dourando', 'ponto', 'queimado')},
     'acaraje_fechado': lambda: acaraje_lado('fechado'), 'acaraje_aberto': lambda: acaraje_lado('aberto'),
@@ -585,6 +632,6 @@ ITENS = {
     'estrela_cheia': lambda: estrela(True), 'estrela_vazia': lambda: estrela(False),
     **{f'carinha_{n}': (lambda n=n: carinha(n)) for n in range(5)},
     'maozinha': maozinha, 'som_on': lambda: som(True), 'som_off': lambda: som(False),
-    'pimenta_sim': lambda: icone_pimenta(True), 'pimenta_nao': lambda: icone_pimenta(False),
+    **{f'icone_{n}': (lambda n=n: icone(n)) for n in ('fogo', 'frio', 'camarao', 'veg')},
     'cupom': cupom, 'carimbo': carimbo, 'confete': confete, 'brilho': brilho,
 }

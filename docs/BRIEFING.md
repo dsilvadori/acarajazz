@@ -140,7 +140,7 @@ Campos sugeridos:
 > 📄 Briefing de arte (mecânica, etapas, personagens, paleta): https://claude.ai/artifact/7z2pXWuYi4hDxWdmSoq6Ap
 > 🛠️ Especificação técnica: [ACARABET-TECNICO.md](ACARABET-TECNICO.md)
 
-- Jogo em **pixel art**, tela em pé: a Bia faz um acarajé do começo ao fim em 10 minijogos rápidos.
+- Jogo em **pixel art**, tela em pé: a Bia faz um acarajé do começo ao fim em 9 minijogos rápidos.
 - Não tem sorte: quem completa e satisfaz o cliente **sempre ganha** o cupom ("a bet em que todo mundo ganha").
 - Ao final, gera uma **imagem 1080 × 1920 para os Stories**, com o código do cupom.
 - Regras e termos da promoção visíveis na página.
@@ -241,7 +241,7 @@ Landing page de **pré-lançamento** para captar potenciais alunos.
 
 ## 8. Perguntas em aberto
 
-1. ~~**Acarabet:** qual é o jogo?~~ → Definido no briefing de arte: pixel art, 10 minijogos da receita do acarajé.
+1. ~~**Acarabet:** qual é o jogo?~~ → Definido no briefing de arte: pixel art, 9 minijogos da receita do acarajé.
 2. ~~**Acarabet:** qual o desconto e onde ele é usado?~~ → Validação presencial; proposta de 10% no local (aguardando aprovação).
 3. **Eventos:** há cardápios/pacotes de eventos e faixas de preço para mostrar no site?
 4. **Eventos no local do cliente:** existe limite de distância ou número mínimo de convidados?

@@ -8,7 +8,7 @@ import { DESCONTO, DESCONTO_TEXTO, ENDERECO_LOJA, VALIDADE_DIAS } from '../../li
 const siteKey = env.TURNSTILE_SITE_KEY ?? '';
 const passos = [
   { n: '1', titulo: 'Escolha a roupa da Bia', texto: 'Baiana, dólmã laranja ou despojada. O casal já está na mesa esperando o acarajé.' },
-  { n: '2', titulo: 'Faça o acarajé do zero', texto: 'São 10 minijogos rapidinhos: lavar o feijão, moer, vatapá, caruru, vinagrete, camarão, bater a massa, fritar, montar e servir.' },
+  { n: '2', titulo: 'Faça o acarajé do zero', texto: 'São 9 minijogos rapidinhos: lavar o feijão-fradinho, triturar no multiprocessador, bater a massa, vatapá, caruru, salada de tomate verde, fritar, montar do jeito que o cliente pediu e servir.' },
   { n: '3', titulo: 'Ganhe o seu cupom', texto: `Caprichou? O casal fica feliz e você ganha ${DESCONTO} na primeira compra. Não deu? Refaz as etapas: aqui ninguém sai sem prêmio.` },
 ];
 const regras = [
@@ -23,7 +23,7 @@ const regras = [
 
 <Base
   title="Acarabet · O jogo do Acarajazz"
-  description={`Faça um acarajé com a Bia em 10 minijogos e ganhe ${DESCONTO} na primeira compra na loja do Acarajazz. Jogo grátis, sem dinheiro e sem aposta.`}
+  description={`Conheça de um jeito lúdico o preparo do acarajé: faça um com a Bia em 9 minijogos e ganhe ${DESCONTO} na primeira compra na loja do Acarajazz. Jogo grátis, sem dinheiro e sem aposta.`}
 >
   <Cabecalho home={false} />
   <main>
@@ -34,6 +34,7 @@ const regras = [
           <h1>Acarabet</h1>
           <p class="sub">A aposta em que todo mundo ganha.</p>
           <p>Ajude a Bia a fazer um acarajé do feijão até a mesa e ganhe <strong>{DESCONTO} de desconto</strong> na sua primeira compra na loja.</p>
+          <p>A ideia também é mostrar, de um jeito lúdico, os processos que envolvem a preparação do acarajé: do feijão-fradinho lavado e triturado à massa batida até ficar branquinha, o vatapá, o caruru e a fritura no dendê.</p>
           <button class="botao botao-amarelo jogar" type="button" data-jogar>Jogar agora</button>
           <p class="obs">Funciona no celular e no computador. Leva uns 5 minutos.</p>
         </div>
@@ -160,8 +161,9 @@ const regras = [
   .aj[hidden] { display: none; }
   .aj-barra { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 8px 0 14px; color: var(--creme); font: 800 1.1rem var(--fonte-titulo); flex: none; }
   .aj-fechar { width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--creme); color: var(--vinho); font-size: 1.2rem; font-weight: 800; cursor: pointer; }
-  .aj-tela { flex: 1; min-height: 0; display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .aj-tela { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .aj-tela canvas { display: block; image-rendering: pixelated; box-shadow: 0 0 0 3px #3b1408, 0 10px 40px rgb(0 0 0 / 0.5); }
+  .aj-nitido { position: absolute; pointer-events: none; image-rendering: auto; box-shadow: 0 0 0 3px #3b1408, 0 10px 40px rgb(0 0 0 / 0.5); }
   .aj-carregando { display: none; position: absolute; inset: 0; place-items: center; color: var(--creme); font: 700 1.2rem var(--fonte-titulo); }
   .aj.carregando .aj-carregando { display: grid; }
   .aj-vire { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--creme); font: 700 1.2rem var(--fonte-titulo); text-align: center; background: #3b1408; }

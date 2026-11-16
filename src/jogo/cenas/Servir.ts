@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import salao from '../../data/acarabet/salao.json';
 import {
+  ETAPAS,
   estado, nivelSatisfacao, numeroEtapa, prepararRefazer, proximaEtapa, registrarEstrelas, satisfeito, totalEstrelas, medir, MAX_ESTRELAS,
 } from '../estado';
 import { montaSalao } from '../salao';
@@ -25,7 +26,7 @@ export class Servir extends Phaser.Scene {
     const s = montaSalao(this, { easterEggs: false });
     animBia(s.bia, estado.roupa, 'parada');
     faixa(this, 0, 0, 18).setDepth(1100);
-    texto(this, 4, 4, `${numeroEtapa('servir')}/10 SERVIR`, { esquerda: true }).setDepth(1101);
+    texto(this, 4, 4, `${numeroEtapa('servir')}/${ETAPAS.length} SERVIR`, { esquerda: true }).setDepth(1101);
     this.add.image(L - 26, 9, 'atlas', `carinha_${nivelSatisfacao()}_0`).setDepth(1101);
     botaoSom(this);
 

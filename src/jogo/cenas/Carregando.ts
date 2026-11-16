@@ -5,8 +5,8 @@ import { COR } from '../ui';
 const FPS: Record<string, number> = {
   parada: 2, andando: 8, mexendo: 8, batendo: 10, provando: 3, comemorando: 8, preocupada: 4,
   andando_lado: 10, servindo_lado: 10, andando_costas: 8, acenando: 4, brindando: 4,
-  esperando: 2, feliz: 5, comendo: 4, sentado: 4, dormindo: 1, tacho: 6, fumaca: 6, respingo: 14,
-  carimbo: 14, confete: 8, brilho: 12, massa_saindo: 8,
+  esperando: 2, feliz: 5, comendo: 4, sentado: 4, dormindo: 1, tacho: 6, fumaca: 6, respingo: 14, ligado: 16,
+  carimbo: 14, confete: 8, brilho: 12, 
 };
 const SEM_REPETIR = new Set(['carimbo', 'respingo']);
 
@@ -22,7 +22,7 @@ export class Carregando extends Phaser.Scene {
     this.load.on('progress', (p: number) => {
       barra.clear().fillStyle(COR.dende).fillRect(30, 159, Math.round(w * p), 6);
     });
-    const v = '?v=3';
+    const v = '?v=4';
     this.load.atlas('atlas', '/jogo/atlas.png' + v, '/jogo/atlas.json' + v);
     this.load.bitmapFont('clara', '/jogo/fonte_clara.png' + v, '/jogo/fonte_clara.xml' + v);
     this.load.bitmapFont('escura', '/jogo/fonte_escura.png' + v, '/jogo/fonte_escura.xml' + v);

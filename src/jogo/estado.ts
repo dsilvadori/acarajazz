@@ -14,22 +14,24 @@ export interface InfoEtapa {
   instrucao: string;
 }
 
-/** As 10 etapas, na ordem da receita (briefing de arte). */
+/** As etapas, na ordem do preparo de verdade (definida com a equipe em nov/2026). */
 export const ETAPAS: InfoEtapa[] = [
-  { id: 'lavar', cena: 'Lavar', nome: 'LAVAR O FEIJÃO', instrucao: 'ESFREGUE O FEIJÃO COM O DEDO PRA SOLTAR AS CASCAS.' },
-  { id: 'moer', cena: 'Moer', nome: 'MOER', instrucao: 'GIRE A MANIVELA EM CÍRCULOS, NO RITMO. NEM DEVAGAR, NEM CORRENDO!' },
-  { id: 'vatapa', cena: 'Vatapa', nome: 'VATAPÁ', instrucao: 'TOQUE NOS INGREDIENTES NA ORDEM DA RECEITA. DEPOIS MEXA EM CÍRCULOS PRA NÃO GRUDAR.' },
-  { id: 'caruru', cena: 'Caruru', nome: 'CARURU', instrucao: 'ARRASTE CADA QUIABO PRA TÁBUA. A BIA CORTA E JOGA NA PANELA.' },
-  { id: 'vinagrete', cena: 'Vinagrete', nome: 'VINAGRETE', instrucao: 'TOQUE PRA CORTAR QUANDO A FACA ESTIVER EM CIMA DO TOMATE. CUIDADO COM O DEDO!' },
-  { id: 'camarao', cena: 'Camarao', nome: 'CAMARÃO', instrucao: 'TOQUE NO CAMARÃO QUANDO ELE FICAR ROSADO E BRILHANTE. ANTES DE QUEIMAR!' },
-  { id: 'bater', cena: 'Bater', nome: 'BATER A MASSA', instrucao: 'TOQUE RAPIDINHO NA BACIA PRA MASSA FICAR FOFINHA!' },
-  { id: 'fritar', cena: 'Fritar', nome: 'FRITAR', instrucao: 'TOQUE NO DENDÊ PRA JOGAR A MASSA. QUANDO DOURAR E BRILHAR, TOQUE PRA VIRAR. DOUROU DE NOVO? TOQUE PRA TIRAR.' },
-  { id: 'montar', cena: 'Montar', nome: 'MONTAR', instrucao: 'ARRASTE OS RECHEIOS PRO ACARAJÉ. A PIMENTA SÓ SE O CASAL PEDIU!' },
+  { id: 'lavar', cena: 'Lavar', nome: 'LAVAR O FEIJÃO', instrucao: 'O FEIJÃO-FRADINHO JÁ VEM QUEBRADO. ESFREGUE NA ÁGUA PRA DEIXAR ELE LIMPINHO!' },
+  { id: 'triturar', cena: 'Triturar', nome: 'TRITURAR', instrucao: 'TOQUE NO BOTÃO VERDE PRA LIGAR O MULTIPROCESSADOR. TOQUE DE NOVO PRA PARAR QUANDO O PONTEIRO ESTIVER NA FAIXA VERDE!' },
+  { id: 'bater', cena: 'Bater', nome: 'BATER A MASSA', instrucao: 'TOQUE RAPIDINHO NA TELA PRA BATER. A MASSA VAI CRESCENDO ATÉ FICAR BRANQUINHA E LEVINHA!' },
+  { id: 'vatapa', cena: 'Vatapa', nome: 'VATAPÁ', instrucao: 'TOQUE NOS INGREDIENTES NA ORDEM DA RECEITA. DEPOIS MEXA EM CÍRCULOS ATÉ DAR O PONTO.' },
+  { id: 'caruru', cena: 'Caruru', nome: 'CARURU', instrucao: 'ARRASTE O QUIABO PRA TÁBUA. DEPOIS TOQUE NOS INGREDIENTES DO VATAPÁ PRA IR PRA PANELA.' },
+  { id: 'salada', cena: 'Salada', nome: 'SALADA', instrucao: 'TOQUE PRA PICAR QUANDO A FACA ESTIVER EM CIMA DO TOMATE VERDE. CUIDADO COM O DEDO!' },
+  { id: 'fritar', cena: 'Fritar', nome: 'FRITAR', instrucao: 'TOQUE NA MASSA PRA JOGAR OS 4 BOLINHOS NO DENDÊ (OU NO TACHO, UM POR UM). DOUROU E BRILHOU? TOQUE PRA VIRAR. DOUROU DE NOVO? TOQUE PRA TIRAR.' },
+  { id: 'montar', cena: 'Montar', nome: 'MONTAR', instrucao: 'ARRASTE NA ORDEM: PIMENTA NO BOLINHO, VATAPÁ, CARURU, SALADA E CAMARÃO POR CIMA. OLHE O PEDIDO!' },
   { id: 'servir', cena: 'Servir', nome: 'SERVIR', instrucao: 'TOQUE NA MESA DO CASAL PRA BIA LEVAR O ACARAJÉ QUENTINHO.' },
 ];
 
+/** Ordem da montagem (a pimenta varia: com pimenta ou pouca pimenta; o camarão só no tradicional). */
+export const ORDEM_MONTAGEM = ['pimenta', 'vatapa', 'caruru', 'salada', 'camarao'] as const;
+
 const MAX_ESTRELAS = ETAPAS.length * 3;
-export const META_SATISFACAO = 20; // de 30 estrelas: o casal fica satisfeito
+export const META_SATISFACAO = Math.ceil((MAX_ESTRELAS * 2) / 3); // 2/3 das estrelas: o casal fica satisfeito
 
 /** Regras da promoção, vindas do servidor (src/lib/acarabet.ts) pela página. */
 export interface Config {
@@ -50,7 +52,10 @@ export interface CupomInfo {
 
 export const estado = {
   roupa: 'baiana' as Roupa,
-  comPimenta: false,
+  /** Pedido do casal: 'forte' (foguinho) = com pimenta · 'pouca' (friozinho) = pouca pimenta. */
+  pimenta: 'forte' as 'forte' | 'pouca',
+  /** Tradicional leva camarão por cima; vegetariano, não. */
+  vegetariano: false,
   estrelas: {} as Record<string, number>,
   fila: [] as string[], // etapas que faltam (na primeira vez, todas; depois, as que vai refazer)
   rodada: 0,
@@ -58,7 +63,8 @@ export const estado = {
 };
 
 export function novaPartida() {
-  estado.comPimenta = Math.random() < 0.5;
+  estado.pimenta = Math.random() < 0.5 ? 'forte' : 'pouca';
+  estado.vegetariano = Math.random() < 0.35;
   estado.estrelas = {};
   estado.fila = ETAPAS.map((e) => e.id);
   estado.rodada = 0;
@@ -74,6 +80,10 @@ export function nivelSatisfacao(): number {
   const proporcao = totalEstrelas() / (feitas * 3);
   return proporcao < 0.4 ? 0 : proporcao < 0.55 ? 1 : proporcao < 0.67 ? 2 : proporcao < 0.85 ? 3 : 4;
 }
+
+/** Texto do pedido, ex.: "TRADICIONAL COM PIMENTA" / "VEGETARIANO COM POUCA PIMENTA". */
+export const textoPedido = () =>
+  `${estado.vegetariano ? 'VEGETARIANO' : 'TRADICIONAL'} COM ${estado.pimenta === 'pouca' ? 'POUCA ' : ''}PIMENTA`;
 
 export const satisfeito = () => totalEstrelas() >= META_SATISFACAO || estado.rodada >= 2; // ninguém sai sem cupom
 export const infoEtapa = (id: string) => ETAPAS.find((e) => e.id === id)!;
