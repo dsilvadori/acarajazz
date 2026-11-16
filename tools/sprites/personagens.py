@@ -66,14 +66,18 @@ C.update({
 
 
 # ─── Peças comuns ─────────────────────────────────────────────────────────────
-def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha='castanho', oculos=False, feliz=False, cor_oculos='olho', blush='blush', brilho_olho=False):
+def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha='castanho', oculos=False, feliz=False, cor_oculos='olho', blush='blush', brilho_olho=False, triste=False):
     p.ret(14, 22 + dy, 17, 24 + dy, pele)  # pescoço
     p.elipse(16, 17 + dy, 6.2, 6.2, pele, ymin=11 + dy)
     for y in range(13 + dy, 22 + dy):
         if (21, y) in p.px:
             p.d(21, y, sombra)
-    for x in (12, 13, 18, 19):
-        p.d(x, 14 + dy, sobrancelha)
+    if triste:  # sobrancelhas caídas para fora (cara de "não gostei")
+        for (x, y) in ((12, 15), (13, 14), (18, 14), (19, 15)):
+            p.d(x, y + dy, sobrancelha)
+    else:
+        for x in (12, 13, 18, 19):
+            p.d(x, 14 + dy, sobrancelha)
     if olhos == 'abertos' and not feliz:
         for x in (13, 18):
             p.d(x, 16 + dy, 'olho'); p.d(x, 17 + dy, 'olho')
@@ -95,6 +99,11 @@ def rosto(p, dy, pele, sombra, boca='batom_sombra', olhos='abertos', sobrancelha
         p.d(15, 16 + dy, cor_oculos); p.d(16, 16 + dy, cor_oculos)
     if blush:
         p.d(11, 19 + dy, blush); p.d(20, 19 + dy, blush)
+    if triste:  # boca virada pra baixo
+        p.d(13, 21 + dy, boca); p.d(18, 21 + dy, boca)
+        for x in range(14, 18):
+            p.d(x, 20 + dy, boca)
+        return
     # sorriso
     p.d(13, 19 + dy, boca); p.d(18, 19 + dy, boca)
     for x in range(14, 18):
@@ -756,10 +765,12 @@ def cabelo_homem(estilo, cab, luz):
 def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
     """Mesa de dois lugares. par = (quem senta à esquerda, quem senta à direita), cada um de ELES ou ELAS:
     casal de homem e mulher, de dois homens ou de duas mulheres.
-    estado: 'esperando' (sem comida), 'feliz' (o acarajé chegou) ou 'comendo'. k = quadro."""
+    estado: 'esperando' (sem comida), 'feliz' (o acarajé chegou), 'comendo' ou 'desgostou' (provou e não gostou:
+    cara fechada e o acarajé mordido largado no prato). k = quadro."""
     q = [[None] * MW for _ in range(H)]
     feliz = estado == 'feliz'
     pisca = estado == 'esperando' and k == 1
+    desgostou = estado == 'desgostou'
     lugares = [(0, par[0], 1, (1, 2)), (32, par[1], 0, (3, 0))]  # (ox, quem, quadro do sorriso, quadros levando à boca)
 
     def dados(quem):
@@ -862,7 +873,7 @@ def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
         cab = Parte()
         if tipo == 'ele':
             rosto(cab, 0, P_['pele'], P_['sombra'], boca=P_['boca'], olhos='fechados' if pisca else 'abertos',
-                  sobrancelha=P_['cab'] if P_['cab'] != 'cabelo_castanho_claro' else 'castanho', feliz=alegre, blush=P_['blush'])
+                  sobrancelha=P_['cab'] if P_['cab'] != 'cabelo_castanho_claro' else 'castanho', feliz=alegre, blush=P_['blush'], triste=desgostou)
             if P_['barba']:
                 for x in range(11, 21):  # barba curtinha no queixo
                     for y in (21, 22):
@@ -874,7 +885,7 @@ def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
             compor_em(q, cabelo_homem(P_['cabelo'], P_['cab'], P_['cab_luz']), ox)
         else:
             rosto(cab, 0, P_['pele'], P_['sombra'], boca=P_['boca'], olhos='fechados' if pisca else 'abertos',
-                  sobrancelha='olho', feliz=alegre, blush=P_['blush'], brilho_olho=P_.get('brilho', False))
+                  sobrancelha='olho', feliz=alegre, blush=P_['blush'], brilho_olho=P_.get('brilho', False), triste=desgostou)
             if P_.get('luz'):
                 cab.d(12, 15, P_['luz']); cab.d(19, 15, P_['luz'])  # luz nas maçãs
             if P_['brinco'] == 'argola':  # argolonas douradas
@@ -905,6 +916,9 @@ def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
         if estado != 'esperando':
             pr.elipse(cx, 31.6, 3.2, 1.8, 'barra')
             pr.d(cx - 1, 31, 'amarelo'); pr.d(cx + 1, 31, 'amarelo')
+            if desgostou:  # deixou o acarajé mordido no prato
+                for (x, y) in ((cx + 2, 30), (cx + 3, 31), (cx + 3, 30), (cx + 2, 31)):
+                    pr.px.pop((x, y), None)
         compor_em(q, pr)
     compor_em(q, copo(29, 30))
     compor_em(q, copo(33, 30))
@@ -930,6 +944,10 @@ def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
             bolinho.d(18 + ox, 21, 'amarelo')
             compor_em(q, bolinho)
 
+    if desgostou and k == 1:  # rabisquinho de contrariado sobre as cabeças
+        for ox in (0, 32):
+            for x, y in ((ox + 14, 2), (ox + 15, 1), (ox + 16, 2), (ox + 17, 1), (ox + 18, 2)):
+                q[y][x] = C['olho']
     if feliz:  # coraçõezinhos subindo
         for x, y in ((31, 10 - k), (30, 9 - k), (32, 9 - k), (31, 11 - k)):
             if 0 <= y < H:
@@ -954,6 +972,7 @@ def animacoes():
         A[f'cliente_casal_{v}_esperando'] = [casal_mesa('esperando', 0, par), casal_mesa('esperando', 1, par)]
         A[f'cliente_casal_{v}_feliz'] = [casal_mesa('feliz', k, par) for k in range(3)]
         A[f'cliente_casal_{v}_comendo'] = [casal_mesa('comendo', k, par) for k in range(4)]
+        A[f'cliente_casal_{v}_desgostou'] = [casal_mesa('desgostou', k, par) for k in range(2)]
     for g in GEMEAS:
         A[f'npc_{g}_parada'] = [gemea(g), gemea(g, 1, 'fechados')]
         A[f'npc_{g}_acenando'] = [gemea(g, acenando=1), gemea(g, acenando=2)]

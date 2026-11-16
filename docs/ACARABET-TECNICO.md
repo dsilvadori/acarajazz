@@ -196,7 +196,7 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 
 **Regras de jogo implementadas**
 - Cada etapa dá 1 a 3 estrelas; refazer guarda sempre a melhor nota.
-- O casal fica satisfeito com **2/3 das estrelas** (20 de 30). Se não ficar, a Bia refaz as etapas mais fracas e serve de novo; na terceira rodada o casal aceita de qualquer jeito (ninguém sai sem cupom).
+- O casal fica satisfeito com **2/3 das estrelas** (20 de 30). Se não ficar, o casal faz cara de "não gostei" (animação `cliente_casal_<casal>_desgostou`, acarajé mordido no prato), aparece **O CASAL NÃO GOSTOU!** e o botão **TENTAR DE NOVO** recomeça tudo desde lavar o feijão, com o mesmo casal e o mesmo pedido (`recomecar()` em `estado.ts`). Não há aceite automático: o cupom só sai com 20 estrelas ou mais.
 - O pedido é sorteado a cada partida e aparece no balão do casal e na faixa da montagem: **com pimenta** (ícone de foguinho) ou **pouca pimenta** (ícone de friozinho), e **tradicional** (camarão por cima, ícone de camarão) ou **vegetariano** (shimeji por cima, ícone de shimeji).
 
 **Processos de cada etapa (definidos com a equipe)**

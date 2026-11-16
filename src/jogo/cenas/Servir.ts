@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import salao from '../../data/acarabet/salao.json';
 import {
   ETAPAS,
-  estado, nivelSatisfacao, numeroEtapa, prepararRefazer, proximaEtapa, registrarEstrelas, satisfeito, totalEstrelas, medir, MAX_ESTRELAS,
+  estado, nivelSatisfacao, numeroEtapa, proximaEtapa, recomecar, registrarEstrelas, satisfeito, totalEstrelas, medir, MAX_ESTRELAS, META_SATISFACAO,
 } from '../estado';
 import { montaSalao } from '../salao';
 import { tocar } from '../som';
@@ -86,16 +86,21 @@ export class Servir extends Phaser.Scene {
         }, 'verde').setDepth(1303);
       });
     } else {
+      // provou e não gostou: cara fechada, acarajé mordido no prato e volta tudo pro começo
       s.casal.play(`cliente_casal_${estado.casal}_comendo`);
+      this.time.delayedCall(1300, () => s.casal.play(`cliente_casal_${estado.casal}_desgostou`));
       animBia(s.bia, estado.roupa, 'preocupada');
-      this.time.delayedCall(900, () => {
+      tocar('erro');
+      this.time.delayedCall(1600, () => {
         // no alto do salão e com a altura do texto (o botão não cobre a última linha)
-        texto(this, L / 2, 30, 'QUASE!', { fonte: 'escura', tamanho: 2 }).setDepth(1302);
-        const t = texto(this, L / 2, 54, 'O CASAL QUERIA MAIS CAPRICHO. BORA REFAZER AS ETAPAS MAIS FRACAS? AQUI NINGUÉM SAI SEM PRÊMIO!', { fonte: 'escura', largura: 150 }).setDepth(1302);
-        const yBotao = 54 + Math.ceil(t.height) + 14;
+        const titulo = texto(this, L / 2, 30, 'O CASAL NÃO GOSTOU!', { fonte: 'escura', tamanho: 2, largura: 150 }).setDepth(1302);
+        const yTexto = 30 + Math.ceil(titulo.height) + 8;
+        const t = texto(this, L / 2, yTexto, `${total} DE ${MAX_ESTRELAS} ESTRELAS. PRA AGRADAR PRECISA DE PELO MENOS ${META_SATISFACAO}. BORA FAZER TUDO DE NOVO, DESDE O FEIJÃO?`, { fonte: 'escura', largura: 150 }).setDepth(1302);
+        const yBotao = yTexto + Math.ceil(t.height) + 14;
         painel(this, 12, 24, L - 24, yBotao - 24 + 14).setDepth(1301);
-        botao(this, L / 2, yBotao, 100, 16, 'REFAZER', () => {
-          prepararRefazer();
+        botao(this, L / 2, yBotao, 120, 16, 'TENTAR DE NOVO', () => {
+          medir('casal_nao_gostou', { estrelas: total, rodada: estado.rodada + 1 });
+          recomecar();
           this.scene.start(proximaEtapa()!);
         }).setDepth(1303);
       });

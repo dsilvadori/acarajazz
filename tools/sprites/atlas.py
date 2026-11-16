@@ -39,7 +39,10 @@ def coleta():
     return anims
 
 
-def empacota(anims, largura=512):
+LARGURA = 1024  # 1024 de largura mantém a altura em 2048 (textura segura até em celular antigo)
+
+
+def empacota(anims, largura=LARGURA):
     quadros = []
     for nome, qs in anims.items():
         for k, q in enumerate(qs):
@@ -74,11 +77,11 @@ def main():
     frames = {nome: {'frame': {'x': x, 'y': y, 'w': w, 'h': h}, 'rotated': False, 'trimmed': False,
                      'spriteSourceSize': {'x': 0, 'y': 0, 'w': w, 'h': h}, 'sourceSize': {'w': w, 'h': h}}
               for nome, (x, y, w, h, _) in pos.items()}
-    meta = {'image': 'atlas.png', 'size': {'w': 512, 'h': altura}, 'scale': '1',
+    meta = {'image': 'atlas.png', 'size': {'w': LARGURA, 'h': altura}, 'scale': '1',
             'animacoes': {nome: len(qs) for nome, qs in anims.items()}}
     with open(os.path.join(saida, 'atlas.json'), 'w') as f:
         json.dump({'frames': frames, 'meta': meta}, f, separators=(',', ':'))
-    print(f'atlas: {len(frames)} quadros, 512×{altura}')
+    print(f'atlas: {len(frames)} quadros, {LARGURA}×{altura}')
 
 
 if __name__ == '__main__':

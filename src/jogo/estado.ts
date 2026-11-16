@@ -98,7 +98,7 @@ export function nivelSatisfacao(): number {
 export const textoPedido = () =>
   `${estado.vegetariano ? 'VEGETARIANO, COM SHIMEJI' : 'TRADICIONAL, COM CAMARÃO'} E ${estado.pimenta === 'pouca' ? 'POUCA ' : ''}PIMENTA`;
 
-export const satisfeito = () => totalEstrelas() >= META_SATISFACAO || estado.rodada >= 2; // ninguém sai sem cupom
+export const satisfeito = () => totalEstrelas() >= META_SATISFACAO; // abaixo da meta o casal não gosta e é preciso recomeçar
 export const infoEtapa = (id: string) => ETAPAS.find((e) => e.id === id)!;
 export const numeroEtapa = (id: string) => ETAPAS.findIndex((e) => e.id === id) + 1;
 export { MAX_ESTRELAS };
@@ -115,12 +115,11 @@ export function proximaEtapa(): string | null {
   return id ? infoEtapa(id).cena : null;
 }
 
-/** O casal não ficou satisfeito: refaz as etapas mais fracas (as de 1 estrela; se não houver, as de 2). */
-export function prepararRefazer() {
+/** O casal não gostou: recomeça o acarajé do zero (a partir de lavar o feijão), com o mesmo casal e o mesmo pedido. */
+export function recomecar() {
   estado.rodada++;
-  const fracas = ETAPAS.filter((e) => e.id !== 'servir' && (estado.estrelas[e.id] ?? 0) <= 1).map((e) => e.id);
-  const medias = ETAPAS.filter((e) => e.id !== 'servir' && (estado.estrelas[e.id] ?? 0) === 2).map((e) => e.id);
-  estado.fila = [...(fracas.length ? fracas : medias.slice(0, 3)), 'servir'];
+  estado.estrelas = {};
+  estado.fila = ETAPAS.map((e) => e.id);
 }
 
 // ─── Armazenamento no aparelho (se falhar, o jogo segue) ─────────────────────
