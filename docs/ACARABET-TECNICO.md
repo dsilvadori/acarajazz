@@ -9,7 +9,7 @@
 ## 1. Resumo do jogo (do briefing de arte)
 
 - Jogo em **pixel art**, tela **em pé** (formato story), jogado com toque ou clique.
-- A Bia faz um acarajé do começo ao fim em **10 minijogos** curtos (20–40 s cada), até **30 estrelas**: lavar o feijão, triturar, bater a massa, temperos, vatapá, caruru, salada, **fritar**, **montar** e **servir** (processos definidos com a equipe em nov/2026, ver seção 10).
+- A Bia faz um acarajé do começo ao fim em **10 minijogos** curtos (20–40 s cada), até **30 estrelas**: lavar o feijão, triturar, temperos, vatapá, caruru, salada, bater a massa, **fritar**, **montar** e **servir** (processos definidos com a equipe em nov/2026, ver seção 10).
 - Cada etapa dá de 1 a 3 estrelas → enche o **medidor de satisfação** do cliente.
 - Não tem sorte: quem completa e satisfaz o cliente **sempre ganha** o cupom.
 - Final: bilhete de aposta de brincadeira ("chance de ganhar: 100%") + cupom + **imagem 1080 × 1920 para os Stories**.
@@ -202,14 +202,14 @@ Com isso dá para ver em que etapa as pessoas desistem e quantos cupons viram vi
 **Processos de cada etapa (definidos com a equipe)**
 1. **Lavar o feijão:** feijão-fradinho (branco com o olhinho preto), que já vem quebrado da loja; o processo é só lavar, com a torneira aberta caindo água na bacia.
 2. **Triturar:** no multiprocessador industrial, com um botão só. Três levas: um toque liga, e a pessoa tem que parar na hora certa (ponteiro na faixa verde).
-3. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
-4. **Temperos:** picar cebola e pimentão (toques na faca) e fazer a pimenta: jogar as pimentas no dendê e mexer em círculos.
-5. **Vatapá:** castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê, nessa ordem; depois mexer até dar o ponto. O nome de cada ingrediente aparece na tela ("PRÓXIMO: …" e ao tocar).
-6. **Caruru:** cortar o quiabo e juntar os ingredientes do vatapá, **menos a farinha**.
-7. **Salada:** só tomate verde picado.
+3. **Temperos:** picar cebola e pimentão (toques na faca) e fazer a pimenta: jogar as pimentas no dendê e mexer em círculos.
+4. **Vatapá:** castanha de caju, amendoim, gengibre, temperos naturais triturados, farinha de trigo e um pouco de dendê, nessa ordem; depois mexer até dar o ponto. O nome de cada ingrediente aparece na tela ("PRÓXIMO: …" e ao tocar).
+5. **Caruru:** cortar o quiabo, juntar os ingredientes do vatapá (**menos a farinha**) e mexer.
+6. **Salada:** só tomate verde picado.
+7. **Bater a massa:** toquinhos na tela simulam a batida; a massa vai crescendo na bacia até ficar bem branquinha e levinha.
 8. **Fritar** no dendê: um toque na massa joga os 4 bolinhos de uma vez no tacho (ou um por um, tocando no tacho); virar e tirar no ponto. A janela do ponto é larga (5 s) pra dar conta dos 4 sem queimar.
 9. **Montar, nesta ordem:** pimenta no bolinho, vatapá, caruru, salada e camarão por cima (sem camarão no vegetariano). Pimenta errada, camarão no vegetariano ou fora de ordem contam como erro.
 10. **Servir** na mesa do casal.
 - Tocar nos personagens do salão (Eliana, gêmeas, Valentina, tios, Pôr do Sol) faz eles acenarem/brindarem: são os easter eggs.
 
-**Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Triturar, Bater, Temperos, Vatapa, Caruru, Salada, Fritar, Montar, Servir, Premio, Cupom).
+**Atalho de teste (só em desenvolvimento):** `/acarabet?cena=Fritar#jogar` abre direto numa cena (Titulo, Pedido, Lavar, Triturar, Temperos, Vatapa, Caruru, Salada, Bater, Fritar, Montar, Servir, Premio, Cupom).

@@ -440,18 +440,25 @@ export class Caruru extends Etapa {
   }
 
   protected readonly id = 'caruru';
-  protected tempoTotal = 35000;
+  protected tempoTotal = 40000;
   private feitos = 0;
   private postos = 0;
   private cortando = false;
+  private mexendo = false;
+  private mexido = 0;
+  private somMexer = 0;
+  private colher!: Phaser.GameObjects.Image;
+  private giro!: (p: Phaser.Input.Pointer) => number;
   private faca!: Phaser.GameObjects.Image;
   private readonly QUIABOS = 4;
   private readonly TABUA = { x: CENTRO_X, y: 168, w: 128, h: 64 };
   private readonly PANELA = { x: 126, y: 268 };
 
   protected montar() {
-    this.feitos = this.postos = 0;
-    this.cortando = false;
+    this.feitos = this.postos = this.mexido = 0;
+    this.cortando = this.mexendo = false;
+    this.colher = this.add.image(0, 0, 'atlas', 'colher_0').setScale(2).setFlipY(true).setOrigin(0.2, 0.2).setVisible(false).setDepth(50);
+    this.giro = this.rastreadorGiro(this.PANELA.x, this.PANELA.y, 6);
     this.add.image(this.TABUA.x, this.TABUA.y, 'atlas', 'tabua_0').setScale(2);
     this.add.image(this.PANELA.x, this.PANELA.y, 'atlas', 'panela_vazia_0').setScale(1.3);
     this.faca = this.add.image(this.TABUA.x + 30, this.TABUA.y - 40, 'atlas', 'faca_0').setScale(2).setVisible(false).setDepth(40);
@@ -510,11 +517,30 @@ export class Caruru extends Etapa {
           onComplete: () => {
             s.destroy();
             this.postos++;
-            if (this.postos === INGREDIENTES_CARURU.length) this.terminar(this.segundos() <= 16 ? 3 : this.segundos() <= 25 ? 2 : 1);
+            if (this.postos === INGREDIENTES_CARURU.length) {
+              this.mexendo = true;
+              flutua(this, CENTRO_X, 150, 'AGORA MEXE O CARURU!');
+            }
           },
         });
       });
     });
+  }
+
+  /** Mexer o caruru: girar o dedo em volta da panela. */
+  protected passo() {
+    if (!this.mexendo) return;
+    const p = this.input.activePointer;
+    const d = this.giro(p);
+    this.colher.setVisible(p.isDown).setPosition(p.x - 34, p.y - 36);
+    this.mexido += d;
+    if (d > 0.05 && this.time.now - this.somMexer > 300) { tocar('agua'); this.somMexer = this.time.now; }
+    if (this.mexido >= Math.PI * 2 * 3) {
+      this.mexendo = false;
+      this.colher.setVisible(false);
+      flutua(this, CENTRO_X, 150, 'CARURU NO PONTO!');
+      this.terminar(this.segundos() <= 21 ? 3 : this.segundos() <= 30 ? 2 : 1);
+    }
   }
 
   protected tempoEsgotado() {
