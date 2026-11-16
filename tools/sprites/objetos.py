@@ -391,21 +391,45 @@ def tacho():
     return quadros
 
 
-def acaraje_fritando(estado):
-    """Visto de cima no dendê: cru (claro), dourando, no ponto (dourado com brilho e maior), queimado (escuro e murcho)."""
-    cor, borda, r = {
-        'cru': ('massa', 'massa_sombra', 6.0), 'dourando': ('dourado', 'dende_luz', 6.2),
-        'ponto': ('dende_luz', 'frito', 6.6), 'queimado': ('frito', 'queimado', 5.6),
-    }[estado]
+def acaraje_fritando(estado, lado=1):
+    """Visto de cima no dendê. Quem frita é a parte de baixo:
+    lado 1 → o miolo continua massa crua e só a BORDA vai dourando (é o aviso de virar);
+    lado 2 → já virado, aparece a parte frita por cima e a borda vai escurecendo até o ponto final."""
+    r = 6.6 if estado == 'ponto' else 5.8 if estado == 'queimado' else 6.2
     p = Parte()
-    p.elipse(8, 8, r, r * 0.85, cor)
+    p.elipse(8, 8, r, r * 0.85, 'massa' if lado == 1 else 'dende_luz')
     for (x, y) in list(p.px):
-        if x + y > 18:
-            p.d(x, y, borda)
+        d = ((x - 8) / r) ** 2 + ((y - 8) / (r * 0.85)) ** 2
+        borda_fora, borda_dentro = d > 0.62, d > 0.38
+        if lado == 1:
+            if estado == 'cru':
+                if x + y > 19 and borda_fora:
+                    p.d(x, y, 'massa_sombra')
+            elif estado == 'dourando' and borda_fora:
+                p.d(x, y, 'dourado')
+            elif estado == 'ponto':
+                if borda_fora:
+                    p.d(x, y, 'dende_luz')
+                elif borda_dentro:
+                    p.d(x, y, 'dourado')
+            elif estado == 'queimado':
+                if borda_fora:
+                    p.d(x, y, 'queimado')
+                elif borda_dentro:
+                    p.d(x, y, 'frito')
+        else:
+            if (x * 7 + y * 5) % 11 == 0:
+                p.d(x, y, 'dourado')  # casquinha
+            if estado == 'cru' and borda_fora and x + y > 18:
+                p.d(x, y, 'dende')
+            elif estado == 'dourando' and borda_fora:
+                p.d(x, y, 'dende')
+            elif estado == 'ponto' and borda_fora:
+                p.d(x, y, 'frito')
+            elif estado == 'queimado':
+                p.d(x, y, 'queimado' if borda_fora else 'frito')
     if estado == 'ponto':
         p.d(5, 5, 'ouro_luz'); p.d(6, 5, 'ouro_luz'); p.d(5, 6, 'ouro_luz')  # brilho: forma e luz mudam, não só a cor
-    if estado == 'queimado':
-        p.d(7, 7, 'queimado'); p.d(10, 6, 'queimado')
     return [faz(16, 16, [p])]
 
 
@@ -688,7 +712,8 @@ ITENS = {
     'cebola': lambda: cebola(False), 'cebola_picada': lambda: cebola(True),
     'pimentao': lambda: pimentao(False), 'pimentao_picado': lambda: pimentao(True), 'malagueta': malagueta,
     'tacho': tacho, 'respingo': respingo,
-    **{f'acaraje_{e}': (lambda e=e: acaraje_fritando(e)) for e in ('cru', 'dourando', 'ponto', 'queimado')},
+    'acaraje_cru': lambda: acaraje_fritando('cru', 1),  # bolinho cru (também usado no triturar)
+    **{f'acaraje_l{l}_{e}': (lambda e=e, l=l: acaraje_fritando(e, l)) for l in (1, 2) for e in ('cru', 'dourando', 'ponto', 'queimado')},
     'acaraje_fechado': lambda: acaraje_lado('fechado'), 'acaraje_aberto': lambda: acaraje_lado('aberto'),
     **{f'camada_{n}': (lambda n=n: camada(n)) for n in RECHEIOS},
     **{f'pote_{n}': (lambda n=n: potinho(n)) for n in RECHEIOS},

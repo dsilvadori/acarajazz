@@ -59,8 +59,8 @@ export abstract class Etapa extends Phaser.Scene {
 
   private mostrarTutorial(instrucao: string) {
     const fundo = this.add.rectangle(0, 18, L, 302, COR.contorno, 0.55).setOrigin(0).setDepth(1000).setInteractive();
-    const p = painel(this, 10, 128, L - 20, 74).setDepth(1001);
     const t = texto(this, L / 2, 134, instrucao, { fonte: 'escura', largura: 150 }).setDepth(1002);
+    const p = painel(this, 10, 128, L - 20, Math.max(74, Math.ceil(t.height) + 14)).setDepth(1001); // cresce com o texto
     const toque = texto(this, L / 2, 300, 'TOQUE PRA COMEÇAR').setDepth(1002);
     this.tweens.add({ targets: toque, alpha: 0.3, duration: 500, yoyo: true, repeat: -1 });
     const mao = this.add.image(0, 0, 'atlas', 'maozinha_0').setOrigin(0.35, 0).setDepth(1003);

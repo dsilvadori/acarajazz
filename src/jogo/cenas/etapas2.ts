@@ -114,7 +114,7 @@ export class Fritar extends Etapa {
     const [x, y] = this.VAGAS[i];
     if (!b) { // joga a massa no dendê
       if (this.bons + this.vagas.filter(Boolean).length >= this.META + 1) return;
-      const s = this.add.image(x, y, 'atlas', 'acaraje_cru_0').setScale(2).setDepth(20);
+      const s = this.add.image(x, y, 'atlas', 'acaraje_l1_cru_0').setScale(2).setDepth(20);
       this.vagas[i] = { s, lado: 1, t: 0, fase: 'cru' };
       const r = this.add.sprite(x, y, 'atlas').setScale(2).setDepth(21).play('respingo');
       r.once('animationcomplete', () => r.destroy());
@@ -125,7 +125,7 @@ export class Fritar extends Etapa {
     if (b.saindo || b.fase === 'queimado') return;
     if (b.fase === 'cru' || b.fase === 'dourando') {
       this.cedo++;
-      flutua(this, x, y - 18, 'AINDA CRU!');
+      flutua(this, x, y - 18, b.lado === 1 ? 'ESPERA A BORDA DOURAR!' : 'AINDA NÃO!');
       tocar('erro');
       return;
     }
@@ -136,7 +136,7 @@ export class Fritar extends Etapa {
       tocar('acerto');
       this.tweens.add({
         targets: b.s, scaleY: 0, duration: 110, yoyo: true,
-        onYoyo: () => { b.lado = 2; b.t = 0; b.fase = 'cru'; b.s.setFrame('acaraje_cru_0').setFlipY(true); },
+        onYoyo: () => { b.lado = 2; b.t = 0; b.fase = 'cru'; b.s.setFrame('acaraje_l2_cru_0'); }, // o lado frito vem pra cima
       });
     } else {
       b.saindo = true;
@@ -164,8 +164,9 @@ export class Fritar extends Etapa {
       const fase: FaseBolinho = b.t >= TEMPOS.queimado ? 'queimado' : b.t >= TEMPOS.ponto ? 'ponto' : b.t >= TEMPOS.dourando ? 'dourando' : 'cru';
       if (fase === b.fase) return;
       b.fase = fase;
-      b.s.setFrame(`acaraje_${fase}_0`);
+      b.s.setFrame(`acaraje_l${b.lado}_${fase}_0`);
       if (fase === 'ponto') {
+        flutua(this, b.s.x, b.s.y - 18, b.lado === 1 ? 'VIRA!' : 'TIRA!');
         b.brilho = this.add.sprite(b.s.x - 6, b.s.y - 8, 'atlas').setDepth(22).play('brilho');
         this.tweens.add({ targets: b.s, scale: 2.25, duration: 140, yoyo: true });
       }
