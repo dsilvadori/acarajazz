@@ -1,0 +1,86 @@
+# App Android "Figurinhas Acarajazz": gera as figurinhas a partir dos sprites do jogo, coloca dentro do
+# app de exemplo oficial do WhatsApp (github.com/WhatsApp/stickers) e publica o .apk na release "figurinhas".
+# Link fixo do .apk: https://github.com/<dono>/<repo>/releases/download/figurinhas/figurinhas-acarajazz.apk
+name: App de figurinhas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/jogo/sprites/**'
+      - 'tools/figurinhas/**'
+      - '.github/workflows/figurinhas.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: figurinhas
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      # versão do app de exemplo do WhatsApp usada como base (fixa, para o build não mudar sozinho)
+      AMOSTRA_COMMIT: 06144a1f6077bbb346e1230032fc4e0bce996d03
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Gerar e conferir as figurinhas
+        run: |
+          node tools/figurinhas/gerar.mjs
+          node tools/figurinhas/app/montar.mjs "$RUNNER_TEMP/montado"
+
+      - name: Baixar o app de exemplo do WhatsApp
+        run: |
+          git init -q "$RUNNER_TEMP/wa"
+          cd "$RUNNER_TEMP/wa"
+          git remote add origin https://github.com/WhatsApp/stickers.git
+          git fetch -q --depth 1 origin "$AMOSTRA_COMMIT"
+          git checkout -q FETCH_HEAD
+
+      - name: Colocar as figurinhas, o nome e o ícone do Acarajazz
+        working-directory: ${{ runner.temp }}/wa/Android
+        run: |
+          rm -rf app/src/main/assets/* app/src/main/res/mipmap-anydpi-v26
+          cp -r "$RUNNER_TEMP/montado/assets/." app/src/main/assets/
+          cp -r "$RUNNER_TEMP/montado/res/." app/src/main/res/
+          sed -i 's/applicationId "com.example.samplestickerapp"/applicationId "com.oacarajazz.figurinhas"/' app/build.gradle
+          grep -q 'applicationId "com.oacarajazz.figurinhas"' app/build.gradle
+          sed -i 's|<string name="app_name">[^<]*</string>|<string name="app_name">Figurinhas Acarajazz</string>|' \
+            app/src/main/res/values/strings.xml app/src/main/res/values-lo/strings.xml
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Compilar o .apk
+        working-directory: ${{ runner.temp }}/wa/Android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/figurinhas-acarajazz.apk"
+
+      - name: Publicar na release "figurinhas"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view figurinhas >/dev/null 2>&1 || gh release create figurinhas \
+            --target "$GITHUB_SHA" \
+            --title "Figurinhas do Acarajazz" \
+            --notes "App Android com os pacotes de figurinhas animadas do jogo. Baixe o figurinhas-acarajazz.apk no celular, instale e toque em Adicionar ao WhatsApp em cada pacote."
+          gh release upload figurinhas figurinhas-acarajazz.apk --clobber
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: figurinhas-acarajazz
+          path: figurinhas-acarajazz.apk
