@@ -11,6 +11,8 @@ Easter eggs do Acarabet: personagens que aparecem no cenário.
   Casal       → os clientes: ele negro de pele mais clara (barba, camisa vinho), ela retinta (black power,
                 argolonas, blusa de estampa africana), na mesa de chita: esperando, feliz e comendo. Quadro 64×48.
   Pôr do Sol  → gatinho laranja listrado e branco (peito, patas e focinho brancos, rabo em anéis), da foto (sentado balançando o rabo e dormindo)
+  Dev         → quem fez o jogo (da foto): cabelo escuro curto, óculos de armação escura, barba com o queixo grisalho,
+                camiseta preta e caneca rosa. De vez em quando surge atrás do balcão, espia desconfiado, dá um gole e some.
 
 Mesmo estilo da Bia (tools/sprites/bia.py): 32×48 por quadro (gato: 24×17), contorno marrom-dendê.
 Uso:  python3 tools/sprites/personagens.py [--previa arquivo.png]
@@ -955,6 +957,116 @@ def casal_mesa(estado='esperando', k=0, par=('negro', 'negra')):
     return q
 
 
+# ─── Dev: espia atrás do balcão e dá um gole na caneca rosa ───────────────────
+C.update({
+    'pele_dev': hx('e8b892'), 'pele_dev_sombra': hx('c78f6a'), 'boca_dev': hx('a85a52'),
+    'cabelo_dev': hx('2a1a14'), 'cabelo_dev_luz': hx('4a3226'),
+    'barba_dev': hx('4a372c'), 'barba_dev_grisalha': hx('9a928a'),
+    'oculos_dev': hx('2e1a1a'),
+    'caneca': hx('c8195e'), 'caneca_sombra': hx('8e1045'), 'caneca_luz': hx('e8508a'),
+})
+
+
+def caneca_dev(x, y):
+    """Caneca rosa de 5×6 com alça à direita e o logo branco (o triângulo do Núcleo de Tecnologia)."""
+    p = Parte()
+    p.ret(x, y, x + 4, y + 5, 'caneca')
+    for yy in range(y, y + 6):
+        p.p(x + 4, yy, 'caneca_sombra')
+    p.d(x, y + 1, 'caneca_luz'); p.d(x, y + 2, 'caneca_luz')  # brilho da louça
+    p.d(x + 2, y + 2, 'branco'); p.d(x + 1, y + 3, 'branco'); p.d(x + 3, y + 3, 'branco')  # logo
+    p.p(x + 5, y + 1, 'branco'); p.p(x + 6, y + 2, 'branco'); p.p(x + 6, y + 3, 'branco'); p.p(x + 5, y + 4, 'branco')  # alça
+    return p
+
+
+def dev(olhar='frente', caneca='peito'):
+    """olhar: 'esquerda' | 'direita' (desconfiado, olhando de lado) | 'frente' | 'gole' (olhos fechados);
+    caneca: 'peito' | 'boca'."""
+    p = Parte()
+    p.ret(14, 22, 17, 24, 'pele_dev')  # pescoço
+    p.elipse(16, 17, 6.6, 6.4, 'pele_dev', ymin=11)  # rosto cheinho
+    for y in range(13, 22):
+        if (22, y) in p.px:
+            p.d(22, y, 'pele_dev_sombra')
+    # barba cheia mas rente: maxilar e queixo (fios grisalhos no queixo), bigode; bochecha fica de fora
+    for (x, y) in list(p.px):
+        if (y >= 21 and 10 <= x <= 22) or (y == 20 and (x <= 12 or x >= 19)) or (y == 19 and (x <= 11 or x >= 20)):
+            grisalho = 13 <= x <= 18 and y >= 22 and (x * 3 + y) % 4 == 0
+            p.d(x, y, 'barba_dev_grisalha' if grisalho else 'barba_dev')
+    for y in (16, 17, 18):
+        p.d(10, y, 'barba_dev'); p.d(22, y, 'barba_dev')  # costeletas
+    for x in range(13, 19):
+        p.d(x, 19, 'barba_dev')  # bigode
+    for x in (14, 15, 16, 17):  # boca fechada, de canto (desconfiado) ou reta
+        p.d(x, 20, 'boca_dev')
+    if olhar in ('esquerda', 'direita'):
+        p.d(14 if olhar == 'esquerda' else 17, 20, 'barba_dev')
+    # sobrancelhas: desconfiado = uma levantada, outra franzida
+    if olhar in ('esquerda', 'direita'):
+        for (x, y) in ((12, 13), (13, 13), (17, 14), (18, 14), (19, 13)):
+            p.d(x, y, 'cabelo_dev')
+    else:
+        for x in (12, 13, 18, 19):
+            p.d(x, 14, 'cabelo_dev')
+    # olhos
+    if olhar == 'gole':
+        for x in (12, 13, 18, 19):
+            p.d(x, 17, 'olho')
+    elif olhar == 'frente':
+        for x in (13, 18):
+            p.d(x, 16, 'olho'); p.d(x, 17, 'olho')
+    else:  # semicerrados, pupila no canto
+        dx = -1 if olhar == 'esquerda' else 1
+        for x in (13, 18):
+            p.d(x + dx, 17, 'olho'); p.d(x, 17, 'olho')
+    # óculos de armação escura retangular
+    for x0 in (11, 17):
+        for x in range(x0, x0 + 4):
+            p.d(x, 15, 'oculos_dev'); p.d(x, 18, 'oculos_dev')
+        for y in (16, 17):
+            p.d(x0, y, 'oculos_dev'); p.d(x0 + 3, y, 'oculos_dev')
+    p.d(15, 16, 'oculos_dev'); p.d(16, 16, 'oculos_dev')
+    p.d(10, 15, 'oculos_dev'); p.d(22, 15, 'oculos_dev')  # hastes
+    # cabelo escuro, um pouco cheio em cima, repartido à direita e jogado suave pro lado esquerdo (como na foto)
+    cabelo = Parte()
+    for y in range(6, 17):
+        for x in range(8, 25):
+            cheio = ((x + 0.5 - 16) / 7.4) ** 2 + ((y + 0.5 - 14.8) / 7.9) ** 2 <= 1
+            topete = ((x + 0.5 - 14) / 4.8) ** 2 + ((y + 0.5 - 8.8) / 2.6) ** 2 <= 1  # volume leve pro lado
+            if not (cheio or topete):
+                continue
+            if x <= 10 or x >= 22:
+                frente = 15  # laterais até a orelha
+            elif x >= 19:
+                frente = 10  # entradinha do lado da risca
+            elif x >= 16:
+                frente = 11
+            else:
+                frente = 12  # o cabelo cai um pouquinho sobre a testa do lado esquerdo
+            if y <= frente:
+                cabelo.p(x, y, 'cabelo_dev')
+    for (x, y) in list(cabelo.px):  # fios penteados da risca pro lado esquerdo
+        if 8 <= y <= 10 and x <= 18 and (x + 2 * y) % 5 == 0:
+            cabelo.d(x, y, 'cabelo_dev_luz')
+    for y in range(8, 11):
+        cabelo.d(19, y, 'cabelo_dev_luz')  # risca
+
+    t = tronco(0, lambda x, y: 'preto_luz' if x >= 22 else 'preto')  # camiseta preta
+    for x in range(14, 18):
+        t.d(x, 24, 'preto_luz')  # gola
+    esq = Parte()
+    braco(esq, (8, 25), (5, 30), (5, 34), 'pele_dev', 'preto', 0.35)
+    dir_ = Parte()
+    if caneca == 'boca':
+        cn = caneca_dev(12, 18)  # na boca, tampando a barba
+        braco(dir_, (22, 25), (24, 25), (18, 20), 'pele_dev', 'preto', 0.45)
+    else:
+        cn = caneca_dev(13, 24)  # na altura do peito
+        braco(dir_, (22, 25), (24, 29), (19, 26), 'pele_dev', 'preto', 0.45)
+    pernas = pernas_calca('jeans', 'preto')
+    return montar(pernas + [t, esq, cabelo, p, cn, dir_])
+
+
 # ─── Saída ────────────────────────────────────────────────────────────────────
 def animacoes():
     A = {
@@ -967,6 +1079,8 @@ def animacoes():
         'gato_dormindo': [recorte_gato(gato_dormindo(0)), recorte_gato(gato_dormindo(1))],
         'npc_tios_mesa_parada': [mesa_tios(), mesa_tios(respira=1, olhos='fechados')],
         'npc_tios_mesa_brindando': [mesa_tios(1), mesa_tios(2), mesa_tios(1)],
+        'npc_dev_espiando': [dev('esquerda'), dev('direita')],
+        'npc_dev_gole': [dev('frente', 'peito'), dev('gole', 'boca'), dev('gole', 'boca')],
     }
     for v, par in CASAIS.items():  # cada partida sorteia um casal
         A[f'cliente_casal_{v}_esperando'] = [casal_mesa('esperando', 0, par), casal_mesa('esperando', 1, par)]

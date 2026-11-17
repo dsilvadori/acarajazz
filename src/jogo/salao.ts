@@ -16,9 +16,13 @@ export interface Salao {
   andar: (rota: string[], bandeja: boolean) => Promise<void>;
   /** Todo mundo comemora junto: tchauzinho de Eliana, gêmeas e Valentina, brinde dos tios. */
   festa: (ms?: number) => void;
+  /** Quem fez o jogo espia atrás do balcão e dá um gole (some sozinho em ~2 s). */
+  espiao: (atraso?: number) => void;
+  /** Cancela a aparição sorteada que ainda não aconteceu. */
+  semEspiao: () => void;
 }
 
-export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Salao {
+export function montaSalao(cena: Phaser.Scene, { easterEggs = true, espiao: sortearEspiao = false } = {}): Salao {
   cena.add.image(0, 0, 'salao_fundo').setOrigin(0, 0).setDepth(0);
   cena.add.image(0, 0, 'salao_balcao').setOrigin(0, 0).setDepth(2);
   cena.add.sprite(0, 0, 'fitas').setOrigin(0, 0).setDepth(1000).play('fitas');
@@ -55,6 +59,7 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
   npc(g.x, g.y, g.sprite, g.sprite === 'gato_sentado' ? 'gato_sentado' : null, 17);
   const casal = cena.add.sprite(pos.casal.x, pos.casal.y, 'atlas').setOrigin(0, 0)
     .setDepth(profundidade(pos.casal.y)).play(`cliente_casal_${estado.casal}_esperando`);
+  const sorteio = sortearEspiao ? espiaoSorteado(cena, bia, b0) : undefined;
 
   const andar = async (rota: string[], bandeja: boolean) => {
     for (let i = 1; i < rota.length; i++) {
@@ -88,7 +93,54 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true } = {}): Sala
     cena.time.delayedCall(ms, () => reacoes.forEach(({ s, parada }) => s.play(parada)));
   };
 
-  return { bia, casal, andar, festa };
+  const espiao = (atraso = 0) => cena.time.delayedCall(atraso, () => espiar(cena));
+
+  const semEspiao = () => sorteio?.remove();
+
+  return { bia, casal, andar, festa, espiao, semEspiao };
+}
+
+/**
+ * Easter egg: quem fez o jogo surge atrás do balcão, no canto direito, espia desconfiado, dá um gole na caneca
+ * rosa e se esconde. Na tela inicial (montaSalao com espiao: true) aparece em ~30% das vezes, uma vez só, com a
+ * Bia parada na bancada e enquanto ninguém escolheu a roupa; e sempre na comemoração do final (Servir chama
+ * s.espiao()). Em desenvolvimento dá pra forçar o sorteio com ?espiao=1.
+ */
+const ESPIAO = { x: 98, chance: 0.3, fimBalcao: 124, fundoBalcao: 200, escondido: 170, olhos: 157, inteiro: 146 };
+
+function espiaoSorteado(cena: Phaser.Scene, bia: Phaser.GameObjects.Sprite, bancada: Ponto) {
+  const forcar = import.meta.env.DEV && new URLSearchParams(location.search).has('espiao');
+  if (!forcar && Math.random() > ESPIAO.chance) return undefined;
+  return cena.time.delayedCall(Phaser.Math.Between(forcar ? 800 : 2000, forcar ? 800 : 7000), () => {
+    if (bia.x !== bancada.x || bia.y !== bancada.y) return; // a Bia saiu de trás do balcão: fica pra próxima
+    espiar(cena);
+  });
+}
+
+/** A aparição em si (~2 s): espia, aparece com a caneca, dá um gole e some. */
+function espiar(cena: Phaser.Scene) {
+  const s = cena.add.sprite(ESPIAO.x, ESPIAO.escondido, 'atlas').setOrigin(0, 0).setDepth(1).play('npc_dev_espiando');
+  // atrás do balcão (depth 2), cortado na base e no fim dele pra não aparecer por baixo nem pelo lado
+  const recorta = () => s.setCrop(0, 0, ESPIAO.fimBalcao - ESPIAO.x, Phaser.Math.Clamp(ESPIAO.fundoBalcao - Math.round(s.y), 0, 48));
+  recorta();
+  s.setInteractive({ useHandCursor: true, hitArea: new Phaser.Geom.Rectangle(8, 6, 16, 24), hitAreaCallback: Phaser.Geom.Rectangle.Contains });
+  s.once('pointerup', () => {
+    medir('easter_egg', { quem: 'dev' });
+    coracao(cena, s.x + 16, s.y + 4);
+  });
+  const subir = (y: number, duration: number, ease = 'Sine.easeOut') =>
+    new Promise<void>((fim) => cena.tweens.add({ targets: s, y, duration, ease, onUpdate: recorta, onComplete: () => fim() }));
+  const esperar = (ms: number) => new Promise<void>((fim) => cena.time.delayedCall(ms, fim));
+  (async () => {
+    await subir(ESPIAO.olhos, 220); // só os olhos por cima do balcão
+    await esperar(850); // olha pra um lado e pro outro, desconfiado
+    s.play({ key: 'npc_dev_gole', repeat: 0 });
+    await subir(ESPIAO.inteiro, 120); // aparece com a caneca
+    await new Promise<void>((fim) => s.once('animationcomplete', () => fim()));
+    await esperar(120);
+    await subir(ESPIAO.escondido, 160, 'Sine.easeIn'); // e some
+    s.destroy();
+  })();
 }
 
 export function coracao(cena: Phaser.Scene, x: number, y: number) {

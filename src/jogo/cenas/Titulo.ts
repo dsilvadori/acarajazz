@@ -11,7 +11,7 @@ export class Titulo extends Phaser.Scene {
 
   create() {
     estado.roupa = ler<Roupa>('roupa', 'baiana');
-    const { bia } = montaSalao(this);
+    const { bia, semEspiao } = montaSalao(this, { espiao: true });
     this.input.once('pointerdown', destravarAudio);
 
     // Nome do jogo
@@ -35,6 +35,7 @@ export class Titulo extends Phaser.Scene {
       texto(this, x, y0 + 55, r.nome, { fonte: 'escura' }).setDepth(1102);
       s.setInteractive({ useHandCursor: true, hitArea: new Phaser.Geom.Rectangle(-6, 0, 44, 50), hitAreaCallback: Phaser.Geom.Rectangle.Contains });
       s.on('pointerup', () => {
+        semEspiao(); // escolheu a roupa: não aparece mais nessa tela
         estado.roupa = r.id;
         gravar('roupa', r.id);
         animBia(bia, r.id, 'parada');
