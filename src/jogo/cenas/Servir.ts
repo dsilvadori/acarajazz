@@ -72,7 +72,7 @@ export class Servir extends Phaser.Scene {
       s.casal.play(`cliente_casal_${estado.casal}_feliz`);
       animBia(s.bia, estado.roupa, 'comemorando');
       s.festa(6000); // o salão inteiro comemora: tchauzinho e brinde dos tios
-      s.espiao(1800); // e quem fez o jogo espia atrás do balcão e dá um gole pra comemorar
+      if (estado.espiao) s.espiao(1800); // se apareceu no começo, quem fez o jogo volta pra comemorar com um gole
       tocar('vitoria');
       this.time.delayedCall(1500, () => s.casal.play(`cliente_casal_${estado.casal}_comendo`));
       for (let i = 0; i < 4; i++) this.add.sprite(20 + i * 46, 60 + (i % 2) * 30, 'atlas').setScale(2).setDepth(1250).play('confete');

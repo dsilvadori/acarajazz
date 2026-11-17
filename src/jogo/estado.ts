@@ -72,6 +72,8 @@ export const estado = {
   fila: [] as string[], // etapas que faltam (na primeira vez, todas; depois, as que vai refazer)
   rodada: 0,
   inicio: 0,
+  /** Easter egg: se quem fez o jogo aparece nesta visita (sorteado na tela inicial, vale também pra comemoração). */
+  espiao: false,
 };
 
 export function novaPartida() {
