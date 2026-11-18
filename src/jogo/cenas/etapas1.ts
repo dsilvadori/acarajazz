@@ -14,6 +14,7 @@ export class Lavar extends Etapa {
   }
 
   protected readonly id = 'lavar';
+  protected animTrabalho = 'lavando_feijao';
   protected tempoTotal = 20000;
   private feijoes: Feijao[] = [];
   private limpos = 0;
@@ -110,7 +111,7 @@ export class Triturar extends Etapa {
     if (!this.rodando || this.trocando || this.ligado) return;
     this.ligado = true;
     this.botaoImg.setFrame('botao_apertado_0');
-    animBia(this.bia, estado.roupa, 'mexendo');
+    animBia(this.bia, estado.roupa, 'segurando_tampa'); // segura a tampa enquanto o motor trepida
   }
 
   private desliga() {
@@ -200,10 +201,12 @@ export class Triturar extends Etapa {
   }
 }
 
-// ─── 4. Temperos: picar cebola e pimentão, e fazer a pimenta ────────────────
+// ─── 4. Temperos: picar alho, cebola, pimentão e cheiro-verde, e fazer a pimenta ──
 const PICAR = [
-  { nome: 'cebola', rotulo: 'CEBOLA' },
-  { nome: 'pimentao', rotulo: 'PIMENTÃO' },
+  { nome: 'alho', picado: 'alho_picado', rotulo: 'ALHO' },
+  { nome: 'cebola', picado: 'cebola_picada', rotulo: 'CEBOLA' },
+  { nome: 'pimentao', picado: 'pimentao_picado', rotulo: 'PIMENTÃO' },
+  { nome: 'cheiro_verde', picado: 'cheiro_verde_picado', rotulo: 'CHEIRO-VERDE' },
 ];
 
 export class Temperos extends Etapa {
@@ -212,7 +215,8 @@ export class Temperos extends Etapa {
   }
 
   protected readonly id = 'temperos';
-  protected tempoTotal = 35000;
+  protected animTrabalho = 'cortando';
+  protected tempoTotal = 45000; // 4 temperos pra picar (eram 2): +10 s
   private atual = 0;
   private cortes = 0;
   private pimentas = 0;
@@ -236,13 +240,13 @@ export class Temperos extends Etapa {
     this.add.image(36, 286, 'atlas', 'tigela_0_0').setScale(1.6);
     this.add.image(150, 300, 'atlas', 'ing_dende_0').setScale(1.5);
     this.pote = this.add.image(122, 286, 'atlas', 'pote_pimenta_pouca_0').setScale(2.5);
-    this.item = this.add.image(this.T.x, this.T.y, 'atlas', 'cebola_0').setScale(3);
+    this.item = this.add.image(this.T.x, this.T.y, 'atlas', `${PICAR[0].nome}_0`).setScale(3);
     // qualquer toque na tábua é uma facada (toquinhos rápidos no celular não se perdem)
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
       if (Math.abs(p.x - this.T.x) < 66 && Math.abs(p.y - this.T.y) < 40 && this.item.visible) this.pica();
     });
     this.faca = this.add.image(this.T.x + 16, this.T.y - 44, 'atlas', 'faca_0').setScale(2).setDepth(30).setVisible(false);
-    this.legenda = texto(this, CENTRO_X, 224, 'CEBOLA').setDepth(20);
+    this.legenda = texto(this, CENTRO_X, 224, PICAR[0].rotulo).setDepth(20);
     this.colher = this.add.image(0, 0, 'atlas', 'colher_0').setScale(2).setFlipY(true).setOrigin(0.2, 0.2).setVisible(false).setDepth(50);
     this.giro = this.rastreadorGiro(this.pote.x, this.pote.y, 6);
   }
@@ -256,8 +260,7 @@ export class Temperos extends Etapa {
     this.tweens.add({ targets: this.item, scale: 3 - this.cortes * 0.35, duration: 60 });
     if (this.cortes < this.CORTES) return;
     // picou: vai pra tigela
-    const { nome } = PICAR[this.atual];
-    const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${nome}_picada_0`.replace('pimentao_picada', 'pimentao_picado')).setScale(2.5);
+    const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${PICAR[this.atual].picado}_0`).setScale(2.5);
     this.item.setVisible(false);
     tocar('acerto');
     this.tweens.add({ targets: pedaco, x: 36, y: 284, scale: 1, duration: 320, onComplete: () => pedaco.destroy() });
@@ -276,6 +279,7 @@ export class Temperos extends Etapa {
 
   private comecaPimenta() {
     this.fase = 'pimenta';
+    animBia(this.bia, estado.roupa, 'parada'); // largou a faca
     this.legenda.setText('PIMENTA: JOGUE NO DENDÊ');
     const lugares = [[46, 170], [78, 196], [104, 168], [132, 198], [92, 182]];
     lugares.forEach(([x, y], i) => {
@@ -293,6 +297,7 @@ export class Temperos extends Etapa {
             if (this.pimentas === 3) this.pote.setFrame('pote_pimenta_0');
             if (this.pimentas === lugares.length) {
               this.fase = 'mexer';
+              animBia(this.bia, estado.roupa, 'mexendo');
               this.legenda.setText('AGORA MEXE NO DENDÊ!');
               flutua(this, this.pote.x - 20, this.pote.y - 30, 'MEXE EM CÍRCULOS!');
             }
@@ -314,7 +319,7 @@ export class Temperos extends Etapa {
       this.fase = 'pimenta';
       this.colher.setVisible(false);
       flutua(this, this.pote.x - 20, this.pote.y - 30, 'PIMENTA PRONTA!');
-      this.terminar(this.segundos() <= 17 ? 3 : this.segundos() <= 25 ? 2 : 1);
+      this.terminar(this.segundos() <= 23 ? 3 : this.segundos() <= 33 ? 2 : 1);
     }
   }
 
@@ -440,6 +445,7 @@ export class Caruru extends Etapa {
   }
 
   protected readonly id = 'caruru';
+  protected animTrabalho = 'picando_quiabo';
   protected tempoTotal = 40000;
   private feitos = 0;
   private postos = 0;
@@ -528,6 +534,7 @@ export class Caruru extends Etapa {
 
   /** Depois do quiabo: os mesmos ingredientes do vatapá, em qualquer ordem. */
   private ingredientes() {
+    animBia(this.bia, estado.roupa, 'parada'); // largou a faca
     flutua(this, CENTRO_X, 150, 'AGORA OS INGREDIENTES!');
     const lugares = [[22, 150], [158, 150], [22, 236], [62, 236], [40, 292]];
     INGREDIENTES_CARURU.forEach((n, i) => {
@@ -547,6 +554,7 @@ export class Caruru extends Etapa {
             this.postos++;
             if (this.postos === INGREDIENTES_CARURU.length) {
               this.mexendo = true;
+              animBia(this.bia, estado.roupa, 'mexendo');
               flutua(this, CENTRO_X, 150, 'AGORA MEXE O CARURU!');
             }
           },
@@ -595,6 +603,7 @@ export class Salada extends Etapa {
   }
 
   protected readonly id = 'salada';
+  protected animTrabalho = 'picando';
   protected tempoTotal = 30000;
   private faca!: Phaser.GameObjects.Image;
   private item!: Phaser.GameObjects.Image;
@@ -609,7 +618,7 @@ export class Salada extends Etapa {
   private espera = 0;
   private readonly TOMATES = TOMATES.length;
   private readonly Y = 196;
-  private readonly DIST_MAO = [36, 31, 27];
+  private readonly DIST_MAO = [40, 35, 31];
 
   protected montar() {
     this.vel = 60; this.dir = 1; this.cortes = this.tomates = this.dedo = this.errou = 0;

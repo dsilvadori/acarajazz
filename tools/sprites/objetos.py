@@ -249,6 +249,28 @@ def tomate(cubos=False, cor='tomate_verde'):
     return [faz(16, 16, [p])]
 
 
+
+def alho(picado=False):
+    """Cabeça de alho: branquinha, com os gomos marcados e a pontinha seca em cima."""
+    p = Parte()
+    if picado:  # pedacinhos de alho picado
+        for i, (x, y) in enumerate(((4, 5), (8, 3), (11, 7), (5, 10), (9, 11), (12, 12), (2, 12))):
+            p.ret(x, y, x + 1, y, 'branco')
+            if i % 2 == 0:
+                p.d(x + 1, y, 'massa')
+    else:
+        p.elipse(8, 10, 5.3, 4.3, 'branco')
+        p.ret(7, 3, 8, 5, 'branco_sombra')  # pontinha
+        for x in (5, 8, 11):  # gomos
+            for y in range(8, 13):
+                if (x, y) in p.px:
+                    p.d(x, y, 'branco_sombra')
+        p.d(5, 9, 'massa_luz')
+        for x in (6, 8, 10):
+            p.d(x, 14, 'bege')  # raizinhas
+    return [faz(16, 16, [p])]
+
+
 def cebola(picada=False):
     p = Parte()
     if picada:
@@ -273,6 +295,29 @@ def pimentao(picado=False):
         p.linha(8, 5, 8, 14, 'quiabo', 1)  # gomos
         p.d(5, 7, 'quiabo_luz'); p.d(5, 8, 'quiabo_luz')
         p.ret(7, 1, 8, 4, 'quiabo')  # cabinho
+    return [faz(16, 16, [p])]
+
+
+
+def cheiro_verde(picado=False):
+    """Maço de cheiro-verde: cebolinha comprida e salsinha em cima, amarrado com barbante."""
+    p = Parte()
+    if picado:  # rodelinhas de cebolinha e salsinha picadinha
+        for i, (x, y) in enumerate(((3, 5), (8, 3), (11, 7), (5, 9), (9, 11), (12, 12), (2, 12))):
+            p.ret(x, y, x + 1, y, 'quiabo_luz' if i % 2 else 'quiabo')
+            if i % 3 == 0:
+                p.d(x + 1, y, 'massa_luz')
+    else:
+        # um contorno só por fora: talinhos de cebolinha juntos e o raminho de salsinha do lado
+        for x, y0, cor in ((4, 3, 'quiabo'), (5, 1, 'fita'), (6, 4, 'quiabo')):  # cebolinha, ponta branca embaixo
+            p.ret(x, y0, x, 13, cor)
+            p.ret(x, 12, x, 13, 'massa_luz')
+        p.linha(7, 13, 10, 8, 'fita')  # cabinho da salsinha
+        for cx, cy, r in ((10.5, 5.5, 2.4), (8.5, 7.5, 1.6), (13, 7.5, 1.7)):  # folhinhas
+            p.elipse(cx, cy, r, r * 0.9, 'quiabo_luz')
+        for x, y in ((10, 5), (11, 4), (13, 7), (8, 7), (12, 6)):
+            p.d(x, y, 'fita')  # recorte das folhas
+        return [faz(16, 16, [p])]
     return [faz(16, 16, [p])]
 
 
@@ -711,8 +756,10 @@ ITENS = {
     'fumaca': fumaca,
     **{f'bacia_massa_{n}': (lambda n=n: bacia_massa(n)) for n in range(N_MASSA)},
     'torneira': torneira, 'jato_agua': jato_agua,
+    'alho': lambda: alho(False), 'alho_picado': lambda: alho(True),
     'cebola': lambda: cebola(False), 'cebola_picada': lambda: cebola(True),
-    'pimentao': lambda: pimentao(False), 'pimentao_picado': lambda: pimentao(True), 'malagueta': malagueta,
+    'pimentao': lambda: pimentao(False), 'pimentao_picado': lambda: pimentao(True),
+    'cheiro_verde': lambda: cheiro_verde(False), 'cheiro_verde_picado': lambda: cheiro_verde(True), 'malagueta': malagueta,
     'tacho': tacho, 'respingo': respingo,
     'acaraje_cru': lambda: acaraje_fritando('cru', 1),  # bolinho cru (também usado no triturar)
     **{f'acaraje_l{l}_{e}': (lambda e=e, l=l: acaraje_fritando(e, l)) for l in (1, 2) for e in ('cru', 'dourando', 'ponto', 'queimado')},

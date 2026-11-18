@@ -12,7 +12,7 @@ const SAIDA = join(RAIZ, 'tools/figurinhas/saida/estaticas');
 const LADO = 1024;
 const MARGEM = 64;
 const ACOES = [
-  'andando_costas', 'andando_lado', 'servindo_lado', 'parada', 'andando', 'mexendo', 'batendo', 'provando', 'comemorando',
+  'lavando_feijao', 'picando_quiabo', 'picando', 'fritando_parada', 'jogando_massa', 'segurando_tampa', 'cortando', 'montando', 'recheando', 'andando_costas', 'andando_lado', 'servindo_lado', 'parada', 'andando', 'mexendo', 'batendo', 'provando', 'comemorando',
   'preocupada', 'servindo', 'acenando', 'brindando', 'esperando', 'lavando', 'feliz', 'comendo', 'sentado', 'dormindo',
 ];
 

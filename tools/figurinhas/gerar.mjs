@@ -19,6 +19,7 @@ const FPS = {
   parada: 2, andando: 8, mexendo: 8, batendo: 10, provando: 3, comemorando: 8, preocupada: 4,
   andando_lado: 10, servindo_lado: 10, servindo: 8, andando_costas: 8, acenando: 4, brindando: 4,
   esperando: 2, lavando: 4, feliz: 5, comendo: 4, sentado: 4, dormindo: 1,
+  lavando_feijao: 6, picando: 6, picando_quiabo: 6, fritando_parada: 2, jogando_massa: 12, segurando_tampa: 12, cortando: 6, montando: 2, recheando: 10,
 };
 
 const PACOTES = [

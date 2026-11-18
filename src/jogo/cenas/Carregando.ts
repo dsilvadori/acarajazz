@@ -7,6 +7,7 @@ const FPS: Record<string, number> = {
   andando_lado: 10, servindo_lado: 10, servindo: 8, andando_costas: 8, acenando: 4, brindando: 4,
   esperando: 2, lavando: 4, feliz: 5, comendo: 4, sentado: 4, dormindo: 1, tacho: 6, fumaca: 6, respingo: 14, ligado: 16,
   carimbo: 14, confete: 8, brilho: 12, espiando: 3, gole: 4,
+  lavando_feijao: 6, picando: 6, picando_quiabo: 6, fritando_parada: 2, jogando_massa: 12, segurando_tampa: 12, cortando: 6, montando: 2, recheando: 10,
 };
 const SEM_REPETIR = new Set(['carimbo', 'respingo']);
 
@@ -22,7 +23,7 @@ export class Carregando extends Phaser.Scene {
     this.load.on('progress', (p: number) => {
       barra.clear().fillStyle(COR.dende).fillRect(30, 159, Math.round(w * p), 6);
     });
-    const v = '?v=19';
+    const v = '?v=27';
     this.load.atlas('atlas', '/jogo/atlas.png' + v, '/jogo/atlas.json' + v);
     this.load.bitmapFont('clara', '/jogo/fonte_clara.png' + v, '/jogo/fonte_clara.xml' + v);
     this.load.bitmapFont('escura', '/jogo/fonte_escura.png' + v, '/jogo/fonte_escura.xml' + v);

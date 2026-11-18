@@ -493,6 +493,123 @@ def bandeja_frente(dy=0):
     return p
 
 
+# ─── Objetos dos minijogos (no peito: da cintura pra baixo a bancada cobre a Bia nos closes) ──
+def _cores_minijogos():
+    C.setdefault('massa', hx('ecdcb0')); C.setdefault('massa_luz', hx('fef9e4')); C.setdefault('massa_sombra', hx('c9b083'))
+    C.setdefault('tomate', hx('c8282d')); C.setdefault('tomate_luz', hx('f06a5a'))
+    C.setdefault('quiabo', hx('3f7f3a')); C.setdefault('quiabo_luz', hx('8cc152'))
+
+
+def borda_bacia(_dy=0):
+    """Só a borda da bacia de metal aparecendo: as mãos da Bia estão lá dentro, na água."""
+    p = Parte()
+    p.ret(2, 35, 30, 37, 'metal')
+    p.ret(2, 35, 30, 35, 'metal_luz')
+    p.ret(2, 37, 30, 37, 'metal_sombra')
+    for x in (6, 15, 24):
+        p.d(x, 36, 'metal_luz')
+    return p
+
+
+def tampa_processador(sx=0):
+    """Topo do multiprocessador de inox (o resto fica atrás da bancada): tampa e pegador, tremendo com o motor."""
+    C.setdefault('aluminio', hx('c3cbd3')); C.setdefault('aluminio_sombra', hx('8e99a5'))
+    p = Parte()
+    p.ret(9 + sx, 35, 22 + sx, 37, 'aluminio')  # copo
+    p.ret(20 + sx, 35, 22 + sx, 37, 'aluminio_sombra')
+    p.ret(7 + sx, 32, 24 + sx, 34, 'metal')  # tampa
+    p.ret(7 + sx, 32, 24 + sx, 32, 'metal_luz')
+    p.ret(13 + sx, 30, 18 + sx, 31, 'metal_sombra')  # pegador
+    return p
+
+
+def gotas(pontos):
+    p = Parte()
+    for x, y in pontos:
+        p.p(x, y, 'gota')
+    return p
+
+
+def tabua_corte(fatias=0, item='tomate'):
+    """Tábua (quase toda atrás da bancada) com o tomate ou o quiabo e as rodelas já cortadas (item=None: só a tábua)."""
+    _cores_minijogos()
+    p = Parte()
+    p.ret(4, 36, 27, 37, 'madeira')
+    p.ret(4, 36, 27, 36, 'madeira_luz')
+    if item is None:
+        return p
+    if item == 'tomate':
+        p.elipse(13.5, 33.5, 3.6, 2.8, 'tomate')
+        p.d(12, 32, 'tomate_luz')
+        p.d(13, 31, 'fita'); p.d(14, 31, 'fita')  # cabinho
+    else:  # quiabo deitado, com o cabinho do lado esquerdo
+        p.elipse(14, 34.5, 5.2, 1.6, 'quiabo')
+        p.ret(8, 34, 9, 34, 'fita')
+        for x in (11, 14, 17):
+            p.d(x, 34, 'quiabo_luz')
+    for i in range(fatias):
+        x = 20 + i * 3
+        p.ret(x, 34, x + 1, 35, item)
+        p.d(x, 34, item + '_luz')
+    return p
+
+
+def faca_mao(hx_, hy):
+    """Faca na mão direita: cabo de madeira na mão, lâmina pra baixo."""
+    p = Parte()
+    p.ret(hx_, hy - 2, hx_ + 1, hy, 'madeira')
+    p.ret(hx_ - 1, hy + 1, hx_, hy + 5, 'metal_luz')
+    p.d(hx_, hy + 1, 'metal'); p.d(hx_, hy + 3, 'metal')
+    return p
+
+
+def tigela_massa(dy=0):
+    """Tigela de massa de acarajé encostada no corpo, do lado esquerdo."""
+    _cores_minijogos()
+    p = Parte()
+    p.elipse(8.5, 35.5, 6.2, 3, 'madeira', ymin=35)
+    p.ret(2, 35, 15, 35, 'madeira_luz')
+    p.elipse(8.5, 34.6, 5.2, 1.6, 'massa', ymax=34)
+    p.d(7, 34, 'massa_luz'); p.d(10, 33, 'massa_luz')
+    return p
+
+
+
+# Cor de cada recheio na ponta da colher (os potes da montagem)
+RECHEIOS = {
+    'pimenta': ('barra', 'batom'), 'pimenta_pouca': ('laranja', 'amarelo'), 'vatapa': ('amarelo', 'laranja'),
+    'caruru': ('quiabo', 'laranja'), 'salada': ('tomate', 'quiabo_luz'), 'camarao': ('camarao', 'branco'),
+    'shimeji': ('massa', 'marrom'),
+}
+
+
+def colher_recheio(hx_, hy, ex, ey, recheio=None):
+    """Colher de pau da montagem; com recheio, leva um montinho da cor dele na ponta."""
+    _cores_minijogos()
+    C.setdefault('camarao', hx('f2875c'))
+    p = Parte()
+    p.linha(hx_, hy, ex, ey, 'madeira')
+    p.ret(ex - 1, ey, ex, ey + 1, 'madeira_luz')
+    if recheio:
+        cor, pinta = RECHEIOS[recheio]
+        p.elipse(ex - 0.2, ey - 0.3, 2.2, 1.5, cor)
+        p.d(ex - 1, ey - 1, pinta); p.d(ex + 1, ey, pinta)
+    return p
+
+
+def colher_massa(hx_, hy, ex, ey, bolinho=True):
+    """Colher de pau saindo da mão até (ex, ey), com o bolinho de massa na ponta."""
+    _cores_minijogos()
+    p = Parte()
+    p.linha(hx_, hy, ex, ey, 'madeira')
+    if bolinho:
+        p.elipse(ex + 0.5, ey + 0.2, 2.4, 1.9, 'massa')
+        p.d(ex - 1, ey - 1, 'massa_luz'); p.d(ex + 1, ey + 1, 'massa_sombra')
+    else:
+        p.ret(ex - 1, ey, ex, ey + 1, 'madeira_luz')
+    return p
+
+
 def bia(roupa, pose):
     q = quadro_vazio()
     dy = pose.get('dy', 0)
@@ -596,6 +713,83 @@ def animacoes(roupa):
         })
         for i in range(2)
     ]
+    # lavando o feijão: as mãos lá embaixo, dentro da bacia, esfregando os grãos
+    A['lavando_feijao'] = [
+        bia(roupa, {
+            'dy_corpo': dyc,
+            'bracos': [(OMBRO_E, (5, 31), e), (OMBRO_D, (25, 31), d_)],
+            'frente': [borda_bacia, lambda d, g=g: gotas(g)],
+            'rosto': {'boca': 'sorriso', 'sobrancelha': 'focada', 'olhos': olhos},
+        })
+        for dyc, e, d_, g, olhos in (
+            (0, (11, 37), (20, 37), [(12, 33), (23, 33)], 'abertos'),
+            (1, (13, 37), (18, 37), [(9, 33), (22, 32)], 'abertos'),
+            (0, (10, 37), (21, 37), [(15, 33), (22, 32)], 'abertos'),
+            (1, (12, 37), (19, 37), [(19, 32), (8, 33)], 'fechados'),
+        )
+    ]
+    # moendo o feijão: segura a tampa do multiprocessador com as duas mãos enquanto o motor faz tudo tremer
+    A['segurando_tampa'] = [
+        bia(roupa, {
+            'dy_corpo': dyc,
+            'bracos': [(OMBRO_E, (6, 30), (9 + sx, 32)), (OMBRO_D, (25, 30), (21 + sx, 32))],
+            'antes_bracos': [lambda d, sx=sx: tampa_processador(sx)],
+            'rosto': {'boca': 'firme', 'sobrancelha': 'focada', 'olhos': olhos},
+        })
+        for sx, dyc, olhos in ((0, 0, 'abertos'), (1, 1, 'abertos'), (0, 0, 'abertos'), (-1, 1, 'fechados'))
+    ]
+    # picando (tomate da salada e quiabo do caruru): segura com a esquerda e desce a faca com a direita
+    # (nos temperos o legume já aparece na tábua do minijogo: ela só desce a faca)
+    for nome, item in (('picando', 'tomate'), ('picando_quiabo', 'quiabo'), ('cortando', None)):
+        A[nome] = [
+            bia(roupa, {
+                'bracos': [(OMBRO_E, (7, 31), (10, 33)), (OMBRO_D, (25, 28), (21, hy))],
+                'antes_bracos': [lambda d, n=n, item=item: tabua_corte(n, item)],
+                'frente': [lambda d, y=hy: faca_mao(21, y)],
+                'rosto': {'boca': 'firme', 'sobrancelha': 'focada', 'olhos': olhos},
+            })
+            for hy, n, olhos in ((25, 0, 'abertos'), (29, 1, 'abertos'), (25, 1, 'abertos'), (29, 2, 'fechados'))
+        ]
+    # fritando: parada com a colher cheia de massa, esperando; e o movimento de jogar a massa no dendê
+    # (o tacho fica embaixo, na bancada), que o jogo toca uma vez a cada bolinho
+    def frita(cot, hx_, hy, ex, ey, bolinho, **extra):
+        return bia(roupa, {
+            'bracos': [(OMBRO_E, (5, 30), (5, 34)), (OMBRO_D, cot, (hx_, hy))],
+            'antes_bracos': [tigela_massa],
+            'frente': [lambda d: colher_massa(hx_, hy, ex, ey, bolinho=bolinho)],
+            'rosto': {'boca': 'firme', 'sobrancelha': 'focada', **extra.pop('rosto', {})},
+            **extra,
+        })
+    A['fritando_parada'] = [
+        frita((23, 30), 16, 28, 13, 31, True),
+        frita((23, 30), 16, 28, 13, 31, True, dy_corpo=1, rosto={'olhos': 'fechados'}),
+    ]
+    A['jogando_massa'] = [
+        frita((25, 29), 21, 28, 19, 31, True),
+        frita((26, 30), 23, 30, 22, 34, True),
+        frita((26, 30), 23, 30, 23, 35, False),  # a massa caiu no tacho
+        frita((21, 31), 13, 30, 9, 33, False),  # pega mais massa na tigela
+    ]
+    # montando o acarajé: espera com a colher na mão e, a cada recheio certo, pega no pote (lá embaixo)
+    # e põe no meio do bolinho (um "<pote>_recheando" pra cada recheio, com a cor dele na colher)
+    def monta(cot, hx_, hy, ex, ey, recheio=None, **extra):
+        return bia(roupa, {
+            'bracos': [BRACOS_PARADOS[0], (OMBRO_D, cot, (hx_, hy))],
+            'frente': [lambda d: colher_recheio(hx_, hy, ex, ey, recheio)],
+            'rosto': {'boca': 'sorriso', 'sobrancelha': 'focada', **extra.pop('rosto', {})},
+            **extra,
+        })
+    A['montando'] = [
+        monta((25, 30), 22, 32, 20, 35),
+        monta((25, 30), 22, 32, 20, 35, dy_corpo=1, rosto={'olhos': 'fechados'}),
+    ]
+    for r in RECHEIOS:
+        A[f'{r}_recheando'] = [
+            monta((25, 31), 21, 35, 19, 38, r),  # colher dentro do pote
+            monta((25, 29), 20, 30, 17, 32, r),  # sobe com o recheio
+            monta((24, 30), 17, 31, 14, 34, r, rosto={'boca': 'aberta'}),  # põe no acarajé
+            monta((25, 30), 20, 31, 17, 34),  # colher vazia, volta
+        ]
     return A
 
 
@@ -642,6 +836,10 @@ def main():
         todas[roupa] = A
         cores = {c for qs in A.values() for q in qs for row in q for c in row if c}
         for nome, quadros in A.items():
+            if nome.endswith('_recheando'):  # no jogo entram todos (via atlas); em PNG/figurinha, só um
+                if nome != 'vatapa_recheando':
+                    continue
+                nome = 'recheando'
             salvar_png(os.path.join(saida, f'bia_{roupa}_{nome}_{len(quadros)}q.png'), tira(quadros))
         print(f'{roupa}: {len(A)} animações, {sum(len(q) for q in A.values())} quadros, {len(cores)} cores')
     if '--previa' in sys.argv:

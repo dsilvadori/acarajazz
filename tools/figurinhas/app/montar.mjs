@@ -24,6 +24,15 @@ const ORDEM = ['bia-baiana', 'bia-dolma', 'bia-preta', 'turma', 'clientes-1', 'c
 
 // Emojis (1 a 3) e descrição de cada animação: é por eles que o WhatsApp sugere a figurinha
 const ACOES = {
+  lavando_feijao: [['🫘', '💧'], 'lavando o feijão-fradinho na peneira'],
+  picando_quiabo: [['🔪', '🥒'], 'picando o quiabo do caruru'],
+  picando: [['🔪', '🍅'], 'picando o tomate da salada'],
+  segurando_tampa: [['💪', '🫘'], 'segurando a tampa do multiprocessador moendo o feijão'],
+  montando: [['🥄', '🙂'], 'com a colher na mão, pronta pra rechear o acarajé'],
+  recheando: [['🥄', '😋'], 'recheando o acarajé com vatapá'],
+  cortando: [['🔪', '🧅'], 'picando os temperos com a faca'],
+  fritando_parada: [['🥄', '😌'], 'esperando com a colher cheia de massa de acarajé'],
+  jogando_massa: [['🥄', '🔥'], 'jogando a massa de acarajé no dendê'],
   andando_costas: [['🚶', '👋'], 'indo embora'],
   andando_lado: [['🚶', '💨'], 'andando de lado'],
   servindo_lado: [['🍽️', '🏃'], 'levando um prato'],

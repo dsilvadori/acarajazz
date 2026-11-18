@@ -85,6 +85,7 @@ export class Fritar extends Etapa {
   }
 
   protected readonly id = 'fritar';
+  protected animTrabalho = 'fritando_parada';
   protected tempoTotal = 45000;
   private vagas: (Bolinho | null)[] = [];
   private bons = 0;
@@ -116,6 +117,7 @@ export class Fritar extends Etapa {
       if (this.bons + this.vagas.filter(Boolean).length >= this.META + 1) return;
       const s = this.add.image(x, y, 'atlas', 'acaraje_l1_cru_0').setScale(2).setDepth(20);
       this.vagas[i] = { s, lado: 1, t: 0, fase: 'cru' };
+      this.jogaMassa();
       const r = this.add.sprite(x, y, 'atlas').setScale(2).setDepth(21).play('respingo');
       r.once('animationcomplete', () => r.destroy());
       tocar('pop');
@@ -150,6 +152,16 @@ export class Fritar extends Etapa {
     }
   }
 
+  /** A Bia joga a colherada de massa no tacho (uma vez por toque) e volta a esperar com a colher cheia. */
+  private jogaMassa() {
+    const chave = `bia_${estado.roupa}_jogando_massa`;
+    if (this.bia.anims.currentAnim?.key === chave && this.bia.anims.isPlaying) return; // vários bolinhos no mesmo toque
+    this.bia.play({ key: chave, repeat: 0 });
+    this.bia.once(`animationcomplete-${chave}`, () => {
+      if (!this.acabou) animBia(this.bia, estado.roupa, 'fritando_parada');
+    });
+  }
+
   private confereFim() {
     if (!this.vagas.some(Boolean)) fritando(false);
     if (this.bons >= this.META) {
@@ -182,7 +194,7 @@ export class Fritar extends Etapa {
           f.destroy();
           b.s.destroy();
           this.vagas[i] = null;
-          animBia(this.bia, estado.roupa, 'mexendo');
+          animBia(this.bia, estado.roupa, 'fritando_parada');
           this.confereFim();
         });
       }
@@ -210,6 +222,7 @@ export class Montar extends Etapa {
   }
 
   protected readonly id = 'montar';
+  protected animTrabalho = 'montando';
   protected tempoTotal = 30000;
   private cima!: Phaser.GameObjects.Image;
   private sequencia: Pote[] = [];
@@ -270,6 +283,7 @@ export class Montar extends Etapa {
       return volta();
     }
     tocar('pop');
+    this.pegaRecheio(nome);
     const k = this.feitos;
     this.feitos++;
     this.add.image(this.A.x, this.A.y + 3 - k * 9, 'atlas', `camada_${nome}_0`).setScale(3).setDepth(5);
@@ -285,6 +299,15 @@ export class Montar extends Etapa {
         this.terminar(this.erros === 0 && this.segundos() <= 18 ? 3 : this.erros <= 1 ? 2 : 1);
       });
     }
+  }
+
+  /** A Bia pega o recheio no pote com a colher e põe no acarajé, depois volta a esperar. */
+  private pegaRecheio(nome: Pote) {
+    const chave = `bia_${estado.roupa}_${nome}_recheando`;
+    this.bia.play({ key: chave, repeat: 0 });
+    this.bia.once(`animationcomplete-${chave}`, () => {
+      if (!this.acabou) animBia(this.bia, estado.roupa, 'montando');
+    });
   }
 
   protected demonstrar(mao: Phaser.GameObjects.Image) {
