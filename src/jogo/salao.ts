@@ -102,11 +102,11 @@ export function montaSalao(cena: Phaser.Scene, { easterEggs = true, espiao: sort
 
 /**
  * Easter egg: quem fez o jogo surge atrás do balcão, no canto direito, espia desconfiado, dá um gole na caneca
- * rosa e se esconde. O sorteio (~70%) acontece na tela inicial (montaSalao com espiao: true) e fica em
+ * rosa e se esconde. O sorteio (~50%) acontece na tela inicial (montaSalao com espiao: true) e fica em
  * estado.espiao: quando sai, ele aparece ali (com a Bia parada na bancada e enquanto ninguém escolheu a roupa)
  * e de novo na comemoração do final (Servir chama s.espiao()). Dá pra forçar com ?espiao=1, inclusive no site.
  */
-const ESPIAO = { x: 98, chance: 0.7, fimBalcao: 124, fundoBalcao: 200, escondido: 170, olhos: 157, inteiro: 146 };
+const ESPIAO = { x: 98, chance: 0.5, fimBalcao: 124, fundoBalcao: 200, escondido: 170, olhos: 157, inteiro: 146 };
 
 function espiaoSorteado(cena: Phaser.Scene, bia: Phaser.GameObjects.Sprite, bancada: Ponto) {
   const forcar = new URLSearchParams(location.search).has('espiao');

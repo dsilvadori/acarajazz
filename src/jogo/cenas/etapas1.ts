@@ -609,6 +609,7 @@ export class Salada extends Etapa {
   private espera = 0;
   private readonly TOMATES = TOMATES.length;
   private readonly Y = 196;
+  private readonly DIST_MAO = [36, 31, 27];
 
   protected montar() {
     this.vel = 60; this.dir = 1; this.cortes = this.tomates = this.dedo = this.errou = 0;
@@ -622,9 +623,13 @@ export class Salada extends Etapa {
   }
 
   private posiciona() {
+    // a mão fica cada vez mais perto do tomate: o 1º um pouco afastado, o 2º mais perto e o 3º quase encostando
+    // (faca acerta o dedo a 12 px da mão e o tomate a 13 px dele: abaixo de 25 px não sobraria lugar seguro)
+    const dist = this.DIST_MAO[this.tomates];
     const xi = Phaser.Math.Between(46, 134);
-    let xm = Phaser.Math.Between(40, 140);
-    while (Math.abs(xm - xi) < 40) xm = Phaser.Math.Between(40, 140);
+    let lado = Phaser.Math.RND.sign();
+    if (xi + lado * dist < 40 || xi + lado * dist > 140) lado = -lado;
+    const xm = xi + lado * dist;
     this.item.setPosition(xi, this.Y).setFrame(`${TOMATES[this.tomates]}_0`).setVisible(true);
     this.mao.setX(xm);
   }
