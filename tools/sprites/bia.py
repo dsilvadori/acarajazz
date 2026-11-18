@@ -575,25 +575,35 @@ def tigela_massa(dy=0):
 
 
 
-# Cor de cada recheio na ponta da colher (os potes da montagem)
+# Cor de cada recheio na ponta da colher: as mesmas da camada que entra no acarajé (objetos.camada)
+# (cor principal, cor dos pontinhos, tamanho do montinho)
 RECHEIOS = {
-    'pimenta': ('barra', 'batom'), 'pimenta_pouca': ('laranja', 'amarelo'), 'vatapa': ('amarelo', 'laranja'),
-    'caruru': ('quiabo', 'laranja'), 'salada': ('tomate', 'quiabo_luz'), 'camarao': ('camarao', 'branco'),
-    'shimeji': ('massa', 'marrom'),
+    'pimenta': ('batom', 'batom_sombra', 1.0), 'pimenta_pouca': ('batom', 'batom_sombra', 0.6),
+    'vatapa': ('vatapa', 'dende', 1.0), 'caruru': ('quiabo', 'dende_luz', 1.0),
+    'salada': ('tomate_verde', 'tomate_maduro', 1.0), 'camarao': ('camarao', 'olho', 1.0),
+    'shimeji': ('shimeji', 'shimeji_talo', 1.0),
+}
+CORES_RECHEIO = {  # iguais às de objetos.py (aqui pra bia.py rodar sozinho)
+    'vatapa': 'e8b13a', 'dende': 'd9601a', 'dende_luz': 'ec9344', 'quiabo': '3f7f3a', 'tomate_verde': '6fa83e',
+    'tomate_maduro': 'd8322c', 'tomate_meio': 'e8582a', 'camarao': 'ff8a65', 'shimeji': 'b08a66', 'shimeji_talo': 'f4ecdc',
 }
 
 
 def colher_recheio(hx_, hy, ex, ey, recheio=None):
-    """Colher de pau da montagem; com recheio, leva um montinho da cor dele na ponta."""
-    _cores_minijogos()
-    C.setdefault('camarao', hx('f2875c'))
+    """Colher de pau da montagem; com recheio, leva um montinho dele na ponta."""
+    for nome, cor in CORES_RECHEIO.items():
+        C.setdefault(nome, hx(cor))
     p = Parte()
     p.linha(hx_, hy, ex, ey, 'madeira')
     p.ret(ex - 1, ey, ex, ey + 1, 'madeira_luz')
     if recheio:
-        cor, pinta = RECHEIOS[recheio]
-        p.elipse(ex - 0.2, ey - 0.3, 2.2, 1.5, cor)
-        p.d(ex - 1, ey - 1, pinta); p.d(ex + 1, ey, pinta)
+        cor, pinta, t = RECHEIOS[recheio]
+        p.elipse(ex - 0.2, ey - 0.3, 2.2 * t, 1.5 * t + 0.3, cor)
+        p.d(ex - 1, ey - 1, pinta)
+        if t == 1.0:
+            p.d(ex + 1, ey, pinta)
+        if recheio == 'salada':
+            p.d(ex, ey - 1, 'tomate_meio')
     return p
 
 
