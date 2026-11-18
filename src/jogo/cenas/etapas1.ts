@@ -201,12 +201,13 @@ export class Triturar extends Etapa {
   }
 }
 
-// ─── 4. Temperos: picar alho, cebola, pimentão e cheiro-verde, e fazer a pimenta ──
+// ─── 4. Temperos: picar alho, cebola, pimentão e cheiro-verde (tigela) e a pimenta (pote), e mexer a pimenta no dendê ──
 const PICAR = [
-  { nome: 'alho', picado: 'alho_picado', rotulo: 'ALHO' },
-  { nome: 'cebola', picado: 'cebola_picada', rotulo: 'CEBOLA' },
-  { nome: 'pimentao', picado: 'pimentao_picado', rotulo: 'PIMENTÃO' },
-  { nome: 'cheiro_verde', picado: 'cheiro_verde_picado', rotulo: 'CHEIRO-VERDE' },
+  { nome: 'alho', picado: 'alho_picado', rotulo: 'ALHO', pote: false },
+  { nome: 'cebola', picado: 'cebola_picada', rotulo: 'CEBOLA', pote: false },
+  { nome: 'pimentao', picado: 'pimentao_picado', rotulo: 'PIMENTÃO', pote: false },
+  { nome: 'cheiro_verde', picado: 'cheiro_verde_picado', rotulo: 'CHEIRO-VERDE', pote: false },
+  { nome: 'malagueta', picado: 'malagueta_picada', rotulo: 'PIMENTA', pote: true }, // essa vai pro pote de dendê
 ];
 
 export class Temperos extends Etapa {
@@ -219,8 +220,7 @@ export class Temperos extends Etapa {
   protected tempoTotal = 45000; // 4 temperos pra picar (eram 2): +10 s
   private atual = 0;
   private cortes = 0;
-  private pimentas = 0;
-  private fase: 'picar' | 'pimenta' | 'mexer' = 'picar';
+  private fase: 'picar' | 'mexer' | 'fim' = 'picar';
   private giro!: (p: Phaser.Input.Pointer) => number;
   private mexido = 0;
   private colher!: Phaser.GameObjects.Image;
@@ -234,7 +234,7 @@ export class Temperos extends Etapa {
   private readonly CORTES = 4;
 
   protected montar() {
-    this.atual = this.cortes = this.pimentas = this.mexido = 0;
+    this.atual = this.cortes = this.mexido = 0;
     this.fase = 'picar';
     this.add.image(this.T.x, this.T.y, 'atlas', 'tabua_0').setScale(2);
     this.add.image(36, 286, 'atlas', 'tigela_0_0').setScale(1.6);
@@ -260,10 +260,15 @@ export class Temperos extends Etapa {
     this.tweens.add({ targets: this.item, scale: 3 - this.cortes * 0.35, duration: 60 });
     if (this.cortes < this.CORTES) return;
     // picou: vai pra tigela
-    const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${PICAR[this.atual].picado}_0`).setScale(2.5);
+    const { picado, pote } = PICAR[this.atual];
+    const pedaco = this.add.image(this.item.x, this.item.y, 'atlas', `${picado}_0`).setScale(2.5);
     this.item.setVisible(false);
     tocar('acerto');
-    this.tweens.add({ targets: pedaco, x: 36, y: 284, scale: 1, duration: 320, onComplete: () => pedaco.destroy() });
+    const [x, y] = pote ? [this.pote.x, this.pote.y - 4] : [36, 284];
+    this.tweens.add({
+      targets: pedaco, x, y, scale: 1, duration: 320,
+      onComplete: () => { pedaco.destroy(); if (pote) this.pote.setFrame('pote_pimenta_0'); },
+    });
     this.atual++;
     this.cortes = 0;
     this.time.delayedCall(360, () => {
@@ -277,34 +282,12 @@ export class Temperos extends Etapa {
     });
   }
 
+  /** A pimenta picada já está no dendê: agora é mexer. */
   private comecaPimenta() {
-    this.fase = 'pimenta';
-    animBia(this.bia, estado.roupa, 'parada'); // largou a faca
-    this.legenda.setText('PIMENTA: JOGUE NO DENDÊ');
-    const lugares = [[46, 170], [78, 196], [104, 168], [132, 198], [92, 182]];
-    lugares.forEach(([x, y], i) => {
-      const p = this.add.image(x, y, 'atlas', 'malagueta_0').setScale(0).setAngle(Phaser.Math.Between(-30, 30)).setInteractive({ useHandCursor: true });
-      this.tweens.add({ targets: p, scale: 2, duration: 180, delay: i * 70 });
-      p.on('pointerdown', () => {
-        if (!this.rodando) return;
-        p.disableInteractive();
-        tocar('pop');
-        this.tweens.add({
-          targets: p, x: this.pote.x, y: this.pote.y - 4, scale: 0.8, duration: 260,
-          onComplete: () => {
-            p.destroy();
-            this.pimentas++;
-            if (this.pimentas === 3) this.pote.setFrame('pote_pimenta_0');
-            if (this.pimentas === lugares.length) {
-              this.fase = 'mexer';
-              animBia(this.bia, estado.roupa, 'mexendo');
-              this.legenda.setText('AGORA MEXE NO DENDÊ!');
-              flutua(this, this.pote.x - 20, this.pote.y - 30, 'MEXE EM CÍRCULOS!');
-            }
-          },
-        });
-      });
-    });
+    this.fase = 'mexer';
+    animBia(this.bia, estado.roupa, 'mexendo');
+    this.legenda.setText('AGORA MEXE NO DENDÊ!');
+    flutua(this, this.pote.x - 20, this.pote.y - 30, 'MEXE EM CÍRCULOS!');
   }
 
   /** Mexer a pimenta no dendê: girar o dedo em volta do pote. */
@@ -316,7 +299,7 @@ export class Temperos extends Etapa {
     this.mexido += d;
     if (d > 0.05 && this.time.now - this.somMexer > 300) { tocar('agua'); this.somMexer = this.time.now; }
     if (this.mexido >= Math.PI * 2 * this.VOLTAS) {
-      this.fase = 'pimenta';
+      this.fase = 'fim';
       this.colher.setVisible(false);
       flutua(this, this.pote.x - 20, this.pote.y - 30, 'PIMENTA PRONTA!');
       this.terminar(this.segundos() <= 23 ? 3 : this.segundos() <= 33 ? 2 : 1);

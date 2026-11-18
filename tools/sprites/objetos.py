@@ -321,6 +321,16 @@ def cheiro_verde(picado=False):
     return [faz(16, 16, [p])]
 
 
+def malagueta_picada():
+    """Rodelinhas de pimenta malagueta, com as sementinhas."""
+    p = Parte()
+    for i, (x, y) in enumerate(((3, 5), (8, 3), (11, 7), (5, 9), (9, 11), (12, 12), (2, 12))):
+        p.ret(x, y, x + 1, y, 'batom')
+        if i % 2 == 0:
+            p.d(x + 1, y, 'amarelo')
+    return [faz(16, 16, [p])]
+
+
 def malagueta():
     p = Parte()
     p.linha(4, 12, 10, 5, 'batom', 2)
@@ -759,7 +769,7 @@ ITENS = {
     'alho': lambda: alho(False), 'alho_picado': lambda: alho(True),
     'cebola': lambda: cebola(False), 'cebola_picada': lambda: cebola(True),
     'pimentao': lambda: pimentao(False), 'pimentao_picado': lambda: pimentao(True),
-    'cheiro_verde': lambda: cheiro_verde(False), 'cheiro_verde_picado': lambda: cheiro_verde(True), 'malagueta': malagueta,
+    'cheiro_verde': lambda: cheiro_verde(False), 'cheiro_verde_picado': lambda: cheiro_verde(True), 'malagueta': malagueta, 'malagueta_picada': malagueta_picada,
     'tacho': tacho, 'respingo': respingo,
     'acaraje_cru': lambda: acaraje_fritando('cru', 1),  # bolinho cru (também usado no triturar)
     **{f'acaraje_l{l}_{e}': (lambda e=e, l=l: acaraje_fritando(e, l)) for l in (1, 2) for e in ('cru', 'dourando', 'ponto', 'queimado')},
