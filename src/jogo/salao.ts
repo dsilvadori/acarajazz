@@ -112,7 +112,7 @@ function espiaoSorteado(cena: Phaser.Scene, bia: Phaser.GameObjects.Sprite, banc
   const forcar = new URLSearchParams(location.search).has('espiao');
   estado.espiao = forcar || Math.random() < ESPIAO.chance;
   if (!estado.espiao) return undefined;
-  return cena.time.delayedCall(Phaser.Math.Between(forcar ? 800 : 2000, forcar ? 800 : 7000), () => {
+  return cena.time.delayedCall(Phaser.Math.Between(forcar ? 800 : 1000, forcar ? 800 : 3500), () => {
     if (bia.x !== bancada.x || bia.y !== bancada.y) return; // a Bia saiu de trás do balcão: fica pra próxima
     espiar(cena);
   });
