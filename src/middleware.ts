@@ -2,14 +2,22 @@ import { defineMiddleware } from 'astro:middleware';
 import { env } from 'cloudflare:workers';
 import { COOKIE, lerSessao } from './lib/auth';
 
-const PUBLICAS = new Set(['/admin/entrar', '/admin/entrar/']);
+const DOMINIO = 'oacarajazz.com';
+const PUBLICAS =new Set(['/admin/entrar', '/admin/entrar/']);
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
-  const { pathname } = ctx.url;
+  const { pathname, hostname } = ctx.url;
+
+  // www.oacarajazz.com → oacarajazz.com (um endereço só para o Google, sem conteúdo duplicado)
+  if (hostname === `www.${DOMINIO}`) {
+    return Response.redirect(`https://${DOMINIO}${pathname}${ctx.url.search}`, 301);
+  }
+
   if (!pathname.startsWith('/admin')) {
     const resposta = await next();
-    // Antes do lançamento (endereço provisório *.workers.dev), o site fica fora do Google
-    if ((env as unknown as { AMBIENTE?: string }).AMBIENTE !== 'producao') resposta.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    // Só o domínio oficial aparece no Google; o endereço provisório (*.workers.dev) e o localhost ficam de fora
+    const indexavel = hostname === DOMINIO || (env as unknown as { AMBIENTE?: string }).AMBIENTE === 'producao';
+    if (!indexavel) resposta.headers.set('X-Robots-Tag', 'noindex, nofollow');
     return resposta;
   }
 

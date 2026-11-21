@@ -33,7 +33,7 @@
     "TURNSTILE_SITE_KEY": "1x00000000000000000000BB",
     // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
     "ADMIN_EMAIL": "acarajazz.contato@gmail.com",
-    // "pre-lancamento": site no ar em *.workers.dev, mas fora do Google. No lançamento: "producao".
+    // O domínio oacarajazz.com é sempre indexado (src/middleware.ts); com "pre-lancamento", o *.workers.dev fica fora do Google.
     "AMBIENTE": "pre-lancamento",
     // Formulários de eventos e do curso: "abertos" ou "fechados"
     "FORMULARIOS": "abertos"
