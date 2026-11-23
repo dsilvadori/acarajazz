@@ -1,6 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 import { env } from 'cloudflare:workers';
 import { COOKIE, lerSessao } from './lib/auth';
+import { foraDoBrasil } from './lib/whatsapp';
 
 const DOMINIO = 'oacarajazz.com';
 const PUBLICAS =new Set(['/admin/entrar', '/admin/entrar/']);
@@ -11,6 +12,14 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   // www.oacarajazz.com → oacarajazz.com (um endereço só para o Google, sem conteúdo duplicado)
   if (hostname === `www.${DOMINIO}`) {
     return Response.redirect(`https://${DOMINIO}${pathname}${ctx.url.search}`, 301);
+  }
+
+  // Formulários (eventos, curso, cupom do Acarabet) só aceitam envios do Brasil
+  if (pathname.startsWith('/api/') && ctx.request.method === 'POST' && foraDoBrasil(ctx.request)) {
+    return Response.json(
+      { ok: false, erros: { geral: 'Os pedidos pelo site são só para quem está no Brasil. Fale com a gente pelo Instagram @o_acarajazz.' } },
+      { status: 403 },
+    );
   }
 
   if (!pathname.startsWith('/admin')) {

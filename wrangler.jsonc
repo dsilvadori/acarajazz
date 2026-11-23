@@ -28,9 +28,8 @@
   "vars": {
     "EMAIL_REMETENTE": "site@oacarajazz.com",
     "EMAIL_DESTINO": "acarajazz.contato@gmail.com",
-    // Chave pública do Turnstile. Esta é a chave de TESTE invisível da Cloudflare (sempre aprova, sem aviso na tela);
-    // trocar pela chave real no lançamento.
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000BB",
+    // Chave pública do Turnstile (widget "Acarajazz"). A secreta fica no segredo TURNSTILE_SECRET.
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAGN4hnIJh94ctWLY",
     // Login do /admin (a senha fica só como hash no segredo ADMIN_SENHA_HASH)
     "ADMIN_EMAIL": "acarajazz.contato@gmail.com",
     // O domínio oacarajazz.com é sempre indexado (src/middleware.ts); com "pre-lancamento", o *.workers.dev fica fora do Google.

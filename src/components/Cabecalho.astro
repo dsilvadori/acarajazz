@@ -1,4 +1,6 @@
 ---
+import { WHATSAPP } from '../lib/whatsapp';
+
 interface Props {
   /** Fora da Home, as âncoras apontam para a Home (/#cardapio etc.) */
   home?: boolean;
@@ -15,7 +17,7 @@ const links = [
 ].map((l) => ({ ...l, href: base + l.href }));
 links.push({ href: '/acarabet', texto: 'Acarabet' });
 links.push({ href: '/acaraje-alem-da-receita', texto: 'Acarajé Além da Receita' });
-const WHATS = 'https://wa.me/5511979564494';
+const WHATS = WHATSAPP.link;
 ---
 
 <header class="cabecalho" id="cabecalho">

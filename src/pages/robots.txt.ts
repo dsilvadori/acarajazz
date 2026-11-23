@@ -8,6 +8,7 @@ export const GET: APIRoute = ({ site, url }) => {
     'Allow: /',
     'Disallow: /admin',
     'Disallow: /api/',
+    'Disallow: /whatsapp',
     'Disallow: /acarabet/sprites',
     '',
     `Sitemap: ${new URL('/sitemap.xml', base).href}`,

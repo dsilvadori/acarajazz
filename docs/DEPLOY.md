@@ -91,3 +91,14 @@ Banco de dados SQLite D1 → acarajazz → **Console** → colar o conteúdo de 
 6. **Publicar:** `npm run deploy`. Em poucos minutos o site responde em https://oacarajazz.com.
 7. **Conferir:** formulário de evento chega no e-mail? Turnstile sem o aviso de teste? `/admin` entra?
 8. **Opcional:** desligar o endereço provisório (`"workers_dev": false`) e publicar de novo.
+
+---
+
+## WhatsApp: só Brasil e sem robôs
+
+Os botões do WhatsApp apontam para `/whatsapp` (`src/pages/whatsapp.ts`), nunca direto para o `wa.me`:
+
+- **Fora do Brasil** (país do Cloudflare diferente de `BR`, inclusive Tor): página avisando, em português e inglês, que o WhatsApp é só para o Brasil, com o link do Instagram. Os formulários (`/api/*`) também recusam envios de fora (`src/middleware.ts`).
+- **No Brasil:** verificação do Turnstile (a mesma chave dos formulários) e redirecionamento para o `wa.me`.
+
+Enquanto a chave do Turnstile for a de teste, a verificação sempre aprova: só o bloqueio por país vale de verdade. Trocar pelas chaves reais (passo 3 e 5 do lançamento) liga a proteção no WhatsApp e nos formulários ao mesmo tempo. O número continua escrito no rodapé, então quem o copiar dali não passa pela verificação.
