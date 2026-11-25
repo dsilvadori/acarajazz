@@ -39,7 +39,7 @@ export const MATERIAS: Materia[] = [
   {
     veiculo: 'g1',
     tipo: 'Portal',
-    titulo: 'Cozinheira que doou acarajés a acampamento de movimento por moradia deixa a garagem para abrir seu primeiro restaurante',
+    titulo: 'Cozinheira que doou acarajés deixa garagem para abrir primeiro restaurante',
     link: 'https://g1.globo.com/sp/sao-paulo/noticia/2022/07/14/cozinheira-que-doou-acarajes-a-evento-do-mtst-com-presenca-de-wagner-moura-deixara-garagem-para-montar-restaurante-em-sp.ghtml',
     data: 'jul/2022',
     imagem: '/img/midia/g1-2022-bia-placa.webp',
