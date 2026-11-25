@@ -12,6 +12,15 @@ export interface Materia {
 
 export const MATERIAS: Materia[] = [
   {
+    veiculo: 'TV Globo · Antena Paulista',
+    tipo: 'TV',
+    titulo: 'Gastronomia ancestral reverencia a consciência negra',
+    link: 'https://g1.globo.com/sp/sao-paulo/antena-paulista/video/gastronomia-ancestral-reverencia-a-consciencia-negra-15276504.ghtml',
+    data: 'nov/2026',
+    imagem: '/img/midia/globo-antena-paulista.webp',
+    posicao: 'center 30%',
+  },
+  {
     veiculo: 'Band · Melhor da Tarde',
     tipo: 'TV',
     titulo: 'Surpresa culinária: Pamela Lucciola recebe os acarajés da chef Bia Souza',
@@ -26,6 +35,14 @@ export const MATERIAS: Materia[] = [
     link: 'https://www.youtube.com/watch?v=AUyr4Tn6-Jw',
     data: 'jun/2026',
     imagem: 'https://i.ytimg.com/vi/AUyr4Tn6-Jw/maxresdefault.jpg',
+  },
+  {
+    veiculo: 'g1',
+    tipo: 'Portal',
+    titulo: 'Cozinheira que doou acarajés a acampamento de movimento por moradia deixa a garagem para abrir seu primeiro restaurante',
+    link: 'https://g1.globo.com/sp/sao-paulo/noticia/2022/07/14/cozinheira-que-doou-acarajes-a-evento-do-mtst-com-presenca-de-wagner-moura-deixara-garagem-para-montar-restaurante-em-sp.ghtml',
+    data: 'jul/2022',
+    imagem: '/img/midia/g1-2022-bia-placa.webp',
   },
   {
     veiculo: 'Agência Mural',
@@ -48,9 +65,8 @@ export const MATERIAS: Materia[] = [
 
 /*
  * PENDENTES (sem link confirmado — não aparecem no site):
- * - Globo: matéria prevista (nov/2026) — entra como primeiro cartão quando sair
  * - g1: matéria(s) sobre o Acarajazz
  * - UOL: matéria gravada no Acarajazz com a chef Debinha (dez/2025)
  * - Canais de gastronomia no Instagram: @ e links dos posts/reels
- * - Metrópoles (nov/2021): doação de acarajés ao MTST — decidir se entra
+ * - Metrópoles (nov/2021): doação de acarajés ao MTST — dispensável, a matéria do g1 (jul/2022) já conta a história
  */
